@@ -27,7 +27,7 @@ logger = logging.getLogger("axiomengine.ollama")
 # Constants
 # ---------------------------------------------------------------------------
 DEFAULT_BASE_URL = "http://localhost:11434"
-DEFAULT_TIMEOUT = 120.0  # seconds for inference calls
+DEFAULT_TIMEOUT = 600.0  # seconds for inference calls (increased for 27B+ models)
 MGMT_TIMEOUT = 30.0      # seconds for management calls (list, show, etc.)
 PULL_TIMEOUT = 600.0      # seconds for model pull (large downloads)
 

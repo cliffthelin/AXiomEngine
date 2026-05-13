@@ -22,12 +22,16 @@ class VGPUManager:
         self.key = "axiomengine:vgpu:allocation"
 
     def get_allocation(self):
+        if not self.stitch.client:
+            return {}
         data = self.stitch.client.get(self.key)
         if data:
             return json.loads(data)
         return {}
 
     def save_allocation(self, alloc):
+        if not self.stitch.client:
+            return
         self.stitch.client.set(self.key, json.dumps(alloc))
 
     def reserve(self, agent_name: str, amount_mib: int):

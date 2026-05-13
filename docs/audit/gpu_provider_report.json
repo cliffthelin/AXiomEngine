@@ -1,0 +1,91 @@
+{
+  "version": "0.1.0",
+  "collected_at": "2026-05-12T21:40:19.716311",
+  "hardware": {
+    "gpus": [
+      {
+        "index": 0,
+        "name": "NVIDIA GeForce RTX 3070",
+        "uuid": "GPU-9a55e41f-c22b-755a-fb37-a620504d5d85",
+        "memory": {
+          "total_mib": 8192,
+          "used_mib": 2347,
+          "free_mib": 5492
+        },
+        "utilization": {
+          "gpu_pct": 0,
+          "memory_pct": 21
+        },
+        "power": {
+          "draw_w": 13.8,
+          "limit_w": 270.0
+        },
+        "temperature_c": 44,
+        "persistence_mode": "Enabled",
+        "display_active": "Enabled"
+      },
+      {
+        "index": 1,
+        "name": "Tesla P40",
+        "uuid": "GPU-cb3c914b-d388-318f-66b4-4037b4cfa0ce",
+        "memory": {
+          "total_mib": 23040,
+          "used_mib": 171,
+          "free_mib": 22736
+        },
+        "utilization": {
+          "gpu_pct": 0,
+          "memory_pct": 0
+        },
+        "power": {
+          "draw_w": 51.85,
+          "limit_w": 180.0
+        },
+        "temperature_c": 47,
+        "persistence_mode": "Enabled",
+        "display_active": "Disabled"
+      }
+    ]
+  },
+  "providers": {
+    "ollama": {
+      "active": true,
+      "models": [
+        {
+          "name": "qwen2.5:7b",
+          "id": "845dbda0ea48",
+          "size": "4.7 GB"
+        },
+        {
+          "name": "translategemma:27b",
+          "id": "21b597a243ec",
+          "size": "17 GB"
+        },
+        {
+          "name": "gemma:2b",
+          "id": "b50d6c999e59",
+          "size": "1.7 GB"
+        },
+        {
+          "name": "qwen3.6:27b",
+          "id": "a50eda8ed977",
+          "size": "17 GB"
+        }
+      ],
+      "running": []
+    },
+    "llama_server": {
+      "active": true,
+      "instances": [
+        {
+          "pid": "5243",
+          "cmdline": "llama-server --model /snap/gemma4/components/80/model-e4b-q4-k-m-gguf/gemma-4-E4B-it-Q4_K_M.gguf --alias gemma4-e4b-q4-k-m --mmproj /snap/gemma4/components/80/mmproj-e4b-q8-0-gguf/mmproj-gemma-4-E4B-it-Q8_0.gguf --port 8336 --host 127.0.0.1 --no-warmup --sleep-idle-seconds 600",
+          "port": "8336",
+          "host": "127.0.0.1",
+          "model_path": "/snap/gemma4/components/80/model-e4b-q4-k-m-gguf/gemma-4-E4B-it-Q4_K_M.gguf",
+          "alias": "gemma4-e4b-q4-k-m"
+        }
+      ]
+    }
+  }
+}

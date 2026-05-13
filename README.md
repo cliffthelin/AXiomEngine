@@ -50,7 +50,7 @@ To avoid hardware timeouts and context limits, we process the application in log
 - **Security**: PII boundaries, auth resolution, and audit trails.
 
 ### 2. The Saturation Loop
-Leverages your available multi-GPU compute (such as the Tesla P40 and RTX 3070 used in our reference architecture) to perform deep inference on the 1,800+ file codebase. The mission orchestrator injects source context directly into the LLM to ensure "High Rationale" extraction.
+Leverages your available multi-GPU compute (such as the Tesla P40 and RTX 3070 used in our reference architecture) to perform deep inference across the entire codebase. The mission orchestrator injects source context directly into the LLM to ensure "High Rationale" extraction.
 
 ### 3. Policy-Driven Recovery
 The **Archon Harness** monitors the mission. If a stall or crash is detected, it evaluates the failure pattern against axiomatic policies and automatically relaunchs the mission with the required fixes.
