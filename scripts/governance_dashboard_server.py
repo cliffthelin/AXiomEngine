@@ -13,6 +13,7 @@ import re
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 from scripts.governance_manifest_verifier import build_manifest_verification_result
+from scripts.gpu_provider_registry import GPUProviderRegistry
 
 VERSION = "1.4.0"
 
@@ -83,6 +84,7 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
             "/api/governance/latest-report": self.handle_latest_report,
             "/api/governance/historical-reports": self.handle_historical_reports,
             "/api/governance/mission-artifacts": self.handle_mission_artifacts,
+            "/api/governance/gpu-status": self.handle_gpu_status,
             "/api/governance/summary": self.handle_summary
         }
 
@@ -146,6 +148,11 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
                     break
         
         self.send_json(artifacts)
+
+    def handle_gpu_status(self):
+        registry = GPUProviderRegistry()
+        report = registry.run_discovery()
+        self.send_json(report)
 
     def handle_summary(self):
         reports = get_all_reports_from_dirs(self.server.mission_dirs)
