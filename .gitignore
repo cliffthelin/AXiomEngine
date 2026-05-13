@@ -34,3 +34,5 @@ valkey_local.*
 workspaces/
 temp_sim_*/
 mission_pack_*/
+.agent_keychain.json
+.env
