@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AXiomEngine Governance Cockpit</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0a0a0c;
+            --panel-bg: rgba(20, 20, 25, 0.8);
+            --accent-color: #3b82f6;
+            --text-color: #e2e8f0;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --layer-gap: 120px;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden;
+            display: flex;
+            height: 100vh;
+        }
+
+        #graph-container {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a0c 100%);
+        }
+
+        #sidebar {
+            width: 350px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(10px);
+            border-left: 1px solid var(--border-color);
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .layer-label {
+            position: absolute;
+            left: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.3);
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .node {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .node:hover {
+            filter: brightness(1.5);
+        }
+
+        .node circle {
+            stroke: rgba(255, 255, 255, 0.2);
+            stroke-width: 1px;
+        }
+
+        .node text {
+            font-size: 8px;
+            fill: #94a3b8;
+            pointer-events: none;
+        }
+
+        .edge {
+            stroke: rgba(255, 255, 255, 0.05);
+            stroke-width: 1px;
+            fill: none;
+            transition: stroke 0.3s ease;
+        }
+
+        .edge.active {
+            stroke: var(--accent-color);
+            stroke-width: 2px;
+            stroke-opacity: 0.8;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .card h3 {
+            margin: 0 0 10px 0;
+            font-size: 0.9rem;
+            color: #60a5fa;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+
+        .metric .label { color: #94a3b8; }
+        .metric .value { font-family: 'JetBrains Mono', monospace; }
+
+        .status-pill {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.6rem;
+            font-weight: 600;
+        }
+
+        .status-governed { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+        .status-partial { background: rgba(234, 179, 8, 0.2); color: #fde047; }
+        .status-drifted { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+        .button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            text-align: center;
+            transition: opacity 0.2s;
+        }
+
+        .button:hover { opacity: 0.8; }
+
+        #tooltip {
+            position: absolute;
+            background: rgba(15, 15, 20, 0.95);
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="graph-container">
+        <!-- SVGs will be injected here -->
+    </div>
+
+    <div id="sidebar">
+        <div class="header">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <h1>Governance Cockpit</h1>
+        </div>
+
+        <div class="card" id="selection-card">
+            <p style="font-size: 0.8rem; color: #94a3b8; margin: 0;">Select a node in the graph to view details and intent stack.</p>
+        </div>
+
+        <div class="card">
+            <h3>System Status</h3>
+            <div class="metric">
+                <span class="label">Mean Alignment</span>
+                <span class="value" id="mean-alignment">0.253</span>
+            </div>
+            <div class="metric">
+                <span class="label">Governed Files</span>
+                <span class="value">96.4%</span>
+            </div>
+            <div class="metric">
+                <span class="label">Active Conflicts</span>
+                <span class="value" style="color: #f87171;">2 Detected</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>HITL Actions</h3>
+            <button class="button" style="width: 100%; margin-bottom: 10px;">Declare New Decision</button>
+            <button class="button" style="width: 100%; background: rgba(255,255,255,0.05); color: #e2e8f0;">Map Concept to Code</button>
+        </div>
+    </div>
+
+    <div id="tooltip"></div>
+
+    <script>
+        // Data integration placeholder
+        // In a real environment, we'd fetch INTENT_INDEX.json and MDG.json
+        // For this demo, I'll inject a representative subset of the data
+        const layers = [
+            { id: 13, name: "Process & Provenance", color: "#60a5fa" },
+            { id: 10, name: "MDG (Dependency)", color: "#818cf8" },
+            { id: 8,  name: "Data Concepts", color: "#a78bfa" },
+            { id: 6,  name: "Decisions", color: "#f472b6" },
+            { id: 3,  name: "PDD Rules", color: "#fb7185" },
+            { id: 1,  name: "Application Code", color: "#34d399" }
+        ];
+
+        const width = window.innerWidth - 350;
+        const height = window.innerHeight;
+
+        const svg = d3.select("#graph-container")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .append("g");
+
+        const zoom = d3.zoom()
+            .scaleExtent([0.1, 4])
+            .on("zoom", (event) => {
+                svg.attr("transform", event.transform);
+            });
+
+        d3.select("svg").call(zoom);
+
+        // Add layer background zones
+        layers.forEach((layer, i) => {
+            const y = (i + 1) * 150;
+            d3.select("#graph-container").append("div")
+                .attr("class", "layer-label")
+                .style("top", `${y}px`)
+                .text(`Layer ${layer.id}: ${layer.name}`);
+        });
+
+        // Mock data generator for visualization
+        const nodes = [];
+        const links = [];
+
+        // Generate Concepts (Layer 8)
+        const concepts = ["DC-GPU-THERMAL", "DC-AGENT-SESSION", "DC-MODEL-ROUTER", "DC-AUDIT-TRAIL"];
+        concepts.forEach((c, i) => {
+            nodes.push({ id: c, layer: 8, x: (i + 1) * (width / 5), y: 3 * 150 });
+        });
+
+        // Generate Decisions (Layer 6)
+        nodes.push({ id: "DEC-P40-LIMIT", layer: 6, x: width/2, y: 4 * 150 });
+        links.push({ source: "DEC-P40-LIMIT", target: "DC-GPU-THERMAL" });
+
+        // Generate Rules (Layer 3)
+        const rules = ["R-HW-GPU-001", "R-HW-GPU-002", "R-SEC-001"];
+        rules.forEach((r, i) => {
+            nodes.push({ id: r, layer: 3, x: (i + 1) * (width / 4), y: 5 * 150 });
+            if (i < 2) links.push({ source: r, target: "DC-GPU-THERMAL" });
+        });
+
+        // Generate Code (Layer 1)
+        const code = ["gpu_thermal_optimizer.py", "gpu-manager.sh", "intent_builder.py", "drift_detector.py"];
+        code.forEach((f, i) => {
+            nodes.push({ id: f, layer: 1, x: (i + 1) * (width / 5), y: 6 * 150 });
+            if (i < 2) links.push({ source: f, target: "DC-GPU-THERMAL" });
+        });
+
+        // Draw Links
+        const linkElements = svg.selectAll(".edge")
+            .data(links)
+            .enter()
+            .append("path")
+            .attr("class", "edge")
+            .attr("d", d => {
+                const s = nodes.find(n => n.id === d.source);
+                const t = nodes.find(n => n.id === d.target);
+                return `M ${s.x} ${s.y} C ${s.x} ${(s.y + t.y)/2}, ${t.x} ${(s.y + t.y)/2}, ${t.x} ${t.y}`;
+            });
+
+        // Draw Nodes
+        const nodeElements = svg.selectAll(".node")
+            .data(nodes)
+            .enter()
+            .append("g")
+            .attr("class", "node")
+            .attr("transform", d => `translate(${d.x}, ${d.y})`)
+            .on("mouseover", showTooltip)
+            .on("mouseout", hideTooltip)
+            .on("click", selectNode);
+
+        nodeElements.append("circle")
+            .attr("r", 6)
+            .attr("fill", d => layers.find(l => l.id === d.layer).color)
+            .attr("filter", "drop-shadow(0 0 5px rgba(255,255,255,0.2))");
+
+        nodeElements.append("text")
+            .attr("dy", 15)
+            .attr("text-anchor", "middle")
+            .text(d => d.id);
+
+        function showTooltip(event, d) {
+            const tooltip = d3.select("#tooltip");
+            tooltip.transition().duration(200).style("opacity", .9);
+            tooltip.html(`<strong>${d.id}</strong><br>Layer: ${d.layer}`)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 28) + "px");
+        }
+
+        function hideTooltip() {
+            d3.select("#tooltip").transition().duration(500).style("opacity", 0);
+        }
+
+        function selectNode(event, d) {
+            // Highlight intent stack
+            const related = links.filter(l => l.source === d.id || l.target === d.id);
+            linkElements.classed("active", l => l.source === d.id || l.target === d.id);
+            
+            d3.select("#selection-card").html(`
+                <div class="header">
+                    <div style="width: 10px; height: 10px; border-radius: 50%; background: ${layers.find(l => l.id === d.layer).color}"></div>
+                    <h3 style="margin:0">${d.id}</h3>
+                </div>
+                <div class="metric" style="margin-top:10px">
+                    <span class="label">Layer</span>
+                    <span class="value">${d.layer}</span>
+                </div>
+                <div class="metric">
+                    <span class="label">Status</span>
+                    <span class="status-pill status-governed">GOVERNED</span>
+                </div>
+                <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 10px;">
+                    <strong>Intent Path:</strong><br>
+                    ${d.layer === 1 ? "Code ➔ Concept ➔ Rule ➔ Decision" : "Concept Anchor"}
+                </div>
+            `);
+        }
+
+        // Initial View
+        d3.select("svg").transition().duration(750).call(
+            zoom.transform,
+            d3.zoomIdentity.translate(50, 50).scale(0.8)
+        );
+    </script>
+</body>
+</html>

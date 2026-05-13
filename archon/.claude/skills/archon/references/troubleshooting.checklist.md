@@ -1,0 +1,16 @@
+# Active ARCHON-REFERENCES Checklist: troubleshooting.md
+
+- [ ] G-ARCHON-REFERENCES-TROUBLESHOOTING-001: Fix (Claude): (Section: "Claude Code not found" / "Codex CLI binary not found")
+- [ ] G-ARCHON-REFERENCES-TROUBLESHOOTING-002: Install: `curl fsSL https://claude.ai/install.sh | bash` (or `npm install g @anthropicai/claudecode`) (Section: "Claude Code not found" / "Codex CLI binary not found")
+- [ ] G-ARCHON-REFERENCES-TROUBLESHOOTING-003: Set `CLAUDE_BIN_PATH=/path/to/claude` in `~/.archon/.env`, OR (Section: "Claude Code not found" / "Codex CLI binary not found")
+- [ ] G-ARCHON-REFERENCES-TROUBLESHOOTING-004: Set `assistants.claude.claudeBinaryPath: /absolute/path` in `.archon/config.yaml` (Section: "Claude Code not found" / "Codex CLI binary not found")
+- [ ] G-ARCHON-REFERENCES-TROUBLESHOOTING-005: Autodetect covers `$HOME/.local/bin/claude` (native installer) — no config needed if you used that path (Section: "Claude Code not found" / "Codex CLI binary not found")
+- [ ] G-ARCHON-REFERENCES-TROUBLESHOOTING-006: Fix (Codex): (Section: "Claude Code not found" / "Codex CLI binary not found")
+- [ ] G-ARCHON-REFERENCES-TROUBLESHOOTING-007: Install: `npm install g @openai/codex` (or platformspecific instructions) (Section: "Claude Code not found" / "Codex CLI binary not found")
+- [ ] G-ARCHON-REFERENCES-TROUBLESHOOTING-008: Set `CODEX_CLI_PATH=/path/to/codex` or `assistants.codex.codexBinaryPath` in config (Section: "Claude Code not found" / "Codex CLI binary not found")
+- [ ] G-ARCHON-REFERENCES-TROUBLESHOOTING-009: Autodetect covers the standard npm / Homebrew locations per platform (Section: "Claude Code not found" / "Codex CLI binary not found")
+- [ ] G-ARCHON-REFERENCES-TROUBLESHOOTING-010: Web UI: Dashboard → Abandon or Cancel button on the run card (Section: Workflow shows `running` for a long time but nothing happens)
+- [ ] G-ARCHON-REFERENCES-TROUBLESHOOTING-011: CLI: `archon workflow abandon <runid>` — marks the DB row cancelled without killing any subprocess. Right tool for orphans since the subprocess is already gone (Section: Workflow shows `running` for a long time but nothing happens)
+- [ ] G-ARCHON-REFERENCES-TROUBLESHOOTING-012: Chat (Slack / Telegram / Web): `/workflow cancel <runid>` — actively terminates the subprocess. Use for a stilllive run that needs to be interrupted (there is no `archon workflow cancel` CLI subcommand) (Section: Workflow shows `running` for a long time but nothing happens)
+- [ ] G-ARCHON-REFERENCES-TROUBLESHOOTING-013: Caveat: AI session context from prior nodes is NOT restored on resume. If a `context: shared` node depended on insession memory, rerunning it will have fresh context. Artifactbased handoff survives; incontext memory does not. (Section: → "Resuming workflow — skipping N already-completed node(s)")
+- [ ] G-ARCHON-REFERENCES-TROUBLESHOOTING-014: Fix: Set `interactive: true` at the workflow level too. Nodelevel `interactive` is ignored on web without workflowlevel `interactive`. See `references/workflowdag.md` §Approval Nodes and §Interactive Loops. (Section: Approval gate not appearing on web UI)

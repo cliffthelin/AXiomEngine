@@ -1,0 +1,8 @@
+{
+  "statement": "All dynamic command execution initiated by configuration values must be restricted to a predefined allowlist of executables or absolute paths, with explicit validation before subprocess invocation, to mitigate command injection vulnerabilities.",
+  "bounded_area": "AuthManager.resolve_key shell command construction and execution",
+  "evidence": [
+    "auth_manager.py",
+    "AuthManager.resolve_key"
+  ]
+}

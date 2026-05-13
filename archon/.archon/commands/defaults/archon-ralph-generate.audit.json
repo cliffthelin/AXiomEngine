@@ -1,0 +1,21 @@
+{
+  "file": "archon-ralph-generate.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-RALPH-GENERATE",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-ralph-generate logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-ralph-generate status widget"
+    }
+  ]
+}

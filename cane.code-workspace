@@ -1,0 +1,29 @@
+{
+	"folders": [
+		{
+			"path": "../../../../../../home/cane"
+		},
+		{
+			"path": "."
+		},
+		{
+			"path": "../../../U5"
+		},
+		{
+			"path": "../../../Ubuntu 26.04 amd64"
+		},
+		{
+			"path": "../../../../run/media/cane/U5"
+		},
+		{
+			"path": "../../../../run/media/cane/Ubuntu 26.04 amd64"
+		},
+		{
+			"path": "../../../../../../home/cane/Downloads"
+		},
+		{
+			"path": "../GPU_Switcher/gpu-orchestrator"
+		}
+	],
+	"settings": {}
+}

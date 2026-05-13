@@ -1,0 +1,81 @@
+{
+  "decisions": [
+    {
+      "decision_id": "DEC-P40-POWER-LIMIT-150W",
+      "decision_type": "Override",
+      "prompted_by": {
+        "context_type": "operational_observation",
+        "description": "Tesla P40 repeatedly caused PCIe kernel hangs under sustained inference at default power limits. Three thermal crashes observed in 48 hours.",
+        "bounded_area": "DC-GPU-THERMAL-LIMIT",
+        "evidence": [
+          "gpu-manager.sh thermal optimizer integration 2026-05-11",
+          "Kernel hang logs showing PCIe timeout at >85°C"
+        ]
+      },
+      "statement": "The Tesla P40 must not exceed 150W sustained power draw during inference. The gpu_thermal_optimizer.py daemon must enforce dynamic stepping between 150W and 220W based on thermal zone readings. Manual override of power limits is forbidden during inference workloads.",
+      "authority": "Infrastructure Lead",
+      "scope": {
+        "applies_to": [
+          {"entity_type": "DataConcept", "entity_id": "DC-GPU-THERMAL-LIMIT"}
+        ]
+      },
+      "effective": {
+        "start_date": "2026-05-11",
+        "end_date": null
+      },
+      "enforcement": "Strict",
+      "supersedes": []
+    },
+    {
+      "decision_id": "DEC-REVERSA-TRANSLATE-INPLACE",
+      "decision_type": "Interpretation",
+      "prompted_by": {
+        "context_type": "rule_review",
+        "description": "During Reversa translation pipeline setup, the question arose whether translated files should be saved alongside originals or overwrite them.",
+        "bounded_area": "DC-REVERSA-EXTRACTION",
+        "evidence": [
+          "Conversation b492d731 — user confirmed originals downloadable from source"
+        ]
+      },
+      "statement": "All Reversa agent skill translations from Portuguese to English are saved in-place, overwriting the originals. No backup copies are needed because the original repository can be re-downloaded at any time from the upstream source.",
+      "authority": "User (Project Owner)",
+      "scope": {
+        "applies_to": [
+          {"entity_type": "DataConcept", "entity_id": "DC-REVERSA-EXTRACTION"}
+        ]
+      },
+      "effective": {
+        "start_date": "2026-05-12",
+        "end_date": null
+      },
+      "enforcement": "Strict",
+      "supersedes": []
+    },
+    {
+      "decision_id": "DEC-RTX3070-INFERENCE-OFFLOAD",
+      "decision_type": "Interpretation",
+      "prompted_by": {
+        "context_type": "drift_finding",
+        "description": "Governance audit identified that all inference was routed to the Tesla P40, creating a thermal bottleneck. The RTX 3070 (8GB VRAM) was idle during heavy audit workloads.",
+        "bounded_area": "DC-MODEL-ROUTING",
+        "evidence": [
+          "Swarm orchestration telemetry showing 100% P40 utilization, 0% RTX 3070",
+          "Conversation b492d731 — multi-GPU offloading discussion"
+        ]
+      },
+      "statement": "Heavy inference should be distributed across both GPUs. Models requiring more than 8GB VRAM must route to the Tesla P40. Models that fit within 8GB should prefer the RTX 3070 to distribute thermal load. The RTX 3070 runs on Ollama port 11434, the P40 on port 11435.",
+      "authority": "Infrastructure Lead",
+      "scope": {
+        "applies_to": [
+          {"entity_type": "DataConcept", "entity_id": "DC-MODEL-ROUTING"}
+        ]
+      },
+      "effective": {
+        "start_date": "2026-05-11",
+        "end_date": null
+      },
+      "enforcement": "BestEffort",
+      "supersedes": []
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+# Active ARCHON-EXAMPLES Checklist: command-template.md
+
+- [ ] G-ARCHON-EXAMPLES-COMMAND-TEMPLATE-001: Workflow ID: $WORKFLOW_ID (Section: Command Name)
+- [ ] G-ARCHON-EXAMPLES-COMMAND-TEMPLATE-002: User request: $ARGUMENTS (Section: Phase 1: LOAD)
+- [ ] G-ARCHON-EXAMPLES-COMMAND-TEMPLATE-003: Read any artifacts from previous steps: `$ARTIFACTS_DIR/` (Section: Phase 1: LOAD)
+- [ ] G-ARCHON-EXAMPLES-COMMAND-TEMPLATE-004: Base branch: $BASE_BRANCH (Section: Phase 1: LOAD)
+- [ ] G-ARCHON-EXAMPLES-COMMAND-TEMPLATE-005: User request understood (Section: PHASE_1_CHECKPOINT)
+- [ ] G-ARCHON-EXAMPLES-COMMAND-TEMPLATE-006: Prior artifacts loaded (if any) (Section: PHASE_1_CHECKPOINT)
+- [ ] G-ARCHON-EXAMPLES-COMMAND-TEMPLATE-007: Codebase context gathered (Section: PHASE_1_CHECKPOINT)
+- [ ] G-ARCHON-EXAMPLES-COMMAND-TEMPLATE-008: Main work completed (Section: PHASE_2_CHECKPOINT)
+- [ ] G-ARCHON-EXAMPLES-COMMAND-TEMPLATE-009: Changes validated (typecheck, lint, tests as appropriate) (Section: PHASE_2_CHECKPOINT)
+- [ ] G-ARCHON-EXAMPLES-COMMAND-TEMPLATE-010: Summary of what was done (Section: Phase 3: GENERATE)
+- [ ] G-ARCHON-EXAMPLES-COMMAND-TEMPLATE-011: Key decisions made (Section: Phase 3: GENERATE)
+- [ ] G-ARCHON-EXAMPLES-COMMAND-TEMPLATE-012: Any issues encountered (Section: Phase 3: GENERATE)
+- [ ] G-ARCHON-EXAMPLES-COMMAND-TEMPLATE-013: Artifact written to `$ARTIFACTS_DIR/output.md` (Section: PHASE_3_CHECKPOINT)
+- [ ] G-ARCHON-EXAMPLES-COMMAND-TEMPLATE-014: Artifact contains actionable information for the next step (Section: PHASE_3_CHECKPOINT)

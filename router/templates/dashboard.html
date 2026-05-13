@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AXiomEngine Governance Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg: #0a0a0c;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.3);
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+            color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--card-border);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .logo span {
+            color: var(--accent);
+            text-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--muted);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-links a.active {
+            color: var(--text);
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .status-badge {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            padding: 0.5rem 1rem;
+            border-radius: 99px;
+            font-size: 0.875rem;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        main {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 1.25rem;
+            padding: 1.5rem;
+            backdrop-filter: blur(5px);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: var(--accent);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            font-size: 0.875rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .card .value {
+            font-size: 2rem;
+            font-weight: 600;
+            margin: 0.5rem 0;
+        }
+
+        .table-container {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 1.25rem;
+            overflow: hidden;
+            margin-top: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.02);
+            text-align: left;
+            padding: 1rem;
+            color: var(--muted);
+            font-weight: 500;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+        }
+
+        .pill {
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .pill-blue { background: rgba(99, 102, 241, 0.2); color: #818cf8; }
+        .pill-green { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .pill-red { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+        .drift-flag {
+            color: var(--danger);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .chart-container {
+            height: 300px;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <span>⚡</span> AXiomEngine Dashboard
+        </div>
+        <div class="nav-links">
+            <a href="/admin/dashboard" class="active">Dashboard</a>
+            <a href="/admin/settings">Settings</a>
+            <div class="status-badge" style="margin-left: 1rem;">
+                <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--success);"></div>
+                System Online
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="grid">
+            <div class="card">
+                <h3>Total Invocations</h3>
+                <div class="value" id="total-invocations">-</div>
+                <div style="color: var(--success); font-size: 0.875rem;">↑ 12% from last hour</div>
+            </div>
+            <div class="card">
+                <h3>Avg Latency</h3>
+                <div class="value" id="avg-latency">-</div>
+                <div style="color: var(--muted); font-size: 0.875rem;">Target: &lt; 5000ms</div>
+            </div>
+            <div class="card">
+                <h3>Token Burn Rate</h3>
+                <div class="value" id="token-burn">-</div>
+                <div style="color: var(--warning); font-size: 0.875rem;">$0.12 total today</div>
+            </div>
+            <div class="card">
+                <h3>Knowledge Graph</h3>
+                <div class="value" id="kg-stats">0 / 0</div>
+                <div style="color: var(--accent); font-size: 0.875rem;">Nodes / Edges</div>
+            </div>
+            <div class="card">
+                <h3>Visual Review (Plannotator)</h3>
+                <div class="value" id="plannotator-status">Inactive</div>
+                <div style="color: var(--accent); font-size: 0.875rem;"><a href="#" onclick="triggerPlannotatorReview()" style="color: inherit; text-decoration: none;">⚡ Launch Review</a></div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card" style="grid-column: span 3;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>System Integrity (Archon Test Harness)</h3>
+                    <button onclick="runTests()" id="test-btn" style="background: var(--accent); border: none; color: white; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-family: inherit; font-weight: 600;">Run Integration Tests</button>
+                </div>
+                <div id="test-results-container" style="margin-top: 1rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <!-- Test results injected here -->
+                </div>
+                <div id="last-run" style="margin-top: 1rem; font-size: 0.75rem; color: var(--muted);">Last Run: Never</div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card" style="grid-column: span 3;">
+                <h3>Governance Proposals (Pending Review)</h3>
+                <div class="table-container" style="margin-top: 1rem;">
+                    <table id="proposals-table">
+                        <thead>
+                            <tr>
+                                <th>Rule ID</th>
+                                <th>Agent</th>
+                                <th>Change</th>
+                                <th>Rationale</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card" style="grid-column: span 2;">
+                <h3>Audit Trail (Recent)</h3>
+                <div class="table-container">
+                    <table id="audit-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Agent</th>
+                                <th>Model</th>
+                                <th>Prompt Hash</th>
+                                <th>Rules Cited</th>
+                                <th>Latency</th>
+                                <th>Drift</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card">
+                <h3>System Performance</h3>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        async function refreshData() {
+            try {
+                const response = await fetch('/admin/audit?limit=15');
+                const data = await response.json();
+                
+                const tableBody = document.querySelector('#audit-table tbody');
+                tableBody.innerHTML = '';
+                
+                let totalLatency = 0;
+                let totalTokens = 0;
+
+                data.forEach(row => {
+                    totalLatency += row.latency_ms;
+                    totalTokens += (row.tokens_in + row.tokens_out);
+
+                    const tr = document.createElement('tr');
+                    const time = new Date(row.created_at).toLocaleTimeString();
+                    
+                    tr.innerHTML = `
+                        <td class="muted">${time}</td>
+                        <td><span class="pill pill-blue">${row.agent_name}</span></td>
+                        <td><span class="pill pill-green">${row.model}</span></td>
+                        <td class="mono">${row.prompt_hash}</td>
+                        <td>${row.rules_cited.join(', ')}</td>
+                        <td>${row.latency_ms}ms</td>
+                        <td>${row.drift_flag ? '<span class="drift-flag">⚠ DRIFT</span>' : '✅'}</td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+
+                document.getElementById('total-invocations').textContent = data.length + "+";
+                document.getElementById('avg-latency').textContent = (totalLatency / data.length || 0).toFixed(0) + "ms";
+                document.getElementById('token-burn').textContent = totalTokens.toLocaleString();
+
+                updateChart(data);
+                refreshKGStats();
+                refreshTestResults();
+                refreshProposals();
+
+            } catch (error) {
+                console.error("Dashboard refresh failed:", error);
+            }
+        }
+
+        async function refreshProposals() {
+            try {
+                const resp = await fetch('/admin/proposals?status=pending');
+                const data = await resp.json();
+                const tableBody = document.querySelector('#proposals-table tbody');
+                tableBody.innerHTML = '';
+                
+                data.forEach(prop => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="mono">${prop.rule_id}</td>
+                        <td><span class="pill pill-blue">${prop.agent_name}</span></td>
+                        <td><span class="pill ${prop.change_type === 'new' ? 'pill-green' : 'pill-red'}">${prop.change_type}</span></td>
+                        <td title="${prop.content}">${prop.rationale}</td>
+                        <td>
+                            <button onclick="resolveProposal(${prop.proposal_id}, 'approve')" style="background: var(--success); border: none; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; font-size: 0.7rem; margin-right: 0.5rem;">Approve</button>
+                            <button onclick="resolveProposal(${prop.proposal_id}, 'reject')" style="background: var(--danger); border: none; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; font-size: 0.7rem;">Reject</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            } catch (e) { console.error("Proposals refresh failed:", e); }
+        }
+
+        async function resolveProposal(pid, action) {
+            if (!confirm(`Are you sure you want to ${action} this proposal?`)) return;
+            await fetch(`/admin/proposals/${pid}/${action}`, { method: 'POST' });
+            refreshProposals();
+        }
+
+        async function refreshKGStats() {
+            const resp = await fetch('/admin/kg-stats');
+            const data = await resp.json();
+            document.getElementById('kg-stats').textContent = `${data.nodes} / ${data.edges}`;
+        }
+
+        async function refreshTestResults() {
+            const resp = await fetch('/admin/test-results');
+            const data = await resp.json();
+            const container = document.getElementById('test-results-container');
+            container.innerHTML = '';
+            
+            if (data.results && data.results.length > 0) {
+                data.results.forEach(res => {
+                    const card = document.createElement('div');
+                    card.style.background = 'rgba(255,255,255,0.02)';
+                    card.style.padding = '1rem';
+                    card.style.borderRadius = '8px';
+                    card.style.border = `1px solid ${res.status === 'PASS' ? 'var(--success)' : 'var(--danger)'}`;
+                    card.innerHTML = `
+                        <div style="font-weight: 600; font-size: 0.8rem;">${res.test}</div>
+                        <div style="color: ${res.status === 'PASS' ? 'var(--success)' : 'var(--danger)'}; font-size: 0.75rem; font-weight: bold;">${res.status}</div>
+                    `;
+                    container.appendChild(card);
+                });
+                document.getElementById('last-run').textContent = `Last Run: ${data.last_run}`;
+            }
+        }
+
+        async function runTests() {
+            const btn = document.getElementById('test-btn');
+            btn.textContent = 'Running...';
+            btn.disabled = true;
+            await fetch('/admin/run-tests', { method: 'POST' });
+            setTimeout(() => {
+                btn.textContent = 'Run Integration Tests';
+                btn.disabled = false;
+                refreshTestResults();
+            }, 5000);
+        }
+
+        let perfChart;
+        function updateChart(data) {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            const labels = data.map(r => new Date(r.created_at).toLocaleTimeString()).reverse();
+            const latencies = data.map(r => r.latency_ms).reverse();
+
+            if (perfChart) perfChart.destroy();
+
+            perfChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Latency (ms)',
+                        data: latencies,
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 2,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { display: false },
+                        y: { 
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#94a3b8', font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function triggerPlannotatorReview() {
+            try {
+                const resp = await fetch('/admin/extensions/plannotator/review', { method: 'POST' });
+                const data = await resp.json();
+                if (data.url) {
+                    window.open(data.url, '_blank');
+                } else {
+                    alert("No active changes to review.");
+                }
+            } catch (e) { console.error("Plannotator trigger failed:", e); }
+        }
+
+        refreshData();
+        setInterval(refreshData, 10000);
+    </script>
+</body>
+</html>

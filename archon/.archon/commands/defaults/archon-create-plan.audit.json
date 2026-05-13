@@ -1,0 +1,21 @@
+{
+  "file": "archon-create-plan.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-CREATE-PLAN",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-create-plan logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-create-plan status widget"
+    }
+  ]
+}

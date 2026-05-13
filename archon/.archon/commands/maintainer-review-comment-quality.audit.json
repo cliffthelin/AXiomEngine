@@ -1,0 +1,21 @@
+{
+  "file": "maintainer-review-comment-quality.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-MAINTAINER-REVIEW-COMMENT-QUALITY",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement maintainer-review-comment-quality logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "maintainer-review-comment-quality status widget"
+    }
+  ]
+}

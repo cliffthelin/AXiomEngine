@@ -1,0 +1,63 @@
+{
+  "id": "R-PDD-AUDIT-001",
+  "generated_by": "Python",
+  "ai_dissertation": {
+    "content": "STALLED_INFERENCE_FALLBACK",
+    "generated_by": "None"
+  },
+  "technical_template": {
+    "content": "Structured audit for R-PDD-AUDIT-001",
+    "generated_by": "Python"
+  },
+  "knowledge_graph": {
+    "related_files": [],
+    "dependency_chain": [],
+    "subsystem_neighbors": [],
+    "confidence_boost": 0,
+    "generated_by": "KnowledgeGraph"
+  },
+  "short_summary": {
+    "content": "RADAR: Reporting on Automated Vehicles and the Transportation System\n\n- Date: June 3, 2021\n- Session: Technical Mandates for 2021-2025\n- Speakers: XYZ and ABC\n\nAbstract: This Technical Mandate outlines a plan to address technological challenges related to the adoption of automated vehicles in transportation systems. It includes actions that aim to promote collaboration, facilitate technology transfer, establish regulatory frameworks, and foster public-private partnerships. These initiatives will support the development of safe, reliable, and efficient automated vehicles while promoting innovation and creating economic opportunities for stakeholders.\n\nKeywords: Automated Vehicles, Transportation System, Technical Mandate, Reporting, Summary, RADAR, Reporting on Automated Vehicles and the Transportation System",
+    "generated_by": "ResearcherAgent"
+  },
+  "keywords": {},
+  "tdd_governance": {
+    "test_verification": {
+      "exists": false,
+      "tdd_gap": "High - Required for CLI/TUI/GUI"
+    },
+    "how_to_validate_values": {
+      "how_to_follow": [
+        "Locate implementation point for: Technical Mandate [Extraction in Progress]...",
+        "Apply rule-specific constraints."
+      ],
+      "how_to_validate": [
+        "Check for physical adherence to: R-PDD-AUDIT-001",
+        "Run linter pass."
+      ]
+    },
+    "generated_by": "Python"
+  },
+  "audit_telemetry": {
+    "time_started": "2026-05-10 23:24:20",
+    "time_completed": "2026-05-10 23:27:48",
+    "time_failed": null,
+    "instance_source": "ExhaustiveDiscovery",
+    "instance_context": "Technical Mandate [Extraction in Progress]",
+    "generated_by": "Python"
+  },
+  "interfaces": {
+    "cli": {
+      "status": "Missing",
+      "percent_satisfied": "0%"
+    },
+    "tui": {
+      "status": "Missing",
+      "percent_satisfied": "0%"
+    },
+    "gui": {
+      "status": "Missing",
+      "percent_satisfied": "0%"
+    }
+  }
+}

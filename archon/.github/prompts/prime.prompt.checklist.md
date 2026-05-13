@@ -1,0 +1,15 @@
+# Active ARCHON-PROMPTS Checklist: prime.prompt.md
+
+- [ ] G-ARCHON-PROMPTS-PRIME-001: codebase (Section: General)
+- [ ] G-ARCHON-PROMPTS-PRIME-002: readFile (Section: General)
+- [ ] G-ARCHON-PROMPTS-PRIME-003: textSearch (Section: General)
+- [ ] G-ARCHON-PROMPTS-PRIME-004: fileSearch (Section: General)
+- [ ] G-ARCHON-PROMPTS-PRIME-005: listDirectory (Section: General)
+- [ ] G-ARCHON-PROMPTS-PRIME-006: usages (Section: General)
+- [ ] G-ARCHON-PROMPTS-PRIME-007: Project Purpose: One sentence (Section: Output)
+- [ ] G-ARCHON-PROMPTS-PRIME-008: Tech Stack (Section: Output)
+- [ ] G-ARCHON-PROMPTS-PRIME-009: Frontend: framework, UI library, state management (Section: Output)
+- [ ] G-ARCHON-PROMPTS-PRIME-010: Backend: framework, database, validation (Section: Output)
+- [ ] G-ARCHON-PROMPTS-PRIME-011: Data Model: Core entities (Section: Output)
+- [ ] G-ARCHON-PROMPTS-PRIME-012: Key Patterns: Database, API, state management patterns (Section: Output)
+- [ ] G-ARCHON-PROMPTS-PRIME-013: Current State: Recent commits, current branch (Section: Output)

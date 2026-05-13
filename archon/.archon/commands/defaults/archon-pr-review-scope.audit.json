@@ -1,0 +1,21 @@
+{
+  "file": "archon-pr-review-scope.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-PR-REVIEW-SCOPE",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-pr-review-scope logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-pr-review-scope status widget"
+    }
+  ]
+}

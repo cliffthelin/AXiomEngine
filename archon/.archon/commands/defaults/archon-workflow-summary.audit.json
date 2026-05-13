@@ -1,0 +1,21 @@
+{
+  "file": "archon-workflow-summary.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-WORKFLOW-SUMMARY",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-workflow-summary logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-workflow-summary status widget"
+    }
+  ]
+}

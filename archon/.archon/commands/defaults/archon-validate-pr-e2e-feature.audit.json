@@ -1,0 +1,21 @@
+{
+  "file": "archon-validate-pr-e2e-feature.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-VALIDATE-PR-E2E-FEATURE",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-validate-pr-e2e-feature logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-validate-pr-e2e-feature status widget"
+    }
+  ]
+}

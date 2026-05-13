@@ -1,0 +1,21 @@
+{
+  "file": "archon-create-pr.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-CREATE-PR",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-create-pr logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-create-pr status widget"
+    }
+  ]
+}

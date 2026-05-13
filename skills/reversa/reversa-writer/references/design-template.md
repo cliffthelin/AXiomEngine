@@ -1,0 +1,50 @@
+### SOURCE:
+# [Unit Name], Technical Design
+
+> Template for the `design.md` file. It focuses on the HOW the unit is built, based on the legacy code read.
+
+## Interface
+[Inputs, outputs, parameters, data types]
+
+For HTTP endpoints:
+
+| Method | Path | Input | Output | Status codes |
+|--------|---------|---------|-------|--------------|
+| GET | `/resource/:id` | `id: string` | `Resource` | 200, 404 |
+| POST | `/resource` | `ResourceCreate` | `Resource` | 201, 400, 409 |
+
+For classes/functions:
+
+| Symbol | Signature | Return | Note |
+|---------|-----------|---------|------------|
+| `ClassName.method` | `(arg1: T, arg2: U)` | `V` | [Relevant detail] |
+
+## Main Flow
+1. [Step 1, with reference to the legacy file when applicable]
+2. [Step 2]
+3. [Step N]
+
+## Alternative Flows
+- **[Special condition]:** [behavior]
+- **[Error case]:** [behavior]
+
+## Dependencies
+- [Component X], [reason, how it's used]
+- [Service Y], [reason, how it's used]
+
+## Identified Design Decisions
+
+| Decision | Evidence in the code | Confidence |
+|---------|---------------------|-----------|
+| [ex: persistence via Prisma with soft-delete] | `prisma/schema.prisma:42` | 🟢 |
+| [ex: in-memory cache with 5min TTL] | `cache/store.ts:18` | 🟡 |
+
+## Internal State
+[If the unit maintains state, describe which fields, where they are stored, how they evolve]
+
+## Observability
+[Logs, metrics, traces emitted by the unit, with reference to the code]
+
+## Risks and Gaps
+- 🔴 [Behavior that could not be inferred from the code, requires human validation]
+- 🟡 [Assumption that may be incorrect]

@@ -1,0 +1,17 @@
+# Active ARCHON-COOKBOOKS Checklist: research.md
+
+- [ ] G-ARCHON-COOKBOOKS-RESEARCH-001: Input: `$ARGUMENTS` — a question about the codebase. Optional: `followup` (append to existing research). (Section: Research Cookbook)
+- [ ] G-ARCHON-COOKBOOKS-RESEARCH-002: DO NOT suggest improvements or changes (Section: CRITICAL: Documentarian Only)
+- [ ] G-ARCHON-COOKBOOKS-RESEARCH-003: DO NOT propose future enhancements or critique implementations (Section: CRITICAL: Documentarian Only)
+- [ ] G-ARCHON-COOKBOOKS-RESEARCH-004: ONLY describe what exists, where it exists, how it works, and how components interact (Section: CRITICAL: Documentarian Only)
+- [ ] G-ARCHON-COOKBOOKS-RESEARCH-005: Identify specific components, patterns, or concepts to investigate (Section: 1.3 Determine Scope)
+- [ ] G-ARCHON-COOKBOOKS-RESEARCH-006: Note `followup` flag for appending to existing research (Section: 1.3 Determine Scope)
+- [ ] G-ARCHON-COOKBOOKS-RESEARCH-007: CHECKPOINT: Query classified, scope identified. (Section: 1.3 Determine Scope)
+- [ ] G-ARCHON-COOKBOOKS-RESEARCH-008: Use for Where/What/Pattern queries. Ask it to find all relevant code locations — files, functions, types, tests. Request file:line references and actual code snippets. (Section: Agent: Codebase Explorer (`Explore`))
+- [ ] G-ARCHON-COOKBOOKS-RESEARCH-009: Use for How/What queries. Ask it to trace data flow, map dependencies, identify entry points, and document how components interact. Request file:line references. (Section: Agent: Codebase Analyst (`codebase-analyst`))
+- [ ] G-ARCHON-COOKBOOKS-RESEARCH-010: Location: `{file}:{lines}` (Section: {Finding Area 1})
+- [ ] G-ARCHON-COOKBOOKS-RESEARCH-011: {Areas that need further investigation} (Section: Open Questions)
+- [ ] G-ARCHON-COOKBOOKS-RESEARCH-012: Next steps: (Section: Phase 6: REPORT — Present to User)
+- [ ] G-ARCHON-COOKBOOKS-RESEARCH-013: To dig deeper: `/archondev research followup {topic}` (Section: Phase 6: REPORT — Present to User)
+- [ ] G-ARCHON-COOKBOOKS-RESEARCH-014: For strategic/external research: `/archondev investigate {topic}` (Section: Phase 6: REPORT — Present to User)
+- [ ] G-ARCHON-COOKBOOKS-RESEARCH-015: To write requirements: `/archondev prd {topic}` (Section: Phase 6: REPORT — Present to User)

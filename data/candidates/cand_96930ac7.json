@@ -1,0 +1,9 @@
+{
+  "statement": "Cached outputs from dynamic credential resolution commands must incorporate explicit time-to-live (TTL) expiration or invalidation triggers to prevent the persistence and reuse of stale or revoked secrets.",
+  "bounded_area": "AuthManager cache dictionary lifecycle and cache lookup/write operations",
+  "evidence": [
+    "auth_manager.py",
+    "AuthManager.__init__",
+    "AuthManager.resolve_key"
+  ]
+}

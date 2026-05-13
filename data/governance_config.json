@@ -1,0 +1,25 @@
+{
+  "governance_phase": "discovery",
+  "phase_rules": {
+    "discovery": {
+      "include_tests": true,
+      "include_generated": true,
+      "include_changelogs": false,
+      "include_lockfiles": false,
+      "description": "Everything scored — surfacing all behavioral evidence"
+    },
+    "governed": {
+      "include_tests": false,
+      "include_generated": false,
+      "include_changelogs": false,
+      "include_lockfiles": false,
+      "description": "Only production code and governance artifacts scored"
+    }
+  },
+  "exclusion_patterns": {
+    "tests": ["*.test.ts", "*.test.py", "*.test.js", "test_*.py", "*_test.py", "test-utils.*", "test/**", "*/test/*", "vitest.config.*"],
+    "generated": ["*.generated.ts", "*.generated.js", "bundled-defaults.generated.*"],
+    "changelogs": ["CHANGELOG.md", "CHANGELOG.checklist.md"],
+    "lockfiles": ["package-lock.json", "pnpm-lock.yaml", "yarn.lock"]
+  }
+}

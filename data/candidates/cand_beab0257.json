@@ -1,0 +1,8 @@
+{
+  "statement": "Credential resolution fallback chains must enforce a deterministic priority where explicitly defined configuration sources strictly supersede environment variables, with explicit opt-out controls required to reverse the precedence.",
+  "bounded_area": "AuthManager.get_api_key resolution order and fallback evaluation",
+  "evidence": [
+    "auth_manager.py",
+    "AuthManager.get_api_key"
+  ]
+}

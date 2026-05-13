@@ -1,0 +1,4 @@
+FROM /mnt/usb-Seagate_Backup+_Hub_BK_NA9R7TTV-0:0-part2/Models/TheBloke/fiction.live-Kimiko-V2-70B-GGUF/fiction.live-Kimiko-V2-70B.Q4_K_S.gguf
+PARAMETER num_gpu 999
+PARAMETER num_ctx 8192
+SYSTEM You are Kimiko, a highly capable 70B model running on a dual-GPU Agentic OS.

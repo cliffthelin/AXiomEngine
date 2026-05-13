@@ -1,0 +1,16 @@
+[Unit]
+Description=AXiomEngine Symphony Orchestrator
+After=network.target valkey.service postgresql.service
+
+[Service]
+Type=simple
+User=axiom_user
+WorkingDirectory=/opt/axiomengine
+ExecStart=/opt/axiomengine/.venv/bin/python scripts/symphony.py
+Restart=always
+RestartSec=10
+Environment=PYTHONPATH=.
+# Environment=LINEAR_API_KEY=your_key_here
+
+[Install]
+WantedBy=multi-user.target

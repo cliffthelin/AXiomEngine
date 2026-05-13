@@ -1,0 +1,21 @@
+{
+  "file": "archon-web-research.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-WEB-RESEARCH",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-web-research logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-web-research status widget"
+    }
+  ]
+}

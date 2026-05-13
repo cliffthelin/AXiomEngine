@@ -1,0 +1,21 @@
+{
+  "file": "archon-confirm-plan.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-CONFIRM-PLAN",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-confirm-plan logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-confirm-plan status widget"
+    }
+  ]
+}

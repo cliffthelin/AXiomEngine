@@ -1,0 +1,21 @@
+{
+  "file": "maintainer-review-report.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-MAINTAINER-REVIEW-REPORT",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement maintainer-review-report logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "maintainer-review-report status widget"
+    }
+  ]
+}

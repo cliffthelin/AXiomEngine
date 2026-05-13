@@ -1,0 +1,21 @@
+{
+  "file": "maintainer-review-error-handling.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-MAINTAINER-REVIEW-ERROR-HANDLING",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement maintainer-review-error-handling logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "maintainer-review-error-handling status widget"
+    }
+  ]
+}

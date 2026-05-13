@@ -1,0 +1,19 @@
+{
+  "rules_completed": 0,
+  "total_tokens_in": 0,
+  "total_tokens_out": 0,
+  "total_chars_written": 0,
+  "batches_processed": 0,
+  "quality_score_avg": 0.0,
+  "orchestration_complexity": 0,
+  "sub_tasks": {
+    "discovery_alignment": 0,
+    "knowledge_graphing": 0,
+    "ai_research": 0,
+    "ai_dissertation": 0,
+    "interface_audit": 0,
+    "code_tagging": 0,
+    "tdd_alignment": 0,
+    "vectorization_prep": 0
+  }
+}

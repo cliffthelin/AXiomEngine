@@ -1,0 +1,21 @@
+{
+  "file": "archon-implement-tasks.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-IMPLEMENT-TASKS",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-implement-tasks logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-implement-tasks status widget"
+    }
+  ]
+}

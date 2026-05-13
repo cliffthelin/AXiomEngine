@@ -1,0 +1,21 @@
+{
+  "file": "archon-sync-pr-with-main.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-SYNC-PR-WITH-MAIN",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-sync-pr-with-main logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-sync-pr-with-main status widget"
+    }
+  ]
+}

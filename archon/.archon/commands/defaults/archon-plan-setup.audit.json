@@ -1,0 +1,21 @@
+{
+  "file": "archon-plan-setup.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-PLAN-SETUP",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-plan-setup logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-plan-setup status widget"
+    }
+  ]
+}

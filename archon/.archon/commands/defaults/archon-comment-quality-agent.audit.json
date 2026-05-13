@@ -1,0 +1,21 @@
+{
+  "file": "archon-comment-quality-agent.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-COMMENT-QUALITY-AGENT",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-comment-quality-agent logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-comment-quality-agent status widget"
+    }
+  ]
+}

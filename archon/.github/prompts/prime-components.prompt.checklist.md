@@ -1,0 +1,16 @@
+# Active ARCHON-PROMPTS Checklist: prime-components.prompt.md
+
+- [ ] G-ARCHON-PROMPTS-PRIME-COMPONENTS-001: codebase (Section: General)
+- [ ] G-ARCHON-PROMPTS-PRIME-COMPONENTS-002: readFile (Section: General)
+- [ ] G-ARCHON-PROMPTS-PRIME-COMPONENTS-003: textSearch (Section: General)
+- [ ] G-ARCHON-PROMPTS-PRIME-COMPONENTS-004: fileSearch (Section: General)
+- [ ] G-ARCHON-PROMPTS-PRIME-COMPONENTS-005: listDirectory (Section: General)
+- [ ] G-ARCHON-PROMPTS-PRIME-COMPONENTS-006: usages (Section: General)
+- [ ] G-ARCHON-PROMPTS-PRIME-COMPONENTS-007: `client/src/components/flagstable.tsx`  data display pattern (Section: Process)
+- [ ] G-ARCHON-PROMPTS-PRIME-COMPONENTS-008: `client/src/components/flagformmodal.tsx`  form with dialog pattern (Section: Process)
+- [ ] G-ARCHON-PROMPTS-PRIME-COMPONENTS-009: `client/src/components/deleteconfirmdialog.tsx`  confirmation dialog pattern (Section: Process)
+- [ ] G-ARCHON-PROMPTS-PRIME-COMPONENTS-010: UI Library: Available shadcn components (Section: Output)
+- [ ] G-ARCHON-PROMPTS-PRIME-COMPONENTS-011: Styling: How Tailwind and cn() are used (Section: Output)
+- [ ] G-ARCHON-PROMPTS-PRIME-COMPONENTS-012: Props Pattern: How props interfaces are defined (Section: Output)
+- [ ] G-ARCHON-PROMPTS-PRIME-COMPONENTS-013: Composition: How feature components compose UI primitives (Section: Output)
+- [ ] G-ARCHON-PROMPTS-PRIME-COMPONENTS-014: State: How local state is managed in components (Section: Output)

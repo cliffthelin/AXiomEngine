@@ -1,0 +1,17 @@
+# Active ARCHON-ISSUE_TEMPLATE Checklist: feature_request.md
+
+- [ ] G-ARCHON-ISSUE_TEMPLATE-FEATURE_REQUEST-001: What problem are you trying to solve? (Section: Problem)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-FEATURE_REQUEST-002: Who experiences it? (which platform/workflow) (Section: Problem)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-FEATURE_REQUEST-003: How often does it come up? (Section: Problem)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-FEATURE_REQUEST-004: Package(s) likely affected: `core|workflows|isolation|git|adapters|server|web|cli|paths` (Section: Scope)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-FEATURE_REQUEST-005: Breaking change? (`Yes/No`) (Section: Scope)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-FEATURE_REQUEST-006: Database changes needed? (`Yes/No`) (Section: Scope)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-FEATURE_REQUEST-007: New external dependencies? (`Yes/No`) (Section: Scope)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-FEATURE_REQUEST-008: New permissions/capabilities? (`Yes/No`) (Section: Security Considerations)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-FEATURE_REQUEST-009: New external network calls? (`Yes/No`) (Section: Security Considerations)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-FEATURE_REQUEST-010: Secrets/tokens handling? (`Yes/No`) (Section: Security Considerations)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-FEATURE_REQUEST-011: If any `Yes`, describe: (Section: Security Considerations)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-FEATURE_REQUEST-012: Acceptance criterion 1 (Section: Definition of Done)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-FEATURE_REQUEST-013: Acceptance criterion 2 (Section: Definition of Done)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-FEATURE_REQUEST-014: Tests covering the feature (Section: Definition of Done)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-FEATURE_REQUEST-015: Documentation updated (if userfacing) (Section: Definition of Done)

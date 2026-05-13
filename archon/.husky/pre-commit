@@ -1,0 +1,4 @@
+# Governance Guard: Ensure no Rule IDs are dropped
+python3 /mnt/usb-Seagate_Backup+_Hub_BK_NA9R7TTV-0:0-part2/Projects/axiomengine/scripts/GovernanceGuard.py
+
+bun x lint-staged

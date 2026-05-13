@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AXiomEngine | Global Sovereign Review (Phase 6)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --panel-bg: #161b22;
+            --sidebar-bg: #010409;
+            --accent-color: #58a6ff;
+            --text-color: #c9d1d9;
+            --border-color: #30363d;
+            --input-bg: #0d1117;
+            --success-color: #3fb950;
+            --danger-color: #f85149;
+            --warning-color: #d29922;
+            --failed-bg: rgba(248, 81, 73, 0.1);
+        }
+
+        * { box-sizing: border-box; }
+        body { margin: 0; background-color: var(--bg-color); color: var(--text-color); font-family: 'Outfit', sans-serif; display: flex; height: 100vh; overflow: hidden; }
+
+        /* Sidebar */
+        aside { width: 240px; background-color: var(--sidebar-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 20px 0; }
+        .logo { padding: 0 20px 20px; font-weight: 600; font-size: 1.2rem; color: var(--accent-color); display: flex; align-items: center; gap: 10px; }
+        nav { flex: 1; }
+        nav button { width: 100%; background: none; border: none; color: var(--text-color); text-align: left; padding: 12px 20px; cursor: pointer; font-size: 0.95rem; display: flex; align-items: center; gap: 10px; transition: all 0.2s; }
+        nav button:hover { background-color: var(--panel-bg); }
+        nav button.active { background-color: var(--panel-bg); border-left: 4px solid var(--accent-color); color: white; }
+
+        /* Main Content */
+        main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        header { height: 60px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 30px; justify-content: space-between; }
+        .content-area { flex: 1; display: flex; overflow: hidden; }
+        .form-panel { flex: 1; padding: 30px; overflow-y: auto; border-right: 1px solid var(--border-color); }
+
+        /* Cards & Tables */
+        .card { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+        .summary-item label { font-size: 0.7rem; color: #8b949e; display: block; margin-bottom: 4px; text-transform: uppercase; }
+        .summary-item span { font-weight: 600; font-size: 0.95rem; }
+
+        .table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
+        .table th { text-align: left; padding: 10px; border-bottom: 1px solid var(--border-color); color: #8b949e; font-weight: 400; }
+        .table td { padding: 10px; border-bottom: 1px solid var(--border-color); vertical-align: top; }
+        
+        .finding-row:hover { background: rgba(58, 130, 246, 0.05); }
+        .snippet { font-family: 'JetBrains Mono', monospace; background: #010409; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; color: #79c0ff; }
+        .excerpt-box { font-family: 'JetBrains Mono', monospace; background: #010409; padding: 10px; border-radius: 6px; font-size: 0.75rem; max-height: 150px; overflow-y: auto; white-space: pre-wrap; margin-top: 10px; border: 1px solid #30363d; }
+
+        /* Badges */
+        .badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; font-weight: 600; text-transform: uppercase; display: inline-block; }
+        .badge.success { background: var(--success-color); color: white; }
+        .badge.failed { background: var(--danger-color); color: white; }
+        .badge.blocked { background: var(--warning-color); color: black; }
+        .badge.partial { background: #ab7df8; color: white; }
+
+        /* Review Controls */
+        .decision-panel { display: flex; gap: 5px; }
+        button.action-btn { font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; cursor: pointer; border: 1px solid var(--border-color); background: var(--input-bg); color: white; }
+        button.action-btn.accept:hover { background: var(--success-color); border-color: var(--success-color); }
+        button.action-btn.reject:hover { background: var(--danger-color); border-color: var(--danger-color); }
+
+        .hidden { display: none !important; }
+        #global-import-zone { border: 2px dashed var(--border-color); padding: 40px; text-align: center; border-radius: 8px; transition: all 0.2s; cursor: pointer; }
+        #global-import-zone:hover { border-color: var(--accent-color); background: rgba(88, 166, 255, 0.05); }
+
+    </style>
+</head>
+<body>
+
+<aside>
+    <div class="logo">🏛️ AXiomEngine</div>
+    <nav id="main-nav">
+        <button data-tab="mission">🎯 Mission</button>
+        <button data-tab="registry">🗃️ Registry</button>
+        <button class="active" data-tab="review">⚖️ Sovereign Review</button>
+        <button data-tab="export">🔨 Export</button>
+    </nav>
+</aside>
+
+<main>
+    <header>
+        <div id="active-tab-title">Global Sovereign Review</div>
+        <div class="btn-group">
+            <button class="primary" id="export-decisions" disabled onclick="exportGlobalDecisions()">Export Decisions (JSON)</button>
+        </div>
+    </header>
+
+    <div class="content-area">
+        <!-- REVIEW TAB -->
+        <div id="tab-review" class="form-panel">
+            <div id="global-import-zone" onclick="document.getElementById('global-input').click()">
+                <h2 style="margin-top:0">Import Global Mission Pack</h2>
+                <p style="font-size: 0.9rem; color: #8b949e;">Select global_mission_report.json, findings, evidence, and errors.</p>
+                <input type="file" id="global-input" multiple accept=".json" class="hidden">
+                <div id="import-stats" style="margin-top:15px; font-weight:600; color: var(--success-color);"></div>
+            </div>
+
+            <div id="review-dashboard" class="hidden" style="margin-top:30px;">
+                <!-- MISSION SUMMARY -->
+                <div class="card" style="border-left: 5px solid var(--accent-color);">
+                    <div id="global-status-badge" style="float:right"></div>
+                    <h3 style="margin-top:0">Mission Pack Dashboard</h3>
+                    <div class="summary-grid" id="global-summary"></div>
+                </div>
+
+                <!-- SHARD STATUS TABLE -->
+                <div class="card">
+                    <h3>Shard Distribution & Health</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Shard Name</th>
+                                <th>Status</th>
+                                <th>Findings</th>
+                                <th>Worker ID</th>
+                                <th>Diagnostics</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shard-table-body"></tbody>
+                    </table>
+                </div>
+
+                <!-- FINDINGS & EVIDENCE -->
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3>Candidate Findings Review</h3>
+                        <select id="shard-filter" style="width: 200px; font-size: 0.8rem;"></select>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Shard</th>
+                                <th>Type</th>
+                                <th>Snippet</th>
+                                <th>Decision</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="findings-table-body"></tbody>
+                    </table>
+                </div>
+
+                <!-- ERRORS & GAPS -->
+                <div id="error-section" class="card hidden" style="border-left: 5px solid var(--danger-color);">
+                    <h3 style="color: var(--danger-color);">Forensic Error Logs & Gaps</h3>
+                    <div id="error-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- OTHER TABS (Skeletons) -->
+        <div id="tab-mission" class="form-panel hidden"><h3>Mission Designer</h3></div>
+        <div id="tab-registry" class="form-panel hidden"><h3>Mission Registry</h3></div>
+        <div id="tab-export" class="form-panel hidden"><h3>Export Node</h3></div>
+    </div>
+</main>
+
+<script>
+    let state = {
+        report: null,
+        findings: [],
+        evidence: {},
+        errors: [],
+        decisions: {}, // finding_id -> { decision, rationale }
+        errorReviews: {}, // shard_name -> { status, rationale }
+        filterShard: 'all'
+    };
+
+    function init() {
+        document.querySelectorAll('#main-nav button').forEach(btn => {
+            btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+        });
+        document.getElementById('global-input').addEventListener('change', handleGlobalImport);
+        document.getElementById('shard-filter').addEventListener('change', (e) => {
+            state.filterShard = e.target.value;
+            renderFindings();
+        });
+    }
+
+    function switchTab(tab) {
+        document.querySelectorAll('#main-nav button').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
+        document.querySelectorAll('.form-panel').forEach(p => p.classList.toggle('hidden', p.id !== `tab-${tab}`));
+        document.getElementById('active-tab-title').textContent = tab.charAt(0).toUpperCase() + tab.slice(1);
+    }
+
+    async function handleGlobalImport(e) {
+        const files = Array.from(e.target.files);
+        for (const file of files) {
+            const json = JSON.parse(await file.text());
+            if (json.mission_pack_id) state.report = json;
+            else if (json.findings) state.findings = json.findings;
+            else if (json.evidence) {
+                // Build index from list or use directly if already indexed
+                const evList = Array.isArray(json.evidence) ? json.evidence : Object.values(json.evidence);
+                evList.forEach(ev => state.evidence[ev.evidence_id] = ev);
+            }
+            else if (json.errors) state.errors = json.errors;
+        }
+
+        if (state.report) {
+            document.getElementById('review-dashboard').classList.remove('hidden');
+            document.getElementById('global-import-zone').classList.add('hidden');
+            document.getElementById('export-decisions').disabled = false;
+            renderDashboard();
+        }
+    }
+
+    function renderDashboard() {
+        const r = state.report;
+        const statusClass = r.global_status.toLowerCase();
+        
+        // Status Badge
+        document.getElementById('global-status-badge').innerHTML = `<span class="badge ${statusClass}">${r.global_status}</span>`;
+        
+        // Summary
+        document.getElementById('global-summary').innerHTML = `
+            <div class="summary-item"><label>Mission Pack ID</label><span>${r.mission_pack_id}</span></div>
+            <div class="summary-item"><label>Manager ID</label><span>${r.manager_run_id}</span></div>
+            <div class="summary-item"><label>Success Rate</label><span>${r.shard_counts.successful_shards}/${r.shard_counts.reported_shards}</span></div>
+            <div class="summary-item"><label>Candidates</label><span>${r.aggregate_counts.total_findings}</span></div>
+            <div class="summary-item"><label>Version</label><span>v${r.manager_version}</span></div>
+            <div class="summary-item"><label>Pack Hash</label><span style="font-size:0.6rem; color:#8b949e;">${r.pack_hash.substring(0,16)}...</span></div>
+        `;
+
+        // Shard Table
+        const shardBody = document.getElementById('shard-table-body');
+        shardBody.innerHTML = '';
+        const filterSelect = document.getElementById('shard-filter');
+        filterSelect.innerHTML = '<option value="all">All Shards</option>';
+
+        r.worker_runs.forEach(w => {
+            const row = document.createElement('tr');
+            const icon = w.status.startsWith('SUCCESS') ? '✅' : (w.status === 'BLOCKED' ? '🚫' : '❌');
+            row.innerHTML = `
+                <td><strong>${w.shard_name}</strong></td>
+                <td><span class="badge ${w.status.toLowerCase()}">${w.status}</span></td>
+                <td>${w.findings_count || 0}</td>
+                <td><span style="font-family:JetBrains Mono; font-size:0.7rem;">${w.run_id || 'N/A'}</span></td>
+                <td>${w.error ? `<span style="color:var(--danger-color); font-size:0.75rem;">${w.error.stage}: ${w.error.type}</span>` : '—'}</td>
+            `;
+            shardBody.appendChild(row);
+            
+            const opt = document.createElement('option');
+            opt.value = w.shard_name;
+            opt.textContent = w.shard_name;
+            filterSelect.appendChild(opt);
+        });
+
+        renderFindings();
+        renderErrors();
+    }
+
+    function renderFindings() {
+        const body = document.getElementById('findings-table-body');
+        body.innerHTML = '';
+        
+        const filtered = state.findings.filter(f => state.filterShard === 'all' || f.shard_name === state.filterShard);
+        
+        filtered.forEach(f => {
+            const dec = state.decisions[f.finding_id] || 'PROPOSED';
+            const row = document.createElement('tr');
+            row.className = 'finding-row';
+            row.innerHTML = `
+                <td><span style="font-family:JetBrains Mono; font-size:0.7rem;">${f.finding_id}</span></td>
+                <td><span style="font-size:0.75rem; color:#8b949e;">${f.shard_name}</span></td>
+                <td><span class="badge" style="border:1px solid var(--accent-color)">${f.type}</span></td>
+                <td><div class="snippet">L${f.line_start}: ${f.snippet}</div></td>
+                <td><span style="font-weight:600; font-size:0.75rem;">${dec}</span></td>
+                <td class="decision-panel">
+                    <button class="action-btn accept" onclick="makeDecision('${f.finding_id}', 'ACCEPTED')">Accept</button>
+                    <button class="action-btn reject" onclick="makeDecision('${f.finding_id}', 'REJECTED')">Reject</button>
+                </td>
+            `;
+            body.appendChild(row);
+        });
+    }
+
+    function renderErrors() {
+        const section = document.getElementById('error-section');
+        const list = document.getElementById('error-list');
+        list.innerHTML = '';
+        
+        if (state.errors.length === 0) {
+            section.classList.add('hidden');
+            return;
+        }
+
+        section.classList.remove('hidden');
+        state.errors.forEach(err => {
+            const div = document.createElement('div');
+            div.className = 'card';
+            div.style.background = 'rgba(248, 81, 73, 0.05)';
+            div.innerHTML = `
+                <div style="display:flex; justify-content:space-between;">
+                    <strong>Shard: ${err.shard_name}</strong>
+                    <span class="badge failed">${err.status}</span>
+                </div>
+                <div style="margin-top:10px; font-size:0.85rem;">
+                    <label>Stage:</label> <span style="color:white">${err.failure_stage}</span> | 
+                    <label>Type:</label> <span style="color:white">${err.error_type}</span> |
+                    <label>Exit Code:</label> <span style="color:white">${err.returncode || 'N/A'}</span>
+                </div>
+                <div style="color:var(--danger-color); font-size:0.85rem; margin-top:5px;">${err.error_message}</div>
+                ${err.stderr_excerpt ? `<div class="excerpt-box"># STDERR EXCERPT\n${err.stderr_excerpt}</div>` : ''}
+                ${err.stdout_excerpt ? `<div class="excerpt-box"># STDOUT EXCERPT\n${err.stdout_excerpt}</div>` : ''}
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    function makeDecision(id, decision) {
+        state.decisions[id] = decision;
+        renderFindings();
+    }
+
+    function exportGlobalDecisions() {
+        const payload = {
+            mission_pack_id: state.report.mission_pack_id,
+            manager_run_id: state.report.manager_run_id,
+            reviewer: "Human Governor",
+            reviewed_at: new Date().toISOString(),
+            decisions: state.decisions,
+            error_reviews: state.errorReviews
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `global_decisions_${state.report.mission_pack_id}.json`;
+        a.click();
+    }
+
+    init();
+</script>
+</body>
+</html>

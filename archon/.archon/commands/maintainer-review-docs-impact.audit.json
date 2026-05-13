@@ -1,0 +1,21 @@
+{
+  "file": "maintainer-review-docs-impact.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-MAINTAINER-REVIEW-DOCS-IMPACT",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement maintainer-review-docs-impact logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "maintainer-review-docs-impact status widget"
+    }
+  ]
+}

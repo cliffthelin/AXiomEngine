@@ -1,0 +1,21 @@
+{
+  "file": "archon-validate.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-VALIDATE",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-validate logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-validate status widget"
+    }
+  ]
+}

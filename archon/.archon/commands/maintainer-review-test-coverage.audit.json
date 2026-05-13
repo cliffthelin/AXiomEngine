@@ -1,0 +1,21 @@
+{
+  "file": "maintainer-review-test-coverage.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-MAINTAINER-REVIEW-TEST-COVERAGE",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement maintainer-review-test-coverage logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "maintainer-review-test-coverage status widget"
+    }
+  ]
+}

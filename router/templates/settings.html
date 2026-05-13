@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AXiomEngine Settings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0c;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.3);
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+            color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--card-border);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .logo span {
+            color: var(--accent);
+            text-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: var(--muted);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-links a.active {
+            color: var(--text);
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        main {
+            padding: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            gap: 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: 250px;
+            flex-shrink: 0;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--muted);
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-radius: 0.75rem;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text);
+        }
+
+        .tab-btn.active {
+            background: var(--card-bg);
+            border-color: var(--card-border);
+            color: var(--accent);
+            font-weight: 600;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content {
+            flex-grow: 1;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 1.25rem;
+            padding: 2rem;
+            backdrop-filter: blur(5px);
+            margin-bottom: 1.5rem;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .form-group .help-text {
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-bottom: 0.25rem;
+        }
+
+        input[type="text"], input[type="number"], select {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--card-border);
+            color: var(--text);
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
+            border-color: var(--accent);
+        }
+
+        /* Toggle Switch CSS */
+        .switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+        
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: .4s;
+            border-radius: 34px;
+            border: 1px solid var(--card-border);
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--accent);
+            border-color: var(--accent);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        .btn-save {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            float: right;
+            transition: opacity 0.2s;
+        }
+
+        .btn-save:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <span>⚡</span> AXiomEngine Config
+        </div>
+        <div class="nav-links">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/settings" class="active">Settings</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('general')">General</button>
+            <button class="tab-btn" onclick="switchTab('models')">Models & VGPU</button>
+            <button class="tab-btn" onclick="switchTab('network')">Router & Network</button>
+            <button class="tab-btn" onclick="switchTab('governance')">Governance (PDD)</button>
+        </div>
+
+        <div class="tab-content active" id="tab-general">
+            <div class="card">
+                <h2>General System Settings</h2>
+                
+                <div class="form-group switch-container">
+                    <div>
+                        <label>Strict Mode</label>
+                        <div class="help-text">Forces strict validation on all agent outputs and halts on warnings.</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="strict_mode" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="form-group switch-container">
+                    <div>
+                        <label>Debug Logging</label>
+                        <div class="help-text">Enable verbose logging across Stitch, Router, and Daemons.</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="debug_logging">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>Workspace Root Directory</label>
+                    <div class="help-text">The default directory where agents are allowed to write files.</div>
+                    <input type="text" id="workspace_dir" value="/mnt/usb-Seagate_Backup+_Hub_BK_NA9R7TTV-0:0-part2/Projects">
+                </div>
+                
+                <button class="btn-save" onclick="saveSettings()">Save Changes</button>
+                <div style="clear: both;"></div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-models">
+            <div class="card">
+                <h2>Models & Infrastructure</h2>
+                
+                <div class="form-group">
+                    <label>Global Default Model</label>
+                    <div class="help-text">Fallback model used when an agent task does not explicitly specify one.</div>
+                    <select id="default_model">
+                        <option value="qwen3.6:27b" selected>Qwen 3.6 (27B) - Ollama</option>
+                        <option value="qwen3.6:35b">Qwen 3.6 (35B) - Ollama</option>
+                        <option value="nemotron:70b">Nemotron (70B) - Split VGPU</option>
+                        <option value="kimiko-70b:latest">Kimiko (70B) - Ollama</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Max Context Length (Tokens)</label>
+                    <div class="help-text">Hard cap for model context window to prevent OOM errors.</div>
+                    <input type="number" id="max_context" value="32768" step="1024">
+                </div>
+
+                <div class="form-group switch-container">
+                    <div>
+                        <label>Enable Dynamic VRAM Offloading</label>
+                        <div class="help-text">Allow OllamaController to automatically unload idle models when VRAM is tight.</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="vram_offload" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <button class="btn-save" onclick="saveSettings()">Save Changes</button>
+                <div style="clear: both;"></div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-network">
+            <div class="card">
+                <h2>Router & Network Settings</h2>
+                
+                <div class="form-group">
+                    <label>Router Port</label>
+                    <div class="help-text">Port for the central FastAPI router. (Requires restart)</div>
+                    <input type="number" id="router_port" value="9001">
+                </div>
+
+                <div class="form-group">
+                    <label>WebSocket Timeout (Seconds)</label>
+                    <div class="help-text">How long to keep idle agent WebSocket connections open.</div>
+                    <input type="number" id="ws_timeout" value="300">
+                </div>
+
+                <div class="form-group">
+                    <label>Valkey Host</label>
+                    <div class="help-text">Redis/Valkey cache endpoint.</div>
+                    <input type="text" id="valkey_host" value="127.0.0.1">
+                </div>
+                
+                <button class="btn-save" onclick="saveSettings()">Save Changes</button>
+                <div style="clear: both;"></div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-governance">
+            <div class="card">
+                <h2>Governance & PDD</h2>
+                
+                <div class="form-group switch-container">
+                    <div>
+                        <label>Auto-Approve Proposals</label>
+                        <div class="help-text">Automatically approve and merge PDD proposals without manual review.</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="auto_approve">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>Drift Tolerance (%)</label>
+                    <div class="help-text">At what percentage of code-behavior drift should an alert be triggered?</div>
+                    <input type="number" id="drift_tolerance" value="15" min="1" max="100">
+                </div>
+                
+                <button class="btn-save" onclick="saveSettings()">Save Changes</button>
+                <div style="clear: both;"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function switchTab(tabId) {
+            // Update buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById('tab-' + tabId).classList.add('active');
+        }
+
+        async function saveSettings() {
+            // Provide UI feedback
+            const btns = document.querySelectorAll('.btn-save');
+            btns.forEach(b => {
+                b.textContent = 'Saving...';
+                b.disabled = true;
+            });
+
+            // Stub: In a real implementation this would POST to /admin/api/settings
+            console.log("Settings save triggered.");
+
+            setTimeout(() => {
+                btns.forEach(b => {
+                    b.textContent = 'Saved!';
+                    b.style.background = '#34d399';
+                });
+                
+                setTimeout(() => {
+                    btns.forEach(b => {
+                        b.textContent = 'Save Changes';
+                        b.style.background = 'var(--success)';
+                        b.disabled = false;
+                    });
+                }, 2000);
+            }, 800);
+        }
+    </script>
+</body>
+</html>

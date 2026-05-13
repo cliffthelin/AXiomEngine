@@ -1,0 +1,1230 @@
+{
+  "stats": {
+    "total_files": 1879,
+    "total_functions": 2907,
+    "total_subsystems": [
+      "archon",
+      "pi",
+      "unknown",
+      "router",
+      "scripts"
+    ],
+    "total_import_edges": 3916,
+    "generated_by": "Python"
+  },
+  "subsystems": {
+    "archon": [
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/.archon/scripts/maintainer-standup-backfill-reviews.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/.archon/scripts/maintainer-standup-gh-data.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/.archon/scripts/maintainer-standup-git-status.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/.archon/scripts/maintainer-standup-persist.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/.archon/scripts/maintainer-standup-read-context.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/chat/slack/adapter.test.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/chat/slack/adapter.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/chat/slack/auth.test.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/chat/slack/auth.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/chat/slack/index.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/chat/slack/types.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/chat/telegram/adapter.test.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/chat/telegram/adapter.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/chat/telegram/auth.test.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/chat/telegram/auth.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/chat/telegram/index.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/chat/telegram/markdown.test.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/chat/telegram/markdown.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/chat/telegram/types.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/chat/discord/adapter.test.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/chat/discord/adapter.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/chat/discord/auth.test.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/chat/discord/auth.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/chat/discord/index.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/chat/discord/types.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/forge/gitea/adapter.test.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/forge/gitea/adapter.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/forge/gitea/auth.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/forge/gitea/index.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/forge/gitea/types.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/forge/gitlab/adapter.test.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/forge/gitlab/adapter.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/forge/gitlab/auth.test.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/forge/gitlab/auth.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/forge/gitlab/index.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/forge/gitlab/types.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/forge/github/adapter.test.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/forge/github/adapter.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/forge/github/auth.test.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/forge/github/auth.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/forge/github/context.test.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/forge/github/index.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/forge/github/types.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/index.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/utils/message-splitting.test.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/utils/message-splitting.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/adapters/cli-adapter.test.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/adapters/cli-adapter.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/bundled-skill.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/cli.test.ts"
+    ],
+    "pi": [
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/.pi/extensions/prompt-url-widget.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/.pi/extensions/redraws.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/.pi/extensions/tps.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/agent/src/agent-loop.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/agent/src/agent.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/agent/src/index.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/agent/src/proxy.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/agent/src/types.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/agent/test/agent-loop.test.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/agent/test/agent.test.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/agent/test/e2e.test.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/agent/test/utils/calculate.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/agent/test/utils/get-current-time.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/agent/vitest.config.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/bedrock-provider.d.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/scripts/generate-models.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/scripts/generate-test-image.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/api-registry.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/bedrock-provider.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/cli.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/env-api-keys.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/index.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/models.generated.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/models.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/oauth.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/providers/amazon-bedrock.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/providers/anthropic.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/providers/azure-openai-responses.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/providers/cloudflare.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/providers/faux.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/providers/github-copilot-headers.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/providers/google-shared.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/providers/google-vertex.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/providers/google.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/providers/mistral.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/providers/openai-codex-responses.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/providers/openai-completions.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/providers/openai-responses-shared.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/providers/openai-responses.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/providers/register-builtins.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/providers/simple-options.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/providers/transform-messages.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/stream.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/types.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/utils/event-stream.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/utils/hash.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/utils/headers.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/utils/json-parse.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/utils/oauth/anthropic.ts",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/ai/src/utils/oauth/github-copilot.ts"
+    ],
+    "unknown": [
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/core/loop/tool_pause_resume.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/core/metrics/agent_latency_metrics.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/core/session/agent_session.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/core/transport/http_transport.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/core/transport/transport_selector.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/core/transport/websocket_transport.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/extensions/plannotator_ext.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/extensions/safety_check.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/pdd/load_rules.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scratch/accelerate_fallback.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scratch/apply_dual_port.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scratch/consolidate_p40.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scratch/depth_upgrade.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scratch/fix_concurrency.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scratch/fix_source_crash.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scratch/fix_telemetry_delay.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scratch/layer4_prep.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scratch/max_multitask.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scratch/mission_optimize.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scratch/multi_gpu_swarm.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scratch/parallel_fix.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scratch/patch_factory.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scratch/prioritize_3070.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scratch/reengage_p40.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scratch/rewrite_inference.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scratch/roi_telemetry.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scratch/stability_patch.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scratch/standardize_ollama.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scratch/standardize_qwen_3070.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scratch/subtask_telemetry.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/tests/test_agent_session_cache.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/.context/AGENTS.md",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/.context/hardware/gpu_allocation.md",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/.context/modes/mode1_split_llm.md",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/.context/pdd/R-PDD-ATLAS-001.md",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/.context/pdd/R-PDD-NEW-FEATURES.md",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/.context/pdd/R-PDD-SWARM-001.md",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/.context/pdd/R-PDD-SYMPHONY-001.md",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/AXIOMENGINE_GOVERNANCE_REPORT.md",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/docs/AXiomEngine_Atomic_Feature_List_100_Plus.md",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/docs/AXiomEngine_Exhaustive_Feature_Matrix.md",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/docs/Archon_CLI_Features_Governance_Matrix.md",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/docs/Archon_DevGuide_Features_Governance_Matrix.md",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/docs/Archon_Governance_Library.md",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/docs/GLOBAL_IMPLEMENTATION_QUEUE.md",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/docs/Governance layers.md",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/docs/GUI_TUI_PRD.md",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/docs/PI docs/compaction.md",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/docs/PI docs/custom-provider.md",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/docs/PI docs/development.md"
+    ],
+    "router": [
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/router/main.py"
+    ],
+    "scripts": [
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/02_index_context.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/03_heartbeat.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/agent_daemon.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/agent_lib.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/agent_types.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/archon_extended_harness.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/archon_tester.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/ast_indexer.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/atlas_bridge.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/auth_manager.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/behavior_monitor.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/benchmark.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/clipboard_utils.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/compaction_manager.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/context_loader.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/DataCatalogFactory.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/dispatcher.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/extension_manager.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/faux_provider.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/rich_tui.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/rpc_handler.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/sandbox.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/search_context.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/session_manager.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/session_tree.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/settings_manager.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/settings_registry.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/shell_utils.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/sis_loop.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/skill_loader.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/skill_manager.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/smart_fetch.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/stats_manager.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/stitch.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/swarm_coordinator.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/git_metadata.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/GovernanceGuard.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/governor.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/harness.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/harness_helper/MISSION_RESILIENCE-context.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/integrity_check.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/intent_mapper.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/keychain.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/kg_pruner.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/knowledge_graph.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/mcp_bridge.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/mission_watchdog.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/ollama_controller.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/package_manager.py",
+      "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/pdd_context_manifest_gen.py"
+    ]
+  },
+  "top_functions": {
+    "inferVerdict": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/.archon/scripts/maintainer-standup-backfill-reviews.ts",
+      "line": 97,
+      "subsystem": "archon"
+    },
+    "extractPrNumber": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/.archon/scripts/maintainer-standup-backfill-reviews.ts",
+      "line": 114,
+      "subsystem": "archon"
+    },
+    "exec": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/.archon/scripts/maintainer-standup-gh-data.ts",
+      "line": 17,
+      "subsystem": "archon"
+    },
+    "parseJson": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/.archon/scripts/maintainer-standup-gh-data.ts",
+      "line": 26,
+      "subsystem": "archon"
+    },
+    "ownerRepo": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/.archon/scripts/maintainer-standup-gh-data.ts",
+      "line": 213,
+      "subsystem": "archon"
+    },
+    "extractNumber": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/.archon/scripts/maintainer-standup-gh-data.ts",
+      "line": 229,
+      "subsystem": "archon"
+    },
+    "git": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/coding-agent/test/git-update.test.ts",
+      "line": 19,
+      "subsystem": "pi"
+    },
+    "getLog": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/workflows/src/workflow-discovery.ts",
+      "line": 34,
+      "subsystem": "archon"
+    },
+    "SlackAdapter": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/chat/slack/adapter.ts",
+      "line": 22,
+      "subsystem": "archon"
+    },
+    "parseAllowedUserIds": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/chat/discord/auth.ts",
+      "line": 10,
+      "subsystem": "archon"
+    },
+    "isSlackUserAuthorized": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/chat/slack/auth.ts",
+      "line": 27,
+      "subsystem": "archon"
+    },
+    "TelegramAdapter": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/chat/telegram/adapter.ts",
+      "line": 22,
+      "subsystem": "archon"
+    },
+    "isUserAuthorized": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/chat/telegram/auth.ts",
+      "line": 29,
+      "subsystem": "archon"
+    },
+    "convertToTelegramMarkdown": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/chat/telegram/markdown.ts",
+      "line": 31,
+      "subsystem": "archon"
+    },
+    "fixRemainingDoubleBold": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/chat/telegram/markdown.ts",
+      "line": 59,
+      "subsystem": "archon"
+    },
+    "escapeMarkdownV2": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/chat/telegram/markdown.ts",
+      "line": 74,
+      "subsystem": "archon"
+    },
+    "isAlreadyEscaped": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/chat/telegram/markdown.ts",
+      "line": 87,
+      "subsystem": "archon"
+    },
+    "stripMarkdown": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/chat/telegram/markdown.ts",
+      "line": 108,
+      "subsystem": "archon"
+    },
+    "DiscordAdapter": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/chat/discord/adapter.ts",
+      "line": 28,
+      "subsystem": "archon"
+    },
+    "isDiscordUserAuthorized": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/chat/discord/auth.ts",
+      "line": 27,
+      "subsystem": "archon"
+    },
+    "createSelfFilterAdapter": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/forge/github/adapter.test.ts",
+      "line": 212,
+      "subsystem": "archon"
+    },
+    "createCommentPayload": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/forge/github/adapter.test.ts",
+      "line": 227,
+      "subsystem": "archon"
+    },
+    "GiteaAdapter": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/forge/gitea/adapter.ts",
+      "line": 47,
+      "subsystem": "archon"
+    },
+    "parseAllowedUsers": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/forge/github/auth.ts",
+      "line": 11,
+      "subsystem": "archon"
+    },
+    "isGiteaUserAuthorized": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/forge/gitea/auth.ts",
+      "line": 28,
+      "subsystem": "archon"
+    },
+    "extends": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/server/src/routes/api.workflows.test.ts",
+      "line": 40,
+      "subsystem": "archon"
+    },
+    "createAdapter": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/forge/gitlab/adapter.test.ts",
+      "line": 92,
+      "subsystem": "archon"
+    },
+    "createNotePayload": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/forge/gitlab/adapter.test.ts",
+      "line": 109,
+      "subsystem": "archon"
+    },
+    "GitLabAdapter": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/forge/gitlab/adapter.ts",
+      "line": 46,
+      "subsystem": "archon"
+    },
+    "isGitLabUserAuthorized": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/forge/gitlab/auth.ts",
+      "line": 28,
+      "subsystem": "archon"
+    },
+    "verifyWebhookToken": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/community/forge/gitlab/auth.ts",
+      "line": 48,
+      "subsystem": "archon"
+    },
+    "createTestAdapterWithMockedOctokit": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/forge/github/adapter.test.ts",
+      "line": 113,
+      "subsystem": "archon"
+    },
+    "createAdapterWithListComments": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/forge/github/adapter.test.ts",
+      "line": 736,
+      "subsystem": "archon"
+    },
+    "callFetchCommentHistory": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/forge/github/adapter.test.ts",
+      "line": 752,
+      "subsystem": "archon"
+    },
+    "callEnsureRepoReady": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/forge/github/adapter.test.ts",
+      "line": 853,
+      "subsystem": "archon"
+    },
+    "GitHubAdapter": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/forge/github/adapter.ts",
+      "line": 48,
+      "subsystem": "archon"
+    },
+    "isGitHubUserAuthorized": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/forge/github/auth.ts",
+      "line": 28,
+      "subsystem": "archon"
+    },
+    "signPayload": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/forge/github/context.test.ts",
+      "line": 137,
+      "subsystem": "archon"
+    },
+    "createIssueCommentPayload": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/forge/github/context.test.ts",
+      "line": 141,
+      "subsystem": "archon"
+    },
+    "createTestAdapter": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/forge/github/context.test.ts",
+      "line": 193,
+      "subsystem": "archon"
+    },
+    "splitIntoParagraphChunks": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/adapters/src/utils/message-splitting.ts",
+      "line": 14,
+      "subsystem": "archon"
+    },
+    "CLIAdapter": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/adapters/cli-adapter.ts",
+      "line": 22,
+      "subsystem": "archon"
+    },
+    "with": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/coding-agent/test/test-harness.ts",
+      "line": 5,
+      "subsystem": "pi"
+    },
+    "printUsage": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/cli.ts",
+      "line": 89,
+      "subsystem": "archon"
+    },
+    "closeDb": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/cli.ts",
+      "line": 145,
+      "subsystem": "archon"
+    },
+    "printUpdateNotice": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/cli.ts",
+      "line": 155,
+      "subsystem": "archon"
+    },
+    "main": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/pdd_stats_reporter_axiomengine.py",
+      "line": 71,
+      "subsystem": "scripts"
+    },
+    "chatCommand": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/chat.ts",
+      "line": 14,
+      "subsystem": "archon"
+    },
+    "continueCommand": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/continue.ts",
+      "line": 35,
+      "subsystem": "archon"
+    },
+    "buildContextPreamble": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/continue.ts",
+      "line": 93,
+      "subsystem": "archon"
+    },
+    "loadArtifactSummary": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/continue.ts",
+      "line": 163,
+      "subsystem": "archon"
+    },
+    "resolveArtifactsDir": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/continue.ts",
+      "line": 204,
+      "subsystem": "archon"
+    },
+    "safeExec": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/continue.ts",
+      "line": 241,
+      "subsystem": "archon"
+    },
+    "isolationListCommand": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/isolation.ts",
+      "line": 35,
+      "subsystem": "archon"
+    },
+    "isolationCleanupCommand": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/isolation.ts",
+      "line": 80,
+      "subsystem": "archon"
+    },
+    "isolationCleanupMergedCommand": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/isolation.ts",
+      "line": 130,
+      "subsystem": "archon"
+    },
+    "isolationCompleteCommand": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/isolation.ts",
+      "line": 179,
+      "subsystem": "archon"
+    },
+    "toError": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/utils/error.ts",
+      "line": 1,
+      "subsystem": "archon"
+    },
+    "serveCommand": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/serve.ts",
+      "line": 20,
+      "subsystem": "archon"
+    },
+    "downloadWebDist": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/serve.ts",
+      "line": 81,
+      "subsystem": "archon"
+    },
+    "cleanupAndThrow": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/serve.ts",
+      "line": 165,
+      "subsystem": "archon"
+    },
+    "parseChecksum": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/serve.ts",
+      "line": 174,
+      "subsystem": "archon"
+    },
+    "is": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/coding-agent/src/core/agent-session.ts",
+      "line": 4,
+      "subsystem": "pi"
+    },
+    "getArchonHome": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/paths/src/archon-paths.ts",
+      "line": 56,
+      "subsystem": "archon"
+    },
+    "generateWebhookSecret": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 159,
+      "subsystem": "archon"
+    },
+    "hasEnvValue": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 166,
+      "subsystem": "archon"
+    },
+    "isCommandAvailable": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 175,
+      "subsystem": "archon"
+    },
+    "probeFileExists": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 191,
+      "subsystem": "archon"
+    },
+    "probeNpmRoot": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 195,
+      "subsystem": "archon"
+    },
+    "probeWhichClaude": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 207,
+      "subsystem": "archon"
+    },
+    "detectClaudeExecutablePath": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 242,
+      "subsystem": "archon"
+    },
+    "getNodeVersion": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 267,
+      "subsystem": "archon"
+    },
+    "checkExistingConfig": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 336,
+      "subsystem": "archon"
+    },
+    "collectDatabaseConfig": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 372,
+      "subsystem": "archon"
+    },
+    "tryReadCodexAuth": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 419,
+      "subsystem": "archon"
+    },
+    "collectClaudeBinaryPath": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 466,
+      "subsystem": "archon"
+    },
+    "collectClaudeAuth": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 516,
+      "subsystem": "archon"
+    },
+    "collectCodexAuth": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 591,
+      "subsystem": "archon"
+    },
+    "collectAIConfig": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 696,
+      "subsystem": "archon"
+    },
+    "collectPlatforms": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 885,
+      "subsystem": "archon"
+    },
+    "collectGitHubConfig": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 913,
+      "subsystem": "archon"
+    },
+    "collectTelegramConfig": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 996,
+      "subsystem": "archon"
+    },
+    "collectSlackConfig": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 1046,
+      "subsystem": "archon"
+    },
+    "collectDiscordConfig": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 1116,
+      "subsystem": "archon"
+    },
+    "collectBotDisplayName": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 1168,
+      "subsystem": "archon"
+    },
+    "generateEnvContent": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 1206,
+      "subsystem": "archon"
+    },
+    "resolveScopedEnvPath": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 1336,
+      "subsystem": "archon"
+    },
+    "serializeEnv": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 1346,
+      "subsystem": "archon"
+    },
+    "backupTimestamp": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 1368,
+      "subsystem": "archon"
+    },
+    "writeScopedEnv": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 1387,
+      "subsystem": "archon"
+    },
+    "trySpawn": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 1455,
+      "subsystem": "archon"
+    },
+    "spawnWindowsTerminal": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 1477,
+      "subsystem": "archon"
+    },
+    "spawnMacTerminal": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 1505,
+      "subsystem": "archon"
+    },
+    "spawnLinuxTerminal": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 1521,
+      "subsystem": "archon"
+    },
+    "spawnTerminalWithSetup": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 1577,
+      "subsystem": "archon"
+    },
+    "setupCommand": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/setup.ts",
+      "line": 1596,
+      "subsystem": "archon"
+    },
+    "copyArchonSkill": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/skill.ts",
+      "line": 29,
+      "subsystem": "archon"
+    },
+    "skillInstallCommand": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/skill.ts",
+      "line": 47,
+      "subsystem": "archon"
+    },
+    "buildValidationConfig": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/validate.ts",
+      "line": 28,
+      "subsystem": "archon"
+    },
+    "formatIssue": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/validate.ts",
+      "line": 48,
+      "subsystem": "archon"
+    },
+    "formatValidationResult": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/validate.ts",
+      "line": 58,
+      "subsystem": "archon"
+    },
+    "formatWorkflowResult": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/validate.ts",
+      "line": 70,
+      "subsystem": "archon"
+    },
+    "validateWorkflowsCommand": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/validate.ts",
+      "line": 82,
+      "subsystem": "archon"
+    },
+    "formatScriptResult": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/validate.ts",
+      "line": 186,
+      "subsystem": "archon"
+    },
+    "validateCommandsCommand": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/validate.ts",
+      "line": 195,
+      "subsystem": "archon"
+    },
+    "getDevVersion": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/version.ts",
+      "line": 32,
+      "subsystem": "archon"
+    },
+    "getDevGitCommit": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/version.ts",
+      "line": 63,
+      "subsystem": "archon"
+    },
+    "versionCommand": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/version.ts",
+      "line": 76,
+      "subsystem": "archon"
+    },
+    "setupWorkflowMocks": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/workflow.test.ts",
+      "line": 2233,
+      "subsystem": "archon"
+    },
+    "generateConversationId": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/workflow.ts",
+      "line": 75,
+      "subsystem": "archon"
+    },
+    "extractStaleWorkspaceEntry": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/workflow.ts",
+      "line": 88,
+      "subsystem": "archon"
+    },
+    "buildRegistrationFailureError": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/workflow.ts",
+      "line": 108,
+      "subsystem": "archon"
+    },
+    "renderWorkflowEvent": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/workflow.ts",
+      "line": 133,
+      "subsystem": "archon"
+    },
+    "loadWorkflows": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/workflow.ts",
+      "line": 172,
+      "subsystem": "archon"
+    },
+    "workflowListCommand": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/workflow.ts",
+      "line": 197,
+      "subsystem": "archon"
+    },
+    "workflowRunCommand": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/workflow.ts",
+      "line": 257,
+      "subsystem": "archon"
+    },
+    "formatAge": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/workflow.ts",
+      "line": 753,
+      "subsystem": "archon"
+    },
+    "formatDuration": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/coding-agent/src/core/tools/bash.ts",
+      "line": 185,
+      "subsystem": "pi"
+    },
+    "buildNodeSummaries": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/workflow.ts",
+      "line": 795,
+      "subsystem": "archon"
+    },
+    "workflowStatusCommand": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/workflow.ts",
+      "line": 852,
+      "subsystem": "archon"
+    },
+    "workflowResumeCommand": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/workflow.ts",
+      "line": 933,
+      "subsystem": "archon"
+    },
+    "workflowAbandonCommand": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/workflow.ts",
+      "line": 966,
+      "subsystem": "archon"
+    },
+    "workflowApproveCommand": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/workflow.ts",
+      "line": 976,
+      "subsystem": "archon"
+    },
+    "workflowRejectCommand": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/workflow.ts",
+      "line": 1032,
+      "subsystem": "archon"
+    },
+    "workflowCleanupCommand": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/workflow.ts",
+      "line": 1092,
+      "subsystem": "archon"
+    },
+    "isValidEventType": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/workflow.ts",
+      "line": 1111,
+      "subsystem": "archon"
+    },
+    "workflowEventEmitCommand": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/cli/src/commands/workflow.ts",
+      "line": 1115,
+      "subsystem": "archon"
+    },
+    "readConfigFile": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/config/config-loader.ts",
+      "line": 20,
+      "subsystem": "archon"
+    },
+    "writeConfigFile": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/config/config-loader.ts",
+      "line": 24,
+      "subsystem": "archon"
+    },
+    "getRegisteredProviderNames": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/config/config-loader.ts",
+      "line": 53,
+      "subsystem": "archon"
+    },
+    "mergeAssistantDefaults": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/config/config-loader.ts",
+      "line": 57,
+      "subsystem": "archon"
+    },
+    "toSafeAssistantDefaults": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/config/config-loader.ts",
+      "line": 104,
+      "subsystem": "archon"
+    },
+    "parseYaml": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/workflows/src/loader.ts",
+      "line": 28,
+      "subsystem": "archon"
+    },
+    "logConfigError": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/config/config-loader.ts",
+      "line": 179,
+      "subsystem": "archon"
+    },
+    "createDefaultConfig": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/config/config-loader.ts",
+      "line": 195,
+      "subsystem": "archon"
+    },
+    "loadGlobalConfig": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/config/config-loader.ts",
+      "line": 213,
+      "subsystem": "archon"
+    },
+    "loadRepoConfig": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/config/config-loader.ts",
+      "line": 242,
+      "subsystem": "archon"
+    },
+    "getDefaults": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/config/config-loader.ts",
+      "line": 263,
+      "subsystem": "archon"
+    },
+    "applyEnvOverrides": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/config/config-loader.ts",
+      "line": 309,
+      "subsystem": "archon"
+    },
+    "mergeGlobalConfig": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/config/config-loader.ts",
+      "line": 364,
+      "subsystem": "archon"
+    },
+    "mergeRepoConfig": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/config/config-loader.ts",
+      "line": 413,
+      "subsystem": "archon"
+    },
+    "loadConfig": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/coding-agent/examples/extensions/sandbox/index.ts",
+      "line": 79,
+      "subsystem": "pi"
+    },
+    "clearConfigCache": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/config/config-loader.ts",
+      "line": 508,
+      "subsystem": "archon"
+    },
+    "logConfig": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/config/config-loader.ts",
+      "line": 515,
+      "subsystem": "archon"
+    },
+    "updateGlobalConfig": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/config/config-loader.ts",
+      "line": 530,
+      "subsystem": "archon"
+    },
+    "toSafeConfig": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/config/config-loader.ts",
+      "line": 584,
+      "subsystem": "archon"
+    },
+    "MockPool": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/adapters/postgres.test.ts",
+      "line": 25,
+      "subsystem": "archon"
+    },
+    "PostgresAdapter": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/adapters/postgres.ts",
+      "line": 15,
+      "subsystem": "archon"
+    },
+    "createTestDb": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/adapters/sqlite.test.ts",
+      "line": 8,
+      "subsystem": "archon"
+    },
+    "insertCodebase": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/adapters/sqlite.test.ts",
+      "line": 17,
+      "subsystem": "archon"
+    },
+    "SqliteAdapter": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/adapters/sqlite.ts",
+      "line": 17,
+      "subsystem": "archon"
+    },
+    "are": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/adapters/types.ts",
+      "line": 27,
+      "subsystem": "archon"
+    },
+    "createCodebase": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/codebases.ts",
+      "line": 15,
+      "subsystem": "archon"
+    },
+    "getCodebase": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/web/src/lib/api.ts",
+      "line": 197,
+      "subsystem": "archon"
+    },
+    "updateCodebaseCommands": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/codebases.ts",
+      "line": 39,
+      "subsystem": "archon"
+    },
+    "getCodebaseCommands": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/codebases.ts",
+      "line": 50,
+      "subsystem": "archon"
+    },
+    "registerCommand": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/extension_manager.py",
+      "line": 57,
+      "subsystem": "scripts"
+    },
+    "findCodebaseByRepoUrl": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/codebases.ts",
+      "line": 86,
+      "subsystem": "archon"
+    },
+    "findCodebaseByDefaultCwd": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/codebases.ts",
+      "line": 94,
+      "subsystem": "archon"
+    },
+    "findCodebaseByPathPrefix": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/codebases.ts",
+      "line": 110,
+      "subsystem": "archon"
+    },
+    "findCodebaseByName": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/orchestrator/orchestrator-agent.ts",
+      "line": 97,
+      "subsystem": "archon"
+    },
+    "updateCodebase": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/codebases.ts",
+      "line": 129,
+      "subsystem": "archon"
+    },
+    "listCodebases": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/web/src/lib/api.ts",
+      "line": 193,
+      "subsystem": "archon"
+    },
+    "deleteCodebase": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/web/src/lib/api.ts",
+      "line": 211,
+      "subsystem": "archon"
+    },
+    "getDatabase": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/connection.ts",
+      "line": 30,
+      "subsystem": "archon"
+    },
+    "getDialect": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/connection.ts",
+      "line": 64,
+      "subsystem": "archon"
+    },
+    "getDatabaseType": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/connection.ts",
+      "line": 84,
+      "subsystem": "archon"
+    },
+    "closeDatabase": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/connection.ts",
+      "line": 91,
+      "subsystem": "archon"
+    },
+    "resetDatabase": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/connection.ts",
+      "line": 102,
+      "subsystem": "archon"
+    },
+    "getConversationById": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/conversations.ts",
+      "line": 19,
+      "subsystem": "archon"
+    },
+    "findConversationByPlatformId": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/conversations.ts",
+      "line": 32,
+      "subsystem": "archon"
+    },
+    "getConversationByPlatformId": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/conversations.ts",
+      "line": 46,
+      "subsystem": "archon"
+    },
+    "getOrCreateConversation": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/conversations.ts",
+      "line": 57,
+      "subsystem": "archon"
+    },
+    "updateConversation": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/web/src/lib/api.ts",
+      "line": 137,
+      "subsystem": "archon"
+    },
+    "getConversationByIsolationEnvId": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/conversations.ts",
+      "line": 165,
+      "subsystem": "archon"
+    },
+    "getConversationsByIsolationEnvId": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/conversations.ts",
+      "line": 176,
+      "subsystem": "archon"
+    },
+    "listConversations": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/web/src/lib/api.ts",
+      "line": 115,
+      "subsystem": "archon"
+    },
+    "touchConversation": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/conversations.ts",
+      "line": 225,
+      "subsystem": "archon"
+    },
+    "updateConversationTitle": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/conversations.ts",
+      "line": 236,
+      "subsystem": "archon"
+    },
+    "softDeleteConversation": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/conversations.ts",
+      "line": 250,
+      "subsystem": "archon"
+    },
+    "getCodebaseEnvVars": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/web/src/lib/api.ts",
+      "line": 492,
+      "subsystem": "archon"
+    },
+    "setCodebaseEnvVar": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/web/src/lib/api.ts",
+      "line": 499,
+      "subsystem": "archon"
+    },
+    "deleteCodebaseEnvVar": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/web/src/lib/api.ts",
+      "line": 510,
+      "subsystem": "archon"
+    },
+    "getById": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/isolation-environments.ts",
+      "line": 23,
+      "subsystem": "archon"
+    },
+    "findActiveByWorkflow": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/isolation-environments.ts",
+      "line": 34,
+      "subsystem": "archon"
+    },
+    "listByCodebase": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/isolation-environments.ts",
+      "line": 50,
+      "subsystem": "archon"
+    },
+    "create": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/ollama_controller.py",
+      "line": 219,
+      "subsystem": "scripts"
+    },
+    "updateStatus": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages/coding-agent/examples/extensions/preset.ts",
+      "line": 296,
+      "subsystem": "pi"
+    },
+    "updateMetadata": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/isolation-environments.ts",
+      "line": 126,
+      "subsystem": "archon"
+    },
+    "findByRelatedIssue": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/isolation-environments.ts",
+      "line": 145,
+      "subsystem": "archon"
+    },
+    "countActiveByCodebase": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/isolation-environments.ts",
+      "line": 164,
+      "subsystem": "archon"
+    },
+    "getConversationsUsingEnv": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/isolation-environments.ts",
+      "line": 176,
+      "subsystem": "archon"
+    },
+    "findStaleEnvironments": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/isolation-environments.ts",
+      "line": 188,
+      "subsystem": "archon"
+    },
+    "findActiveByBranchName": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/isolation-environments.ts",
+      "line": 218,
+      "subsystem": "archon"
+    },
+    "listAllActiveWithCodebase": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/isolation-environments.ts",
+      "line": 236,
+      "subsystem": "archon"
+    },
+    "listByCodebaseWithAge": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/isolation-environments.ts",
+      "line": 261,
+      "subsystem": "archon"
+    },
+    "createIsolationStore": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/isolation-environments.ts",
+      "line": 288,
+      "subsystem": "archon"
+    },
+    "addMessage": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/messages.ts",
+      "line": 27,
+      "subsystem": "archon"
+    },
+    "listMessages": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/messages.ts",
+      "line": 54,
+      "subsystem": "archon"
+    },
+    "getRecentWorkflowResultMessages": {
+      "file": "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/packages/core/src/db/messages.ts",
+      "line": 73,
+      "subsystem": "archon"
+    }
+  }
+}

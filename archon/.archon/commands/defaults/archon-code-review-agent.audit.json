@@ -1,0 +1,21 @@
+{
+  "file": "archon-code-review-agent.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-CODE-REVIEW-AGENT",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-code-review-agent logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-code-review-agent status widget"
+    }
+  ]
+}

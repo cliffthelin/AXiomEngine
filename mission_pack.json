@@ -1,0 +1,21 @@
+{
+  "mission_pack_id": "MPK-ALPHA-SECURITY-2026-001",
+  "goal": "Project-Wide Security & Intent Audit (Shard Alpha)",
+  "project_root": "/mnt/UBUNTU_8TB/Projects/axiomengine",
+  "shards": [
+    {
+      "name": "auth_shard",
+      "goal": "Audit auth_manager.py for shell risks",
+      "type": "worker",
+      "scope": "scripts/auth_manager.py",
+      "flags": ["candidate-only", "evidence-first", "scope-control"]
+    },
+    {
+      "name": "intent_shard",
+      "goal": "Audit intent_index_builder.py for shell risks",
+      "type": "worker",
+      "scope": "scripts/intent_index_builder.py",
+      "flags": ["candidate-only", "evidence-first", "scope-control"]
+    }
+  ]
+}

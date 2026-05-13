@@ -1,0 +1,88 @@
+{
+  "baseline_version": "1.3.1",
+  "baseline_status": "FROZEN_FOR_AUDIT",
+  "created_at": "2026-05-12T20:40:09.333305",
+  "files": [
+    {
+      "path": "scripts/governance_closer.py",
+      "role": "Hardened promotion node",
+      "sha256": "d1ddb4971c60dae3537353a9890fe81b8f05731f9339ecdcfbe22a932fa800a7",
+      "frozen": true
+    },
+    {
+      "path": "governance_dashboard.html",
+      "role": "Authoritative health visualizer",
+      "sha256": "21a7832d7cbed0b1ab8f21fd2f1b402e18bd697b8c797b2699d7de399d7661f2",
+      "frozen": true
+    },
+    {
+      "path": "scripts/harness_manager.py",
+      "role": "Multi-shard mission orchestrator",
+      "sha256": "b2ea09a8c1250d7f54774dcd1250aa162c245ecc8a0e5da357b2cf65f65a3f5d",
+      "frozen": true
+    },
+    {
+      "path": "harness_builder_prototype.html",
+      "role": "Sovereign review interface",
+      "sha256": "dc6eacb694c98b87d686e0eb1d4416c14295041eedd2ce51180ee9a3ff0f5e71",
+      "frozen": true
+    },
+    {
+      "path": "data/decisions.json",
+      "role": "Authoritative decision registry",
+      "sha256": "881b1cd1ca593542ef2d1e195263d971a92645c8bdeade586ae197f3028a86e4",
+      "frozen": true
+    },
+    {
+      "path": "docs/contracts/closer_report_contract.md",
+      "role": "Standardized mission accounting schema",
+      "sha256": "40310c602d8fd17b3bbc8e534cf399ac758454e33f7d5d3dcf871bb100c19da7",
+      "frozen": true
+    },
+    {
+      "path": "docs/contracts/promoted_decision_contract.md",
+      "role": "Standardized determination schema",
+      "sha256": "ce3af9eb31e304262194d19f1229b7006c30c44608444093a0d742e6490b9f08",
+      "frozen": true
+    },
+    {
+      "path": "docs/contracts/governance_dashboard_layer_contract.md",
+      "role": "Standardized 13-layer mapping rules",
+      "sha256": "1067c3740063cb729fd02d05a574cf5f30c30c74a7c04ce0bffe962284efdf57",
+      "frozen": true
+    },
+    {
+      "path": "tests/test_governance_closer.py",
+      "role": "Operational safety tests",
+      "sha256": "d8d05ec479f362e6af965962bdadb6b6a84f64691cc2523e407d7761108ac86d",
+      "frozen": true
+    },
+    {
+      "path": "tests/test_governance_closer_contract.py",
+      "role": "Schema and contract compliance tests",
+      "sha256": "f3b5cea5fa28bbaa46af23c857a06a4b8baa0c1253b6d7fcee2a7f9d547e8092",
+      "frozen": true
+    },
+    {
+      "path": "tests/test_governance_dashboard_logic.py",
+      "role": "Dashboard classification and layer mapping tests",
+      "sha256": "755456b22800156c6e07eb2c5558fd7681ea5c779daae820c3481560c2aa2cc8",
+      "frozen": true
+    },
+    {
+      "path": "docs/audit/AXIOMENGINE_GOVERNANCE_BASELINE_V1_3_1.md",
+      "role": "Audit baseline documentation",
+      "sha256": "4124e33798e6f479e40e32880479f8ca8f9ecc68260945441a58c33c316ee1af",
+      "frozen": true
+    }
+  ],
+  "test_command": "PYTHONPATH=. python3 tests/test_governance_closer.py && PYTHONPATH=. python3 tests/test_governance_closer_contract.py && PYTHONPATH=. python3 tests/test_governance_dashboard_logic.py",
+  "test_result_summary": "14/14 Tests Passing (Operational, Contractual, and Logic)",
+  "known_limitations": [
+    "Dashboard currently uses manual browser-based artifact import.",
+    "Dashboard is read-only.",
+    "Layer saturation depends on explicit promoted determination metadata.",
+    "Static HTML dashboard does not auto-discover project files."
+  ],
+  "next_phase": "v1.4.0 Project Integration"
+}

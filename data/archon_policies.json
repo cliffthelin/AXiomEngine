@@ -1,0 +1,31 @@
+{
+  "monitoring_policies": [
+    {
+      "id": "POL-MON-001",
+      "name": "Saturation Enforcement",
+      "metric": "gpu_utilization",
+      "target": "Tesla P40",
+      "threshold": 5,
+      "window_seconds": 600,
+      "action": "RESTART_MISSION",
+      "rationale": "Hardware idleness during a mission indicates an inference stall or silent crash."
+    },
+    {
+      "id": "POL-MON-002",
+      "name": "Heartbeat Continuity",
+      "metric": "log_staleness",
+      "target": "mission_orchestrator.log",
+      "threshold_seconds": 900,
+      "action": "RECOVERY_ROUTINE",
+      "rationale": "Lack of log updates for 15 minutes suggests a hang in the HTTP client or Ollama deadlock."
+    },
+    {
+      "id": "POL-MON-003",
+      "name": "Service Availability",
+      "metric": "process_state",
+      "target": "ollama",
+      "action": "SERVICE_RESTART",
+      "rationale": "The inference engine is the core dependency for all governance missions."
+    }
+  ]
+}

@@ -1,0 +1,215 @@
+# AXiomEngine Governance Architecture — 13-Layer Reference Model
+#
+# Canonical governance schema derived from the Layers Conversation.
+# This is the authoritative definition of all governance layers,
+# node types, edge semantics, and process templates.
+#
+# Authority: This schema governs all governance tooling in AXiomEngine.
+# Any tool that reads or writes governance data MUST conform to these types.
+
+# ===========================================================================
+# L8 — DataConcept (Canonical Anchor)
+# ===========================================================================
+# The atomic unit that ALL layers attach to. Not a field, not a rule —
+# the IDEA of something.
+DataConcept:
+  data_concept_id: string          # Stable, never reused (e.g., DC-GPU-THERMAL-LIMIT)
+  name: string                     # Human-readable
+  definition: string               # What this concept represents
+  status: enum                     # Active | Deprecated | Proposed
+  aliases: [string]                # Alternative names across systems
+
+# ===========================================================================
+# L4 — Legislative / Authority Authorization
+# ===========================================================================
+LegislativeAuthorization:
+  law_id: string                   # e.g., LAW-PDD-CORE-001
+  citation: string                 # Formal reference
+  applies_to: string               # DataConcept ID
+  authorization_type: enum         # Required | Allowed | Prohibited | Deprecated
+  temporal:
+    start_date: date
+    end_date: date | null
+
+# ===========================================================================
+# L3 — PDD Rule (Operational Obligation)
+# ===========================================================================
+PDD_Rule:
+  rule_id: string                  # e.g., R-PDD-CORE-001
+  governs: string                  # DataConcept ID
+  modality: enum                   # MUST | MUST_NOT | SHOULD | MAY
+  rule_statement: string
+  source: string                   # Origin document
+  temporal:
+    start_date: date
+    end_date: date | null
+
+# ===========================================================================
+# L6 — Decision & Interpretation
+# ===========================================================================
+# Decisions are REACTIONS to presented context. A person reviews a rule,
+# a drift finding, an observation, or an intent gap — and responds with
+# a clarifying statement. Every decision must trace back to what inspired it.
+Decision:
+  decision_id: string              # Stable, never reused (e.g., DEC-P40-LIMIT-150W)
+  decision_type: enum              # Interpretation | Override | Waiver | Deprecation | Emergency
+
+  # What was presented to the decision-maker that prompted this response
+  prompted_by:
+    context_type: enum             # rule_review | drift_finding | operational_observation | intent_gap | reversa_finding
+    description: string            # What was reviewed / what happened
+    bounded_area: string           # DataConcept ID, Rule ID, or file scope that inspired the review
+    evidence: [string]             # Links, logs, commit hashes, conversation references
+
+  # The human's actual response — natural language
+  statement: string                # The decision in the person's own words (REQUIRED)
+
+  authority: string                # Who made the decision (role or name)
+  scope:
+    applies_to:
+      - entity_type: enum          # DataConcept | PDD_Rule | Validation | DerivationRule
+        entity_id: string
+  effective:
+    start_date: date
+    end_date: date | null          # Null = open-ended
+  enforcement: enum                # Strict | BestEffort | Informational
+  supersedes: [string | null]      # Previous decision IDs this replaces
+
+# ===========================================================================
+# L7 — Obligation & Stakeholder Scope
+# ===========================================================================
+Obligation:
+  obligation_id: string
+  applies_to: string               # DataConcept or Rule ID
+  actor: enum                      # Agent | Human | CI_System | External
+  modality: enum                   # Must | May | MustNot
+  context: enum                    # Execution | Storage | Reporting | Derivation
+  source: string                   # Law | Decision | Policy
+
+# ===========================================================================
+# L5 — Derived / Business Logic
+# ===========================================================================
+DerivationRule:
+  derivation_id: string
+  derives: string                  # Output DataConcept ID
+  uses: [string]                   # Input DataConcept IDs
+  formula: string                  # Human-readable derivation logic
+  authority: string                # What authorizes this derivation
+
+# ===========================================================================
+# L11 — Validation / Enforcement
+# ===========================================================================
+Validation:
+  validation_id: string
+  enforces: string                 # PDD Rule ID
+  type: enum                       # Fatal | Warning | Informational
+  condition: string                # Logic expression
+  error_message: string
+  implemented_by: string           # CodeArtifact ID
+
+# ===========================================================================
+# L1 — Code Artifact
+# ===========================================================================
+CodeArtifact:
+  code_id: string
+  type: enum                       # Script | Module | Function | Config | Test
+  location: string                 # File path
+  implements: [string]             # What it implements (Validation IDs, Rule IDs)
+  last_modified: datetime
+
+# ===========================================================================
+# L2 — Reversa Finding (Behavioral Observation)
+# ===========================================================================
+ReversaFinding:
+  finding_id: string
+  observes: string                 # DataConcept ID
+  confidence: enum                 # Confirmed | Inferred | Gap
+  details: string
+  code_reference: string           # CodeArtifact ID
+
+# ===========================================================================
+# L9 — Knowledge Graph Edge (Logical)
+# ===========================================================================
+KG_Edge:
+  edge_id: string
+  type: enum                       # AUTHORIZES | REQUIRES | ENFORCED_BY | IMPLEMENTED_BY | DERIVES | OBSERVES | INTERPRETS
+  from: string                     # Source node ID
+  to: string                       # Target node ID
+  temporal:
+    start_date: date
+    end_date: date | null
+  confidence: enum                 # Authoritative | Interpreted | Observed
+
+# ===========================================================================
+# L10 — Materialized Dependency Graph Edge
+# ===========================================================================
+MDG_Edge:
+  mdg_edge_id: string
+  from_node_id: string
+  to_node_id: string
+  dependency_type: enum            # AUTHORIZES | REQUIRES | CONSTRAINS | INTERPRETS | IMPLEMENTS | SUPERSEDES | DERIVES | AFFECTS
+  materialization:
+    resolved_from: [string]        # KG edge IDs
+    confidence: enum               # Authoritative | Interpreted | Observed
+  temporal:
+    start_date: date
+    end_date: date | null
+  sync_state:
+    last_computed: datetime
+    computation_trigger: [enum]    # SourceChange | GovernanceDecision | Scheduled
+    staleness_policy:
+      max_age: duration            # e.g., P7D
+      force_refresh_on: [enum]     # LawChanged | DecisionAdded | RuleSuperseded
+
+# ===========================================================================
+# L10 — MDG Pre-Flight Result
+# ===========================================================================
+MDG_PreFlight_Result:
+  status: enum                     # PASS | FAIL
+  reason_code: string              # e.g., DOWNSTREAM_IMPACT_UNACKNOWLEDGED
+  offending_nodes: [string]
+  required_acknowledgements: [string]
+  guidance: [string]
+
+# ===========================================================================
+# L13 — Process Record (Operational Governance)
+# ===========================================================================
+ProcessRecord:
+  process_id: string
+  layer: enum                      # L1–L12
+  artifact_type: string
+
+  acquisition:
+    method: enum                   # Automated | Semi-Automated | Manual
+    source: string
+    steps: string                  # EXACT steps to obtain
+
+  automation:
+    current_state:
+      automated: boolean
+      description: string
+    future_candidate: boolean
+    blockers: [string]
+
+  effort:
+    manual_time: string
+    frequency: string
+
+  roles:
+    executor_role: string
+    required_skills: [string]
+    required_access: [string]
+
+  validation:
+    validator_role: string
+    validation_method: string
+    can_be_automated: boolean
+
+  refresh:
+    frequency: string
+    trigger_events: [string]
+    detection_method: string
+
+  provenance:
+    source_of_truth: string
+    audit_evidence: string

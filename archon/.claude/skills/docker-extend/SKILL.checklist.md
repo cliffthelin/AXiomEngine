@@ -1,0 +1,17 @@
+# Active ARCHON-DOCKER-EXTEND Checklist: SKILL.md
+
+- [ ] G-ARCHON-DOCKER-EXTEND-SKILL-001: Decision: (Section: Step 1: Detect Context)
+- [ ] G-ARCHON-DOCKER-EXTEND-SKILL-002: `DEV_MODE` → work with `Dockerfile.user` + `dockercompose.override.yml` (repo root) (Section: Step 1: Detect Context)
+- [ ] G-ARCHON-DOCKER-EXTEND-SKILL-003: `DEPLOY_MODE` → work with `deploy/Dockerfile.user` + `deploy/dockercompose.override.yml` (Section: Step 1: Detect Context)
+- [ ] G-ARCHON-DOCKER-EXTEND-SKILL-004: `UNKNOWN_MODE` → ask the user which directory their `dockercompose.yml` lives in before proceeding (Section: Step 1: Detect Context)
+- [ ] G-ARCHON-DOCKER-EXTEND-SKILL-005: DEV_MODE — check root files: (Section: Step 2: Check Current State)
+- [ ] G-ARCHON-DOCKER-EXTEND-SKILL-006: DEPLOY_MODE — check deploy/ files: (Section: Step 2: Check Current State)
+- [ ] G-ARCHON-DOCKER-EXTEND-SKILL-007: If both files already exist: Skip to Step 4 (add tools). (Section: Step 2: Check Current State)
+- [ ] G-ARCHON-DOCKER-EXTEND-SKILL-008: If files are missing: Proceed to Step 3 (copy from examples). (Section: Step 2: Check Current State)
+- [ ] G-ARCHON-DOCKER-EXTEND-SKILL-009: If example files are missing too: Tell the user the project hasn't added the example files yet and to check with the maintainers or the docs. (Section: Step 2: Check Current State)
+- [ ] G-ARCHON-DOCKER-EXTEND-SKILL-010: DEV_MODE: (Section: Step 3: Copy Example Files)
+- [ ] G-ARCHON-DOCKER-EXTEND-SKILL-011: DEPLOY_MODE: (Section: Only if docker-compose.override.yml does not exist:)
+- [ ] G-ARCHON-DOCKER-EXTEND-SKILL-012: If tools were specified: Edit the appropriate `Dockerfile.user` to add (or uncomment) the `RUN aptget install` block with the requested packages. Use the Edit tool — do not rewrite the entire file. (Section: Step 4: Add Tools)
+- [ ] G-ARCHON-DOCKER-EXTEND-SKILL-013: If no tools were specified: Show the user the file and ask which tools they want to add. Then edit the file accordingly. (Section: Step 4: Add Tools)
+- [ ] G-ARCHON-DOCKER-EXTEND-SKILL-014: DEV_MODE: (Section: Step 5: Rebuild)
+- [ ] G-ARCHON-DOCKER-EXTEND-SKILL-015: DEPLOY_MODE: (Section: Step 5: Rebuild)

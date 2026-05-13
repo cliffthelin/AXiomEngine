@@ -1,0 +1,1348 @@
+{
+  "metadata": {
+    "generated_at": "2026-05-12T20:36:30.835215+00:00",
+    "engine": "MDG Builder v1.0"
+  },
+  "nodes": [
+    {
+      "mdg_node_id": "DC-GPU-THERMAL-LIMIT",
+      "source_type": "DataConcept",
+      "node_role": "Anchor",
+      "description": "GPU Thermal Power Limit",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      }
+    },
+    {
+      "mdg_node_id": "DC-AGENT-SESSION",
+      "source_type": "DataConcept",
+      "node_role": "Anchor",
+      "description": "Agent Session State",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      }
+    },
+    {
+      "mdg_node_id": "DC-PDD-INTENT-RETRIEVAL",
+      "source_type": "DataConcept",
+      "node_role": "Anchor",
+      "description": "PDD Intent Retrieval",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      }
+    },
+    {
+      "mdg_node_id": "DC-MODEL-ROUTING",
+      "source_type": "DataConcept",
+      "node_role": "Anchor",
+      "description": "GPU Model Routing",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      }
+    },
+    {
+      "mdg_node_id": "DC-SWARM-ORCHESTRATION",
+      "source_type": "DataConcept",
+      "node_role": "Anchor",
+      "description": "Agent Swarm Orchestration",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      }
+    },
+    {
+      "mdg_node_id": "DC-KNOWLEDGE-GRAPH",
+      "source_type": "DataConcept",
+      "node_role": "Anchor",
+      "description": "Knowledge Graph Maintenance",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      }
+    },
+    {
+      "mdg_node_id": "DC-REVERSA-EXTRACTION",
+      "source_type": "DataConcept",
+      "node_role": "Anchor",
+      "description": "Reversa Behavioral Extraction",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      }
+    },
+    {
+      "mdg_node_id": "DC-WORKSPACE-SECURITY",
+      "source_type": "DataConcept",
+      "node_role": "Anchor",
+      "description": "Workspace Security Scanning",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      }
+    },
+    {
+      "mdg_node_id": "DC-CONTEXT-AS-CODE",
+      "source_type": "DataConcept",
+      "node_role": "Anchor",
+      "description": "Context-as-Code Manifestation",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      }
+    },
+    {
+      "mdg_node_id": "DC-AUDIT-TRAIL",
+      "source_type": "DataConcept",
+      "node_role": "Anchor",
+      "description": "Computational Audit Trail",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      }
+    },
+    {
+      "mdg_node_id": "R-PDD-CORE-001",
+      "source_type": "PDD_Rule",
+      "node_role": "Constraint",
+      "description": "AI Does Not Infer Intent",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      }
+    },
+    {
+      "mdg_node_id": "DEC-P40-POWER-LIMIT-150W",
+      "source_type": "Decision",
+      "node_role": "Interpretation",
+      "description": "",
+      "temporal": {
+        "start_date": "2026-05-11",
+        "end_date": null
+      }
+    },
+    {
+      "mdg_node_id": "DEC-REVERSA-TRANSLATE-INPLACE",
+      "source_type": "Decision",
+      "node_role": "Interpretation",
+      "description": "",
+      "temporal": {
+        "start_date": "2026-05-12",
+        "end_date": null
+      }
+    },
+    {
+      "mdg_node_id": "DEC-RTX3070-INFERENCE-OFFLOAD",
+      "source_type": "Decision",
+      "node_role": "Interpretation",
+      "description": "",
+      "temporal": {
+        "start_date": "2026-05-11",
+        "end_date": null
+      }
+    }
+  ],
+  "edges": [
+    {
+      "mdg_edge_id": "MDG-E-0001",
+      "from_node": "DEC-P40-POWER-LIMIT-150W",
+      "to_node": "DC-GPU-THERMAL-LIMIT",
+      "dependency_type": "INTERPRETS",
+      "confidence": "Authoritative",
+      "temporal": {
+        "start_date": "2026-05-11",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "GovernanceDecision"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0002",
+      "from_node": "DEC-REVERSA-TRANSLATE-INPLACE",
+      "to_node": "DC-REVERSA-EXTRACTION",
+      "dependency_type": "INTERPRETS",
+      "confidence": "Authoritative",
+      "temporal": {
+        "start_date": "2026-05-12",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "GovernanceDecision"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0003",
+      "from_node": "DEC-RTX3070-INFERENCE-OFFLOAD",
+      "to_node": "DC-MODEL-ROUTING",
+      "dependency_type": "INTERPRETS",
+      "confidence": "Authoritative",
+      "temporal": {
+        "start_date": "2026-05-11",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "GovernanceDecision"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0004",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-assist.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0005",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-auto-fix-review.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0006",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-code-review-agent.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0007",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-comment-quality-agent.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0008",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-confirm-plan.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0009",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-create-plan.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0010",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-create-pr.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0011",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-docs-impact-agent.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0012",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-error-handling-agent.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0013",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-finalize-pr.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0014",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-fix-issue.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0015",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-implement-issue.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0016",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-implement-review-fixes.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0017",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-implement-tasks.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0018",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-implement.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0019",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-investigate-issue.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0020",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-issue-completion-report.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0021",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-plan-setup.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0022",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-post-review-to-pr.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0023",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-pr-review-scope.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0024",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-ralph-generate.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0025",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-ralph-prd.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0026",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-resolve-merge-conflicts.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0027",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-self-fix-all.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0028",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-simplify-changes.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0029",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-sync-pr-with-main.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0030",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-synthesize-review.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0031",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-test-coverage-agent.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0032",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-validate-pr-code-review-feature.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0033",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-validate-pr-code-review-main.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0034",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-validate-pr-e2e-feature.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0035",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-validate-pr-e2e-main.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0036",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-validate-pr-report.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0037",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-validate.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0038",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-web-research.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0039",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/defaults/archon-workflow-summary.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0040",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/e2e-echo-command.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0041",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/maintainer-review-code-review.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0042",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/maintainer-review-comment-quality.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0043",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/maintainer-review-docs-impact.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0044",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/maintainer-review-error-handling.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0045",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/maintainer-review-gate.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0046",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/maintainer-review-report.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0047",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/maintainer-review-synthesize.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0048",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/maintainer-review-test-coverage.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0049",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.archon/commands/maintainer-standup.audit.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0050",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.claude/skills/rule-auditor/SKILL.md",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0051",
+      "from_node": "DC-AUDIT-TRAIL",
+      "to_node": "archon/.claude/skills/rule-auditor/summarize_rule.py",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0052",
+      "from_node": "DC-WORKSPACE-SECURITY",
+      "to_node": "archon/SECURITY.md",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0053",
+      "from_node": "DC-CONTEXT-AS-CODE",
+      "to_node": "archon/packages/adapters/src/forge/github/context.test.ts",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0054",
+      "from_node": "DC-WORKSPACE-SECURITY",
+      "to_node": "archon/packages/docs-web/src/content/docs/reference/security.md",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0055",
+      "from_node": "DC-MODEL-ROUTING",
+      "to_node": "archon/packages/workflows/src/router.test.ts",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0056",
+      "from_node": "DC-MODEL-ROUTING",
+      "to_node": "archon/packages/workflows/src/router.ts",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0057",
+      "from_node": "DC-AGENT-SESSION",
+      "to_node": "core/session/agent_session.py",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0058",
+      "from_node": "DC-KNOWLEDGE-GRAPH",
+      "to_node": "knowledge_graph.json",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0059",
+      "from_node": "DC-PDD-INTENT-RETRIEVAL",
+      "to_node": "pdd/load_rules.py",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0060",
+      "from_node": "DC-CONTEXT-AS-CODE",
+      "to_node": "pi/pi-mono-main/packages/ai/test/context-overflow.test.ts",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0061",
+      "from_node": "DC-MODEL-ROUTING",
+      "to_node": "pi/pi-mono-main/packages/ai/test/openrouter-cache-write-repro.test.ts",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0062",
+      "from_node": "DC-MODEL-ROUTING",
+      "to_node": "pi/pi-mono-main/packages/coding-agent/test/sdk-openrouter-attribution.test.ts",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0063",
+      "from_node": "DC-MODEL-ROUTING",
+      "to_node": "pi/pi-mono-main/packages/web-ui/src/components/sandbox/RuntimeMessageRouter.ts",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0064",
+      "from_node": "DC-MODEL-ROUTING",
+      "to_node": "router/main.py",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0065",
+      "from_node": "DC-CONTEXT-AS-CODE",
+      "to_node": "scripts/02_index_context.py",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0066",
+      "from_node": "DC-CONTEXT-AS-CODE",
+      "to_node": "scripts/context_loader.py",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0067",
+      "from_node": "DC-PDD-INTENT-RETRIEVAL",
+      "to_node": "scripts/intent_mapper.py",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0068",
+      "from_node": "DC-KNOWLEDGE-GRAPH",
+      "to_node": "scripts/kg_pruner.py",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0069",
+      "from_node": "DC-KNOWLEDGE-GRAPH",
+      "to_node": "scripts/knowledge_graph.py",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0070",
+      "from_node": "DC-MODEL-ROUTING",
+      "to_node": "scripts/ollama_controller.py",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0071",
+      "from_node": "DC-PDD-INTENT-RETRIEVAL",
+      "to_node": "scripts/pdd_stats_reporter_axiomengine.py",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0072",
+      "from_node": "DC-CONTEXT-AS-CODE",
+      "to_node": "scripts/search_context.py",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0073",
+      "from_node": "DC-AGENT-SESSION",
+      "to_node": "scripts/session_manager.py",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0074",
+      "from_node": "DC-SWARM-ORCHESTRATION",
+      "to_node": "scripts/swarm_coordinator.py",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0075",
+      "from_node": "DC-SWARM-ORCHESTRATION",
+      "to_node": "scripts/symphony.py",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0076",
+      "from_node": "DC-SWARM-ORCHESTRATION",
+      "to_node": "scripts/symphony_harness.py",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0077",
+      "from_node": "DC-MODEL-ROUTING",
+      "to_node": "scripts/vgpu_manager.py",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0078",
+      "from_node": "DC-WORKSPACE-SECURITY",
+      "to_node": "scripts/workspace_sec_scan.py",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    },
+    {
+      "mdg_edge_id": "MDG-E-0079",
+      "from_node": "DC-AGENT-SESSION",
+      "to_node": "tests/test_agent_session_cache.py",
+      "dependency_type": "IMPLEMENTED_BY",
+      "confidence": "Observed",
+      "temporal": {
+        "start_date": "2026-01-01",
+        "end_date": null
+      },
+      "sync_state": {
+        "last_computed": "2026-05-12T20:36:30.835215+00:00",
+        "trigger": "SourceChange"
+      }
+    }
+  ],
+  "summary": {
+    "total_nodes": 14,
+    "total_edges": 79,
+    "node_types": {
+      "PDD_Rule": 1,
+      "DataConcept": 10,
+      "Decision": 3
+    },
+    "edge_types": {
+      "IMPLEMENTED_BY": 76,
+      "INTERPRETS": 3
+    }
+  }
+}

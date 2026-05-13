@@ -1,0 +1,109 @@
+# Governance Drift Analysis Report (13-Layer)
+
+> Generated: 2026-05-12T20:36:30.883915+00:00
+> Engine: Intent Index v2.1 — 13-Layer (Portable, Phase-Aware)
+> Phase: **DISCOVERY**
+> DataConcepts: 10 | Decisions: 3 | MDG Nodes: 14 | MDG Edges: 79
+
+## Executive Summary
+
+| Metric | Value |
+| :--- | :--- |
+| Total in Report | 1830 |
+| ⚪ Excluded (phase: discovery) | 15 |
+| &nbsp;&nbsp;└─ changelogs | 11 |
+| &nbsp;&nbsp;└─ lockfiles | 4 |
+| **Files Scored** | **1815** |
+| 🟢 Governed | 1748 (96.3%) |
+| 🟡 Partial | 67 (3.7%) |
+| 🔴 Ungoverned | 0 (0.0%) |
+| ⚫ Dark | 0 (0.0%) |
+| **Mean Alignment** | **0.253** |
+
+## 13-Layer Coverage
+
+| # | Layer | Coverage | Files | % |
+| :--- | :--- | :--- | :--- | :--- |
+| L1 | Application Code | ███████████████████░ | 1813 | 99.9% |
+| L2 | Reversa Behavioral | ░░░░░░░░░░░░░░░░░░░░ | 1 | 0.1% |
+| L3 | PDD Rules | ███████████████████░ | 1813 | 99.9% |
+| L4 | Authority | ███░░░░░░░░░░░░░░░░░ | 281 | 15.5% |
+| L5 | Derived Logic | ░░░░░░░░░░░░░░░░░░░░ | 0 | 0.0% |
+| L6 | Decisions | ░░░░░░░░░░░░░░░░░░░░ | 0 | 0.0% |
+| L7 | Obligations | ░░░░░░░░░░░░░░░░░░░░ | 0 | 0.0% |
+| L8 | DataConcepts | ░░░░░░░░░░░░░░░░░░░░ | 76 | 4.2% |
+| L9 | Knowledge Graph | ░░░░░░░░░░░░░░░░░░░░ | 36 | 2.0% |
+| L10 | MDG | ░░░░░░░░░░░░░░░░░░░░ | 0 | 0.0% |
+| L11 | Validation | ░░░░░░░░░░░░░░░░░░░░ | 0 | 0.0% |
+| L12 | Temporal | ░░░░░░░░░░░░░░░░░░░░ | 0 | 0.0% |
+| L13 | Process | ████████████████████ | 1815 | 100.0% |
+
+## Component Alignment
+
+| Component | Files | Chars | Mean Alignment |
+| :--- | :--- | :--- | :--- |
+| `archon` | 903 | 6,796,329 | 0.254 |
+| `pi` | 782 | 5,317,582 | 0.239 |
+| `docs` | 37 | 3,255,769 | 0.244 |
+| `scripts` | 74 | 196,000 | 0.378 |
+| `SPEC.md` | 1 | 67,052 | 0.23 |
+| `knowledge_graph.json` | 1 | 17,906 | 0.28 |
+| `router` | 1 | 10,064 | 0.53 |
+| `core` | 6 | 6,356 | 0.355 |
+| `pdd` | 1 | 5,876 | 0.53 |
+| `ROADMAP.md` | 1 | 5,197 | 0.23 |
+| `INSTRUCTIONS.md` | 1 | 3,055 | 0.23 |
+| `extensions` | 2 | 2,943 | 0.33 |
+| `inprogress_work.md` | 1 | 2,102 | 0.23 |
+| `tests` | 1 | 1,085 | 0.48 |
+| `WORKFLOW.md` | 1 | 892 | 0.23 |
+
+## Top 20 Drift Risk Files
+
+| File | Chars | Alignment | Risk | Verdict |
+| :--- | :--- | :--- | :--- | :--- |
+| `docs/GLOBAL_IMPLEMENTATION_QUEUE.md` | 1,348,630 | 0.230 | 1,038,445 | 🔴 UNGOVERNED |
+| `docs/Archon_Governance_Library.md` | 908,869 | 0.330 | 608,942 | 🔴 UNGOVERNED |
+| `docs/PI_Governance_Library.md` | 657,277 | 0.330 | 440,376 | 🔴 UNGOVERNED |
+| `archon/packages/workflows/src/defaults/bundled-defaults.generated.ts` | 431,595 | 0.230 | 332,328 | 🔴 UNGOVERNED |
+| `pi/pi-mono-main/packages/ai/src/models.generated.ts` | 339,937 | 0.230 | 261,751 | 🔴 UNGOVERNED |
+| `archon/packages/workflows/src/dag-executor.test.ts` | 163,768 | 0.230 | 126,101 | 🔴 UNGOVERNED |
+| `pi/pi-mono-main/packages/coding-agent/src/modes/interactive/interactiv` | 149,226 | 0.230 | 114,904 | 🔴 UNGOVERNED |
+| `pi/pi-mono-main/packages/tui/test/editor.test.ts` | 111,162 | 0.230 | 85,595 | 🔴 UNGOVERNED |
+| `pi/pi-mono-main/packages/web-ui/src/utils/test-sessions.ts` | 102,995 | 0.230 | 79,306 | 🔴 UNGOVERNED |
+| `archon/packages/workflows/src/dag-executor.ts` | 86,695 | 0.230 | 66,755 | 🔴 UNGOVERNED |
+| `archon/packages/cli/src/commands/workflow.test.ts` | 81,475 | 0.230 | 62,736 | 🔴 UNGOVERNED |
+| `archon/packages/isolation/src/providers/worktree.test.ts` | 80,782 | 0.230 | 62,202 | 🔴 UNGOVERNED |
+| `docs/PI docs/extensions.md` | 80,084 | 0.230 | 61,665 | 🔴 UNGOVERNED |
+| `pi/pi-mono-main/packages/coding-agent/docs/extensions.md` | 80,084 | 0.230 | 61,665 | 🔴 UNGOVERNED |
+| `pi/pi-mono-main/packages/coding-agent/src/core/agent-session.ts` | 85,893 | 0.330 | 57,548 | 🔴 UNGOVERNED |
+| `archon/packages/server/src/routes/api.ts` | 73,880 | 0.230 | 56,888 | 🔴 UNGOVERNED |
+| `archon/packages/workflows/src/loader.test.ts` | 69,405 | 0.230 | 53,442 | 🔴 UNGOVERNED |
+| `pi/pi-mono-main/packages/coding-agent/test/package-manager.test.ts` | 68,177 | 0.230 | 52,496 | 🔴 UNGOVERNED |
+| `SPEC.md` | 67,052 | 0.230 | 51,630 | 🔴 UNGOVERNED |
+| `pi/pi-mono-main/packages/tui/src/components/editor.ts` | 62,453 | 0.230 | 48,089 | 🔴 UNGOVERNED |
+
+## Intent Gaps (Missing Layer Coverage)
+
+- **L1 (Application Code)**: 2 files uncovered
+- **L2 (Reversa Behavioral)**: 1814 files uncovered
+- **L3 (PDD Rules)**: 2 files uncovered
+- **L4 (Authority)**: 1534 files uncovered
+- **L5 (Derived Logic)**: 1815 files uncovered
+- **L6 (Decisions)**: 1815 files uncovered
+- **L7 (Obligations)**: 1815 files uncovered
+- **L8 (DataConcepts)**: 1739 files uncovered
+- **L9 (Knowledge Graph)**: 1779 files uncovered
+- **L10 (MDG)**: 1815 files uncovered
+- **L11 (Validation)**: 1815 files uncovered
+- **L12 (Temporal)**: 1815 files uncovered
+
+## MDG Summary
+
+- Nodes: 14
+- Edges: 79
+- Node types: {'PDD_Rule': 1, 'DataConcept': 10, 'Decision': 3}
+- Edge types: {'IMPLEMENTED_BY': 76, 'INTERPRETS': 3}
+
+---
+*Generated by the 13-Layer Governance Intent Resolution Engine.*

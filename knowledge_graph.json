@@ -1,0 +1,1040 @@
+{
+  "nodes": [
+    {
+      "id": "archon/archon.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "archon/archon.py::Archon",
+      "type": "Class",
+      "data": {
+        "line": 16
+      }
+    },
+    {
+      "id": "archon/archon.py::Archon.__init__",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "archon/archon.py::Archon.plan_task",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "archon/workflow_review.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "archon/__init__.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "pdd/load_rules.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "pi/pi.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "pi/pi.py::PI",
+      "type": "Class",
+      "data": {
+        "line": 15
+      }
+    },
+    {
+      "id": "pi/pi.py::PI.__init__",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "pi/pi.py::PI.interact",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "router/main.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/remote_gateway.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/02_index_context.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/03_heartbeat.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/03_heartbeat.py::HeartbeatManager",
+      "type": "Class",
+      "data": {
+        "line": 14
+      }
+    },
+    {
+      "id": "scripts/03_heartbeat.py::HeartbeatManager.__init__",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/agent_lib.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/agent_lib.py::AXiomEngineClient",
+      "type": "Class",
+      "data": {
+        "line": 6
+      }
+    },
+    {
+      "id": "scripts/agent_lib.py::AXiomEngineClient.__init__",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/agent_lib.py::AXiomEngineClient.chat",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/agent_lib.py::AXiomEngineClient.get_audit",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/agent_lib.py::AXiomEngineClient.switch_mode",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/agent_lib.py::AsyncAXiomEngineClient",
+      "type": "Class",
+      "data": {
+        "line": 53
+      }
+    },
+    {
+      "id": "scripts/agent_lib.py::AsyncAXiomEngineClient.__init__",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/archon_tester.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/archon_tester.py::ArchonTestHarness",
+      "type": "Class",
+      "data": {
+        "line": 14
+      }
+    },
+    {
+      "id": "scripts/archon_tester.py::ArchonTestHarness.__init__",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/ast_indexer.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/ast_indexer.py::ASTIndexer",
+      "type": "Class",
+      "data": {
+        "line": 6
+      }
+    },
+    {
+      "id": "scripts/ast_indexer.py::ASTIndexer.__init__",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/ast_indexer.py::ASTIndexer.index_file",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/ast_indexer.py::ASTIndexer.build_index",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/behavior_monitor.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/behavior_monitor.py::BehaviorMonitor",
+      "type": "Class",
+      "data": {
+        "line": 13
+      }
+    },
+    {
+      "id": "scripts/behavior_monitor.py::BehaviorMonitor.__init__",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/dispatcher.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/dispatcher.py::PiDispatcher",
+      "type": "Class",
+      "data": {
+        "line": 13
+      }
+    },
+    {
+      "id": "scripts/dispatcher.py::PiDispatcher.__init__",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/git_metadata.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/governor.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/governor.py::Governor",
+      "type": "Class",
+      "data": {
+        "line": 18
+      }
+    },
+    {
+      "id": "scripts/governor.py::Governor.__init__",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/keychain.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/keychain.py::Keychain",
+      "type": "Class",
+      "data": {
+        "line": 10
+      }
+    },
+    {
+      "id": "scripts/keychain.py::Keychain.__init__",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/keychain.py::Keychain._ensure_file",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/keychain.py::Keychain._load",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/keychain.py::Keychain._save",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/keychain.py::Keychain.get_key",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/keychain.py::Keychain.set_key",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/knowledge_graph.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/knowledge_graph.py::KnowledgeGraph",
+      "type": "Class",
+      "data": {
+        "line": 9
+      }
+    },
+    {
+      "id": "scripts/knowledge_graph.py::KnowledgeGraph.__init__",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/knowledge_graph.py::KnowledgeGraph._load",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/knowledge_graph.py::KnowledgeGraph._save",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/knowledge_graph.py::KnowledgeGraph.populate_from_ast",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/knowledge_graph.py::KnowledgeGraph.add_node",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/knowledge_graph.py::KnowledgeGraph.add_edge",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/rich_tui.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/rich_tui.py::DisplayServer",
+      "type": "Class",
+      "data": {
+        "line": 15
+      }
+    },
+    {
+      "id": "scripts/rich_tui.py::DisplayServer.__init__",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/rich_tui.py::DisplayServer.show_spinner",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/rich_tui.py::DisplayServer.show_panel",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/sandbox.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/sandbox.py::AgentSandbox",
+      "type": "Class",
+      "data": {
+        "line": 6
+      }
+    },
+    {
+      "id": "scripts/sandbox.py::AgentSandbox.__init__",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/sandbox.py::AgentSandbox.setup",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/sandbox.py::AgentSandbox.run_command",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/search_context.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/settings_registry.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/settings_registry.py::SettingsRegistry",
+      "type": "Class",
+      "data": {
+        "line": 8
+      }
+    },
+    {
+      "id": "scripts/settings_registry.py::SettingsRegistry.__init__",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/settings_registry.py::SettingsRegistry._load",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/settings_registry.py::SettingsRegistry._save",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/settings_registry.py::SettingsRegistry.get",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/settings_registry.py::SettingsRegistry.set",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/sis_loop.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/sis_loop.py::SISLoop",
+      "type": "Class",
+      "data": {
+        "line": 13
+      }
+    },
+    {
+      "id": "scripts/sis_loop.py::SISLoop.__init__",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/smart_fetch.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/stitch.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/stitch.py::Stitch",
+      "type": "Class",
+      "data": {
+        "line": 7
+      }
+    },
+    {
+      "id": "scripts/stitch.py::Stitch.__init__",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/stitch.py::Stitch.publish",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/stitch.py::Stitch.send_task",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/stitch.py::Stitch.get_task",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/stitch.py::Stitch.set_status",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/stitch.py::Stitch.get_agent_statuses",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/task_lib.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/test_concurrency.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/test_toon.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/toon.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/toon.py::TOON",
+      "type": "Class",
+      "data": {
+        "line": 5
+      }
+    },
+    {
+      "id": "scripts/toon.py::TOON.encode",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/toon.py::TOON.decode",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/uac.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/uac.py::UAC",
+      "type": "Class",
+      "data": {
+        "line": 13
+      }
+    },
+    {
+      "id": "scripts/uac.py::UAC.is_dangerous",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/uac.py::UAC.request_approval",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/user_prompt.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/wiki_manager.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/wiki_manager.py::WikiManager",
+      "type": "Class",
+      "data": {
+        "line": 8
+      }
+    },
+    {
+      "id": "scripts/wiki_manager.py::WikiManager.__init__",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/wiki_manager.py::WikiManager.update_page",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/__init__.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/intent_mapper.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/intent_mapper.py::IntentMapper",
+      "type": "Class",
+      "data": {
+        "line": 6
+      }
+    },
+    {
+      "id": "scripts/intent_mapper.py::IntentMapper.__init__",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/intent_mapper.py::IntentMapper.scan_roadmap",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/intent_mapper.py::IntentMapper.map_to_agent",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/intent_mapper.py::IntentMapper.generate_task_payloads",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/full_system_test.py",
+      "type": "File",
+      "data": {}
+    },
+    {
+      "id": "scripts/full_system_test.py::ComprehensiveTester",
+      "type": "Class",
+      "data": {
+        "line": 17
+      }
+    },
+    {
+      "id": "scripts/full_system_test.py::ComprehensiveTester.__init__",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/full_system_test.py::ComprehensiveTester.log_result",
+      "type": "Method",
+      "data": {}
+    },
+    {
+      "id": "scripts/harness.py",
+      "type": "File",
+      "data": {}
+    }
+  ],
+  "edges": [
+    {
+      "source": "archon/archon.py",
+      "target": "archon/archon.py::Archon",
+      "relation": "contains"
+    },
+    {
+      "source": "archon/archon.py::Archon",
+      "target": "archon/archon.py::Archon.__init__",
+      "relation": "defines"
+    },
+    {
+      "source": "archon/archon.py::Archon",
+      "target": "archon/archon.py::Archon.plan_task",
+      "relation": "defines"
+    },
+    {
+      "source": "pi/pi.py",
+      "target": "pi/pi.py::PI",
+      "relation": "contains"
+    },
+    {
+      "source": "pi/pi.py::PI",
+      "target": "pi/pi.py::PI.__init__",
+      "relation": "defines"
+    },
+    {
+      "source": "pi/pi.py::PI",
+      "target": "pi/pi.py::PI.interact",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/03_heartbeat.py",
+      "target": "scripts/03_heartbeat.py::HeartbeatManager",
+      "relation": "contains"
+    },
+    {
+      "source": "scripts/03_heartbeat.py::HeartbeatManager",
+      "target": "scripts/03_heartbeat.py::HeartbeatManager.__init__",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/agent_lib.py",
+      "target": "scripts/agent_lib.py::AXiomEngineClient",
+      "relation": "contains"
+    },
+    {
+      "source": "scripts/agent_lib.py::AXiomEngineClient",
+      "target": "scripts/agent_lib.py::AXiomEngineClient.__init__",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/agent_lib.py::AXiomEngineClient",
+      "target": "scripts/agent_lib.py::AXiomEngineClient.chat",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/agent_lib.py::AXiomEngineClient",
+      "target": "scripts/agent_lib.py::AXiomEngineClient.get_audit",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/agent_lib.py::AXiomEngineClient",
+      "target": "scripts/agent_lib.py::AXiomEngineClient.switch_mode",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/agent_lib.py",
+      "target": "scripts/agent_lib.py::AsyncAXiomEngineClient",
+      "relation": "contains"
+    },
+    {
+      "source": "scripts/agent_lib.py::AsyncAXiomEngineClient",
+      "target": "scripts/agent_lib.py::AsyncAXiomEngineClient.__init__",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/archon_tester.py",
+      "target": "scripts/archon_tester.py::ArchonTestHarness",
+      "relation": "contains"
+    },
+    {
+      "source": "scripts/archon_tester.py::ArchonTestHarness",
+      "target": "scripts/archon_tester.py::ArchonTestHarness.__init__",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/ast_indexer.py",
+      "target": "scripts/ast_indexer.py::ASTIndexer",
+      "relation": "contains"
+    },
+    {
+      "source": "scripts/ast_indexer.py::ASTIndexer",
+      "target": "scripts/ast_indexer.py::ASTIndexer.__init__",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/ast_indexer.py::ASTIndexer",
+      "target": "scripts/ast_indexer.py::ASTIndexer.index_file",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/ast_indexer.py::ASTIndexer",
+      "target": "scripts/ast_indexer.py::ASTIndexer.build_index",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/behavior_monitor.py",
+      "target": "scripts/behavior_monitor.py::BehaviorMonitor",
+      "relation": "contains"
+    },
+    {
+      "source": "scripts/behavior_monitor.py::BehaviorMonitor",
+      "target": "scripts/behavior_monitor.py::BehaviorMonitor.__init__",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/dispatcher.py",
+      "target": "scripts/dispatcher.py::PiDispatcher",
+      "relation": "contains"
+    },
+    {
+      "source": "scripts/dispatcher.py::PiDispatcher",
+      "target": "scripts/dispatcher.py::PiDispatcher.__init__",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/governor.py",
+      "target": "scripts/governor.py::Governor",
+      "relation": "contains"
+    },
+    {
+      "source": "scripts/governor.py::Governor",
+      "target": "scripts/governor.py::Governor.__init__",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/keychain.py",
+      "target": "scripts/keychain.py::Keychain",
+      "relation": "contains"
+    },
+    {
+      "source": "scripts/keychain.py::Keychain",
+      "target": "scripts/keychain.py::Keychain.__init__",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/keychain.py::Keychain",
+      "target": "scripts/keychain.py::Keychain._ensure_file",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/keychain.py::Keychain",
+      "target": "scripts/keychain.py::Keychain._load",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/keychain.py::Keychain",
+      "target": "scripts/keychain.py::Keychain._save",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/keychain.py::Keychain",
+      "target": "scripts/keychain.py::Keychain.get_key",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/keychain.py::Keychain",
+      "target": "scripts/keychain.py::Keychain.set_key",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/knowledge_graph.py",
+      "target": "scripts/knowledge_graph.py::KnowledgeGraph",
+      "relation": "contains"
+    },
+    {
+      "source": "scripts/knowledge_graph.py::KnowledgeGraph",
+      "target": "scripts/knowledge_graph.py::KnowledgeGraph.__init__",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/knowledge_graph.py::KnowledgeGraph",
+      "target": "scripts/knowledge_graph.py::KnowledgeGraph._load",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/knowledge_graph.py::KnowledgeGraph",
+      "target": "scripts/knowledge_graph.py::KnowledgeGraph._save",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/knowledge_graph.py::KnowledgeGraph",
+      "target": "scripts/knowledge_graph.py::KnowledgeGraph.populate_from_ast",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/knowledge_graph.py::KnowledgeGraph",
+      "target": "scripts/knowledge_graph.py::KnowledgeGraph.add_node",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/knowledge_graph.py::KnowledgeGraph",
+      "target": "scripts/knowledge_graph.py::KnowledgeGraph.add_edge",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/rich_tui.py",
+      "target": "scripts/rich_tui.py::DisplayServer",
+      "relation": "contains"
+    },
+    {
+      "source": "scripts/rich_tui.py::DisplayServer",
+      "target": "scripts/rich_tui.py::DisplayServer.__init__",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/rich_tui.py::DisplayServer",
+      "target": "scripts/rich_tui.py::DisplayServer.show_spinner",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/rich_tui.py::DisplayServer",
+      "target": "scripts/rich_tui.py::DisplayServer.show_panel",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/sandbox.py",
+      "target": "scripts/sandbox.py::AgentSandbox",
+      "relation": "contains"
+    },
+    {
+      "source": "scripts/sandbox.py::AgentSandbox",
+      "target": "scripts/sandbox.py::AgentSandbox.__init__",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/sandbox.py::AgentSandbox",
+      "target": "scripts/sandbox.py::AgentSandbox.setup",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/sandbox.py::AgentSandbox",
+      "target": "scripts/sandbox.py::AgentSandbox.run_command",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/settings_registry.py",
+      "target": "scripts/settings_registry.py::SettingsRegistry",
+      "relation": "contains"
+    },
+    {
+      "source": "scripts/settings_registry.py::SettingsRegistry",
+      "target": "scripts/settings_registry.py::SettingsRegistry.__init__",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/settings_registry.py::SettingsRegistry",
+      "target": "scripts/settings_registry.py::SettingsRegistry._load",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/settings_registry.py::SettingsRegistry",
+      "target": "scripts/settings_registry.py::SettingsRegistry._save",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/settings_registry.py::SettingsRegistry",
+      "target": "scripts/settings_registry.py::SettingsRegistry.get",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/settings_registry.py::SettingsRegistry",
+      "target": "scripts/settings_registry.py::SettingsRegistry.set",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/sis_loop.py",
+      "target": "scripts/sis_loop.py::SISLoop",
+      "relation": "contains"
+    },
+    {
+      "source": "scripts/sis_loop.py::SISLoop",
+      "target": "scripts/sis_loop.py::SISLoop.__init__",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/stitch.py",
+      "target": "scripts/stitch.py::Stitch",
+      "relation": "contains"
+    },
+    {
+      "source": "scripts/stitch.py::Stitch",
+      "target": "scripts/stitch.py::Stitch.__init__",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/stitch.py::Stitch",
+      "target": "scripts/stitch.py::Stitch.publish",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/stitch.py::Stitch",
+      "target": "scripts/stitch.py::Stitch.send_task",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/stitch.py::Stitch",
+      "target": "scripts/stitch.py::Stitch.get_task",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/stitch.py::Stitch",
+      "target": "scripts/stitch.py::Stitch.set_status",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/stitch.py::Stitch",
+      "target": "scripts/stitch.py::Stitch.get_agent_statuses",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/toon.py",
+      "target": "scripts/toon.py::TOON",
+      "relation": "contains"
+    },
+    {
+      "source": "scripts/toon.py::TOON",
+      "target": "scripts/toon.py::TOON.encode",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/toon.py::TOON",
+      "target": "scripts/toon.py::TOON.decode",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/uac.py",
+      "target": "scripts/uac.py::UAC",
+      "relation": "contains"
+    },
+    {
+      "source": "scripts/uac.py::UAC",
+      "target": "scripts/uac.py::UAC.is_dangerous",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/uac.py::UAC",
+      "target": "scripts/uac.py::UAC.request_approval",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/wiki_manager.py",
+      "target": "scripts/wiki_manager.py::WikiManager",
+      "relation": "contains"
+    },
+    {
+      "source": "scripts/wiki_manager.py::WikiManager",
+      "target": "scripts/wiki_manager.py::WikiManager.__init__",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/wiki_manager.py::WikiManager",
+      "target": "scripts/wiki_manager.py::WikiManager.update_page",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/intent_mapper.py",
+      "target": "scripts/intent_mapper.py::IntentMapper",
+      "relation": "contains"
+    },
+    {
+      "source": "scripts/intent_mapper.py::IntentMapper",
+      "target": "scripts/intent_mapper.py::IntentMapper.__init__",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/intent_mapper.py::IntentMapper",
+      "target": "scripts/intent_mapper.py::IntentMapper.scan_roadmap",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/intent_mapper.py::IntentMapper",
+      "target": "scripts/intent_mapper.py::IntentMapper.map_to_agent",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/intent_mapper.py::IntentMapper",
+      "target": "scripts/intent_mapper.py::IntentMapper.generate_task_payloads",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/full_system_test.py",
+      "target": "scripts/full_system_test.py::ComprehensiveTester",
+      "relation": "contains"
+    },
+    {
+      "source": "scripts/full_system_test.py::ComprehensiveTester",
+      "target": "scripts/full_system_test.py::ComprehensiveTester.__init__",
+      "relation": "defines"
+    },
+    {
+      "source": "scripts/full_system_test.py::ComprehensiveTester",
+      "target": "scripts/full_system_test.py::ComprehensiveTester.log_result",
+      "relation": "defines"
+    }
+  ]
+}

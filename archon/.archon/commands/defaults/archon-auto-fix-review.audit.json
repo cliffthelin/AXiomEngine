@@ -1,0 +1,21 @@
+{
+  "file": "archon-auto-fix-review.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-AUTO-FIX-REVIEW",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-auto-fix-review logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-auto-fix-review status widget"
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+```json
+[
+  {
+    "concept_id": "target_hardware_role_assignment",
+    "file_path": "src/infrastructure/gpu_manager.py",
+    "rationale": "Maps GPU_ID constants (1 for Tesla P40, 0 for RTX 3070) and assigns stack roles based on hardware capabilities and mission requirements."
+  },
+  {
+    "concept_id": "target_hardware_role_assignment",
+    "file_path": "config/system_topology.yaml",
+    "rationale": "Defines static device identifiers, primary/secondary GPU routing rules, and orchestrator initialization parameters for the hardware stack."
+  },
+  {
+    "concept_id": "p40_dynamic_power_governance",
+    "file_path": "src/power/gpu_thermal_optimizer.py",
+    "rationale": "Explicitly enforces stepped power limits (220W/180W/150W) via nvidia-smi -pl calls with a hard 2-second polling and enforcement interval."
+  },
+  {
+    "concept_id": "p40_dynamic_power_governance",
+    "file_path": "src/utils/privilege_runner.py",
+    "rationale": "Handles root privilege escalation for nvidia-smi commands and implements sys.exit(1) termination logic when power limit application fails."
+  },
+  {
+    "concept_id": "thermal_hysteresis_state_machine",
+    "file_path": "src/power/gpu_thermal_optimizer.py",
+    "rationale": "Contains threshold constants (TEMP_WARNING=75, TEMP_CRITICAL=82, TEMP_RECOVERY=70) and implements the crossover comparison logic to prevent power-state oscillation."
+  },
+  {
+    "concept_id": "thermal_hysteresis_state_machine",
+    "file_path": "src/state/thermal_buffer_controller.py",
+    "rationale": "Manages the 5–12°C thermal buffer zone, tracking current vs. target power states and ensuring step-down/step-up transitions only trigger on strict threshold breaches."
+  },
+  {
+    "concept_id": "system_memory_vram_constraints",
+    "file_path": "src/monitoring/resource_watchdog.py",
+    "rationale": "Integrates psutil for host RAM monitoring (8GB free threshold) and NVML/API calls for RTX 3070 VRAM tracking (500MB safety buffer), logging warnings on breaches."
+  },
+  {
+    "concept_id": "system_memory_vram_constraints",
+    "file_path": "src/services/throttling_stub_manager.py",
+    "rationale": "Hosts the reserved throttling callbacks, alert pipelines, and warning handlers triggered when VRAM/RAM buffers fall below configured limits."
+  },
+  {
+    "concept_id": "orchestration_failover_rules",
+    "file_path": "src/factories/DataCatalogFactory.py",
+    "rationale": "Tracks rule completion progress; acts as a primary target for the 900s stalemate threshold, triggering automatic process termination when zero progress is detected."
+  },
+  {
+    "concept_id": "orchestration_failover_rules",
+    "file_path": "src/orchestration/mission_service_controller.py",
+    "rationale": "Enforces the 60s polling cadence for progress metrics, manages graceful degradation of thermal protection independent of task queues, and handles automated restarts for stalled components (e.g., ollama)."
+  }
+]
+```

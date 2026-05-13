@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AXiomEngine | Governance Dashboard v1.4.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #010409;
+            --panel-bg: #0d1117;
+            --accent-color: #79c0ff;
+            --text-color: #c9d1d9;
+            --border-color: #30363d;
+            --success-color: #3fb950;
+            --danger-color: #f85149;
+            --warning-color: #d29922;
+        }
+
+        body { margin: 0; background: var(--bg-color); color: var(--text-color); font-family: 'Outfit', sans-serif; padding: 40px; }
+        header { margin-bottom: 30px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+        h1 { margin: 0; font-weight: 600; color: var(--accent-color); }
+        .subtitle { color: #8b949e; font-size: 0.9rem; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .card { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; position: relative; }
+        
+        .status-strip { position: absolute; top: 0; left: 0; right: 0; height: 4px; border-radius: 12px 12px 0 0; }
+        .status-CONNECTED { background: var(--success-color); }
+        .status-DISCONNECTED { background: var(--danger-color); }
+        .status-SERVER_ERROR { background: var(--warning-color); }
+        .status-DRIFT { background: var(--warning-color); }
+
+        .metric-label { font-size: 0.7rem; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .metric-big { font-size: 2.2rem; font-weight: 600; color: white; }
+        
+        .badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; margin-left: 5px; }
+        .badge-success { background: var(--success-color); color: white; }
+        .badge-danger { background: var(--danger-color); color: white; }
+        .badge-warning { background: var(--warning-color); color: black; }
+
+        /* Layers */
+        .layer-list { display: flex; flex-direction: column; gap: 6px; }
+        .layer-item { display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: rgba(255,255,255,0.01); border-radius: 6px; border: 1px solid transparent; }
+        .layer-item.active { border-color: var(--success-color); background: rgba(63, 185, 80, 0.05); }
+        .layer-num { font-family: 'JetBrains Mono'; font-size: 0.75rem; color: #8b949e; width: 20px; }
+        .layer-name { flex: 1; font-weight: 500; font-size: 0.85rem; }
+
+        /* Connection Overlay */
+        #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(1, 4, 9, 0.9); z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .overlay-card { background: var(--panel-bg); border: 1px solid var(--border-color); padding: 40px; border-radius: 20px; max-width: 500px; }
+        code { background: #010409; color: var(--accent-color); padding: 10px; border-radius: 6px; display: block; margin-top: 15px; font-size: 0.85rem; }
+
+        .hidden { display: none !important; }
+        .scroll-area { max-height: 300px; overflow-y: auto; }
+        
+        .artifact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .artifact-item { background: #161b22; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.75rem; }
+    </style>
+</head>
+<body>
+
+<div id="overlay" class="hidden">
+    <div class="overlay-card">
+        <h2 id="overlay-title" style="color:var(--danger-color)">Discovery Server Disconnected</h2>
+        <p id="overlay-msg">The dashboard cannot reach the local governance API. Please start the discovery server to continue.</p>
+        <code>python3 scripts/governance_dashboard_server.py --project-root .</code>
+        <p style="font-size: 0.8rem; color: #8b949e; margin-top:20px;">Attempting to reconnect every 5 seconds...</p>
+    </div>
+</div>
+
+<header>
+    <div>
+        <h1>Governance Dashboard <span style="font-size: 0.5em; vertical-align: middle; opacity: 0.6;">v1.4.0</span></h1>
+        <div class="subtitle">API-Driven Project Sovereignty Health Monitor</div>
+    </div>
+    <div id="connection-status">
+        <span id="conn-badge" class="badge">DISCONNECTED</span>
+        <span id="baseline-badge" class="badge hidden"></span>
+    </div>
+</header>
+
+<div class="grid">
+    <!-- PROJECT SUMMARY -->
+    <div class="card">
+        <div id="status-strip" class="status-strip"></div>
+        <div class="metric-group">
+            <div class="metric-label">Project Health Summary</div>
+            <div class="metric-big" id="decision-count">0</div>
+            <div style="font-size: 0.8rem; color: #8b949e;">Promoted Determinations</div>
+        </div>
+        <div class="artifact-grid">
+            <div class="artifact-item">
+                <div class="metric-label">Historical Reports</div>
+                <div style="font-weight:600" id="hist-count">0</div>
+            </div>
+            <div class="artifact-item">
+                <div class="metric-label">Total Promoted</div>
+                <div style="font-weight:600" id="total-promoted">0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BASELINE INTEGRITY -->
+    <div class="card">
+        <div class="metric-label">Baseline Integrity (v1.3.1)</div>
+        <div id="baseline-summary" style="margin-top:10px;">
+            <div style="font-size: 1.2rem; font-weight: 600;" id="baseline-version">v1.3.1-FROZEN</div>
+            <div id="baseline-meta" style="font-size: 0.7rem; color: #8b949e; margin-top: 2px;"></div>
+            <div id="baseline-status-text" style="margin-top:5px; font-size: 0.85rem;">Checking integrity...</div>
+        </div>
+        <div id="drift-list" class="scroll-area hidden" style="margin-top:15px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--danger-color);"></div>
+    </div>
+
+    <!-- REPORT METRICS -->
+    <div class="card">
+        <div class="metric-label">Latest Governance Report</div>
+        <div id="report-panel" style="margin-top:10px;">
+            <div id="report-status" style="font-size: 1.1rem; font-weight: 600;">NO_REPORT_YET</div>
+            <div id="report-meta" style="font-size: 0.75rem; color: #8b949e; margin-top: 5px;"></div>
+            <div id="report-errors" style="font-size: 0.75rem; color: var(--danger-color); margin-top: 5px;"></div>
+        </div>
+    </div>
+
+    <!-- MISSION ARTIFACTS -->
+    <div class="card">
+        <div class="metric-label">Audit Pack Status</div>
+        <div id="artifact-list" class="artifact-grid"></div>
+    </div>
+
+    <!-- SOVEREIGN LAYERS -->
+    <div class="card" style="grid-row: span 2;">
+        <div class="metric-label" style="margin-bottom:15px;">Sovereign Layer Saturation</div>
+        <div id="layer-container" class="layer-list"></div>
+    </div>
+
+    <!-- RECENT DETERMINATIONS -->
+    <div class="card" style="grid-column: span 2;">
+        <div class="metric-label" style="margin-bottom:15px;">Authoritative Decision Registry</div>
+        <div id="decision-list" class="scroll-area"></div>
+    </div>
+</div>
+
+<script>
+    const API_BASE = "http://127.0.0.1:8765";
+    const LAYERS = [
+        "Identity & Intent", "Scope & Boundary", "Capability & Skill",
+        "Resource & Hardware", "Security & Trust", "Decision & Policy",
+        "Observation & Evidence", "Analysis & Rationale", "Memory & Context",
+        "Communication & Protocol", "Action & Execution", "Verification & Audit",
+        "Evolution & Meta"
+    ];
+
+    let state = {
+        connected: false,
+        serverError: false,
+        summary: {},
+        baseline: {},
+        manifest: {},
+        artifacts: {},
+        latestReport: null,
+        historicalReports: [],
+        decisions: [],
+        activeLayers: new Set()
+    };
+
+    // --- RESILIENT FETCH HELPERS ---
+
+    async function fetchRequired(endpoint) {
+        try {
+            const r = await fetch(`${API_BASE}${endpoint}`);
+            if (!r.ok) {
+                state.serverError = true;
+                throw new Error(`SERVER_ERROR: ${endpoint} returned ${r.status}`);
+            }
+            return await r.json();
+        } catch (e) {
+            if (e.message.includes("SERVER_ERROR")) throw e;
+            state.connected = false;
+            throw e;
+        }
+    }
+
+    async function fetchOptional(endpoint, fallback = null) {
+        try {
+            const r = await fetch(`${API_BASE}${endpoint}`);
+            if (r.status === 404) return fallback;
+            if (!r.ok) return fallback;
+            return await r.json();
+        } catch (e) {
+            return fallback;
+        }
+    }
+
+    async function refresh() {
+        state.serverError = false;
+        try {
+            // 1. Health & Connection (REQUIRED)
+            const health = await fetchRequired("/health");
+            state.connected = true;
+            document.getElementById('overlay').classList.add('hidden');
+
+            // 2. Core Governance Data (REQUIRED)
+            state.summary = await fetchRequired("/api/governance/summary");
+            state.baseline = await fetchRequired("/api/governance/baseline/status");
+            state.manifest = await fetchRequired("/api/governance/manifest");
+            state.artifacts = await fetchRequired("/api/governance/mission-artifacts");
+            const decData = await fetchRequired("/api/governance/decisions");
+            state.decisions = decData.decisions || [];
+
+            // 3. Reports (OPTIONAL)
+            state.latestReport = await fetchOptional("/api/governance/latest-report", { status: "NO_REPORT_YET" });
+            state.historicalReports = await fetchOptional("/api/governance/historical-reports", []);
+
+            // 4. Render
+            renderAll();
+
+        } catch (e) {
+            if (state.serverError) {
+                showOverlay("SERVER_ERROR", "The discovery server is running but returned an internal error.");
+            } else {
+                showOverlay("DISCONNECTED", "The dashboard cannot reach the local governance API.");
+            }
+        }
+    }
+
+    function showOverlay(title, msg) {
+        const overlay = document.getElementById('overlay');
+        const badge = document.getElementById('conn-badge');
+        const strip = document.getElementById('status-strip');
+        
+        overlay.classList.remove('hidden');
+        document.getElementById('overlay-title').textContent = title;
+        document.getElementById('overlay-msg').textContent = msg;
+        
+        badge.textContent = title;
+        badge.className = `badge badge-danger`;
+        if (strip) strip.className = `status-strip status-${title}`;
+    }
+
+    function renderAll() {
+        const badge = document.getElementById('conn-badge');
+        badge.textContent = "CONNECTED";
+        badge.className = "badge badge-success";
+
+        renderSummary();
+        renderBaseline();
+        renderReport();
+        renderArtifacts();
+        calculateLayers();
+        renderDecisions();
+    }
+
+    function renderSummary() {
+        document.getElementById('decision-count').textContent = state.summary.decision_count || 0;
+        document.getElementById('hist-count').textContent = state.summary.historical_report_count || 0;
+        document.getElementById('total-promoted').textContent = state.summary.total_promoted || 0;
+        
+        const strip = document.getElementById('status-strip');
+        strip.className = `status-strip status-CONNECTED`;
+    }
+
+    function renderBaseline() {
+        const b = state.baseline;
+        const m = state.manifest;
+        const badge = document.getElementById('baseline-badge');
+        const statusText = document.getElementById('baseline-status-text');
+        const driftList = document.getElementById('drift-list');
+        const meta = document.getElementById('baseline-meta');
+        
+        document.getElementById('baseline-version').textContent = b.baseline_version || "UNKNOWN";
+        meta.textContent = m.created_at ? `Created: ${m.created_at} | Files: ${m.files?.length || 0}` : "";
+        badge.classList.remove('hidden');
+
+        if (b.drift_detected) {
+            badge.textContent = "DRIFT DETECTED";
+            badge.className = "badge badge-warning";
+            statusText.textContent = "❌ Repository does not match frozen baseline.";
+            statusText.style.color = "var(--warning-color)";
+            
+            const issues = b.checks.filter(c => c.status !== 'UNCHANGED');
+            driftList.innerHTML = issues.map(c => `[${c.status}] ${c.path}`).join('<br>');
+            driftList.classList.remove('hidden');
+        } else {
+            badge.textContent = "INTEGRITY VERIFIED";
+            badge.className = "badge badge-success";
+            statusText.textContent = "✨ v1.3.1 Baseline Integrity Verified.";
+            statusText.style.color = "var(--success-color)";
+            driftList.classList.add('hidden');
+        }
+    }
+
+    function renderReport() {
+        const r = state.latestReport;
+        const panel = document.getElementById('report-panel');
+        const status = document.getElementById('report-status');
+        const meta = document.getElementById('report-meta');
+        const errors = document.getElementById('report-errors');
+
+        if (!r || r.status === "NO_REPORT_YET") {
+            status.textContent = "NO_REPORT_YET";
+            status.style.color = "#8b949e";
+            meta.textContent = "No closer reports found in configured mission directories.";
+            errors.textContent = "";
+            return;
+        }
+
+        const reportStatus = state.summary.latest_report_status || "UNKNOWN";
+        status.textContent = reportStatus;
+        status.style.color = (reportStatus === "SUCCESS" || reportStatus === "DRY_RUN") ? "var(--success-color)" : "var(--danger-color)";
+        
+        meta.innerHTML = `
+            Timestamp: ${r.timestamp || 'n/a'}<br>
+            Policy: ${r.strict ? 'STRICT' : 'ALLOW-PARTIAL'} | Dry Run: ${r.dry_run ? 'YES' : 'NO'}<br>
+            Promoted: ${r.valid_promotion_count || 0} | Rejected: ${r.rejected_count || 0}
+        `;
+        
+        const errCount = r.validation_errors?.length || 0;
+        errors.textContent = errCount > 0 ? `⚠️ ${errCount} Validation Errors detected.` : "";
+    }
+
+    function renderArtifacts() {
+        const container = document.getElementById('artifact-list');
+        container.innerHTML = Object.entries(state.artifacts).map(([name, data]) => {
+            let statusClass = "badge-success";
+            let statusText = data.status; // Expected: PRESENT or MISSING
+            if (data.status === "MISSING") {
+                statusText = "MISSING"; 
+                statusClass = "badge-danger";
+            } else if (data.status === "PRESENT") {
+                statusText = "PRESENT";
+                statusClass = "badge-success";
+            }
+            
+            if (data.data && data.data.error) {
+                statusText = "MALFORMED";
+                statusClass = "badge-warning";
+            }
+            
+            return `
+                <div class="artifact-item">
+                    <div class="metric-label">${name.replace('global_', '').replace('_', ' ')}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
+                        <span style="font-family:JetBrains Mono; opacity:0.6">${data.path ? '...' + data.path.slice(-15) : 'n/a'}</span>
+                        <span class="badge ${statusClass}">${statusText}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function calculateLayers() {
+        state.activeLayers.clear();
+        state.decisions.forEach(d => {
+            if (d.decision_type === "IntentValidation" || d.closer_version) state.activeLayers.add(0);
+            if (d.decision_type === "ScopeValidation" || d.closer_version) state.activeLayers.add(1);
+            if (d.decision_type === "SkillDetermination") state.activeLayers.add(2);
+            if (d.decision_type === "HardwarePolicy") state.activeLayers.add(3);
+            if (d.decision_type === "SecurityDetermination") state.activeLayers.add(4);
+            if (d.decision_type === "PolicyDefinition") state.activeLayers.add(5);
+            if (d.evidence_context?.evidence_snapshots?.length > 0) state.activeLayers.add(6);
+            if (d.statement?.length > 10 && d.reviewed_at) state.activeLayers.add(7);
+            if (d.prompted_by?.context_type === "mission_audit") state.activeLayers.add(8);
+            if (d.decision_type === "ProtocolValidation") state.activeLayers.add(9);
+            if (d.decision_type === "ExecutionPolicy") state.activeLayers.add(10);
+            if (d.prompted_by?.mission_pack_id) state.activeLayers.add(11);
+            if (d.decision_type === "GovernancePolicy") state.activeLayers.add(12);
+        });
+        renderLayers();
+    }
+
+    function renderLayers() {
+        const container = document.getElementById('layer-container');
+        container.innerHTML = LAYERS.map((name, i) => `
+            <div class="layer-item ${state.activeLayers.has(i) ? 'active' : ''}">
+                <div class="layer-num">${(i+1).toString().padStart(2, '0')}</div>
+                <div class="layer-name">${name}</div>
+            </div>
+        `).join('');
+    }
+
+    function renderDecisions() {
+        const list = document.getElementById('decision-list');
+        if (state.decisions.length === 0) {
+            list.innerHTML = "<div style='text-align:center; padding:20px; opacity:0.5'>No decisions found.</div>";
+            return;
+        }
+
+        list.innerHTML = state.decisions.slice().reverse().map(d => `
+            <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-color);">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <strong style="color:var(--accent-color); font-family:JetBrains Mono; font-size:0.85rem;">${d.decision_id}</strong>
+                    <span style="font-size:0.7rem; color:#8b949e;">${new Date(d.promoted_at).toLocaleDateString()}</span>
+                </div>
+                <div style="font-size: 0.85rem; margin: 10px 0; color: #eee;">${d.statement}</div>
+                <div style="font-size: 0.7rem; color: #8b949e;">
+                    Type: ${d.decision_type} | Provider: ${d.authority}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Polling
+    setInterval(refresh, 5000);
+    refresh();
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "file": "archon-ralph-prd.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-RALPH-PRD",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-ralph-prd logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-ralph-prd status widget"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "concepts": [
+    "L8-DC-001: Personal Identifiable Information (PII) Boundary - Logical grouping of attributes that can directly or indirectly identify a natural person within the system.",
+    "L8-DC-002: Data Processing Consent State - Enumerated representation of user authorization status governing permissible data operations.",
+    "L8-DC-003: Regulatory Data Classification Tier - Categorization level assigned to data assets based on sensitivity and compliance mandates.",
+    "L8-DC-004: Data Subject Lifecycle Stage - Temporal marker indicating the current phase of a record within the permitted processing window.",
+    "L8-DC-005: Auditability & Provenance Scope - Logical boundary defining which operations, transformations, and access events must be traceable."
+  ],
+  "rules": [
+    "L3-PDD-R001: PII Encryption Enforcement - All attributes classified as PII must be encrypted using AES-256-GCM at rest and transmitted only via TLS 1.3 or higher.",
+    "L3-PDD-R002: Purpose-Bound Data Minimization - System logic shall extract, process, and log only the minimum dataset strictly required for the declared business purpose.",
+    "L3-PDD-R003: Consent-Driven Access Control - Data retrieval or mutation operations must validate active consent states and reject requests where authorization is absent, expired, or revoked.",
+    "L3-PDD-R004: Automated Retention & Erasure - Records exceeding their defined retention threshold must be automatically anonymized or permanently deleted without manual approval.",
+    "L3-PDD-R005: Immutable Audit Tracing - Every data subject interaction, transformation, or export event must generate a tamper-evident log entry containing timestamp, actor ID, and scope."
+  ]
+}

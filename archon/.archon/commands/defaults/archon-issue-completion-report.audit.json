@@ -1,0 +1,21 @@
+{
+  "file": "archon-issue-completion-report.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-ISSUE-COMPLETION-REPORT",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-issue-completion-report logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-issue-completion-report status widget"
+    }
+  ]
+}

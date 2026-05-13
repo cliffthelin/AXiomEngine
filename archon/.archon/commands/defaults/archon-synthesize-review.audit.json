@@ -1,0 +1,21 @@
+{
+  "file": "archon-synthesize-review.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-SYNTHESIZE-REVIEW",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-synthesize-review logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-synthesize-review status widget"
+    }
+  ]
+}

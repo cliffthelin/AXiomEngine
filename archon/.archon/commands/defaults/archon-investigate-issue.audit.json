@@ -1,0 +1,21 @@
+{
+  "file": "archon-investigate-issue.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-INVESTIGATE-ISSUE",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-investigate-issue logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-investigate-issue status widget"
+    }
+  ]
+}

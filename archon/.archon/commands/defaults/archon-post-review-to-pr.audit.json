@@ -1,0 +1,21 @@
+{
+  "file": "archon-post-review-to-pr.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-POST-REVIEW-TO-PR",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-post-review-to-pr logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-post-review-to-pr status widget"
+    }
+  ]
+}

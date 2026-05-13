@@ -1,0 +1,171 @@
+# ProcessRecords for L1 (Code), L2 (Reversa), L3 (PDD), L6 (Decisions), L10 (MDG)
+
+- process_id: PR-L1-CODE-SCAN
+  layer: L1
+  artifact_type: CodeArtifact
+  acquisition:
+    method: Automated
+    source: Git repository
+    steps: |
+      1. Walk repository tree
+      2. Measure lines, chars per file
+      3. Detect language by extension
+      4. Record last-modified timestamp
+  automation:
+    automated: true
+    description: Fully automated via intent_index_builder.py
+    future_candidate: false
+    blockers: []
+  effort:
+    manual_time: "0"
+    frequency: "Per commit or on-demand"
+  roles:
+    executor_role: CI/CD or Developer
+    required_skills: []
+    required_access: [repository]
+  validation:
+    validator_role: System
+    validation_method: File existence + stat check
+    can_be_automated: true
+  refresh:
+    frequency: On change
+    trigger_events: [CodeDeployed, GitPush]
+    detection_method: Git hooks or CI pipeline
+
+- process_id: PR-L2-REVERSA-EXTRACTION
+  layer: L2
+  artifact_type: ReversaFinding
+  acquisition:
+    method: Automated
+    source: Reversa agent framework
+    steps: |
+      1. Run /reversa command in VS Code
+      2. Reversa agents (Scout, Archaeologist, Detective) analyze code
+      3. Outputs written to _reversa_sdd/
+      4. Confidence grading applied automatically
+  automation:
+    automated: true
+    description: Fully automated once Reversa is installed
+    future_candidate: false
+    blockers: []
+  effort:
+    manual_time: "0 (after initial setup)"
+    frequency: "Per code change or per analysis cycle"
+  roles:
+    executor_role: Developer or CI
+    required_skills: [Reversa installation]
+    required_access: [Codebase, AI agent]
+  validation:
+    validator_role: Engineer
+    validation_method: Compare extracted behavior vs expected
+    can_be_automated: true
+    validation_logic: Confidence scoring is built-in
+  refresh:
+    frequency: On code change
+    trigger_events: [CodeDeployed]
+    detection_method: CI/CD pipeline
+
+- process_id: PR-L3-PDD-RULE-EXTRACTION
+  layer: L3
+  artifact_type: PDD_Rule
+  acquisition:
+    method: Semi-Automated
+    source: Governance specifications and PDD axioms
+    steps: |
+      1. Parse specification documents
+      2. Decompose into atomic rules
+      3. Assign stable rule IDs (R-XXX-NNN)
+      4. Classify modality (MUST/MUST_NOT/SHOULD/MAY)
+      5. Map to DataConcepts
+  automation:
+    automated: false
+    description: Manual extraction with structured template
+    future_candidate: true
+    blockers:
+      - Specification formatting inconsistency
+      - Rule ambiguity requiring interpretation
+  effort:
+    manual_time: "30-60 minutes per rule cluster"
+    frequency: "Per spec update"
+  roles:
+    executor_role: PDD Author / Governance Analyst
+    required_skills: [Rule decomposition, Domain knowledge]
+    required_access: [Specification documents]
+  validation:
+    validator_role: Data Governance
+    validation_method: Compare against spec text
+    can_be_automated: false
+  refresh:
+    frequency: On change
+    trigger_events: [SpecUpdated, GovernanceDecision]
+    detection_method: Governance notification
+
+- process_id: PR-L6-DECISION-CAPTURE
+  layer: L6
+  artifact_type: Decision
+  acquisition:
+    method: Manual
+    source: Emails, meetings, governance approvals, git history
+    steps: |
+      1. Identify governance decision
+      2. Validate authority
+      3. Normalize into Decision schema (data/decisions.json)
+      4. Assign stable ID (DEC-XXX-NNN)
+      5. Set effective date range
+      6. Link to DataConcepts and Rules
+  automation:
+    automated: false
+    description: Manual capture only — requires human judgment
+    future_candidate: true
+    blockers:
+      - Context interpretation required
+      - Authority validation required
+      - Decisions scattered across email/chat/commits
+  effort:
+    manual_time: "10-15 minutes per decision"
+    frequency: "Ad hoc"
+  roles:
+    executor_role: Governance Lead or Infrastructure Lead
+    required_skills: [Policy interpretation, Domain knowledge]
+    required_access: [Governance communications, Git history]
+  validation:
+    validator_role: Governance Committee or Project Lead
+    validation_method: Review and approval
+    can_be_automated: false
+  refresh:
+    frequency: Event-driven
+    trigger_events: [NewValidationAdded, ExceptionApproved, DeprecationDecided]
+    detection_method: Manual identification
+
+- process_id: PR-L10-MDG-BUILD
+  layer: L10
+  artifact_type: MDG_Edge
+  acquisition:
+    method: Automated
+    source: Intent Index + Knowledge Graph + DataConcepts + Decisions
+    steps: |
+      1. Read INTENT_INDEX.json
+      2. Read data/data_concepts.json
+      3. Read data/decisions.json
+      4. Compute dependency paths
+      5. Materialize edges to MDG.json
+  automation:
+    automated: true
+    description: Fully automated via mdg_builder.py
+    future_candidate: false
+    blockers: []
+  effort:
+    manual_time: "0"
+    frequency: "Event-driven"
+  roles:
+    executor_role: CI/CD or Developer
+    required_skills: []
+    required_access: [Repository]
+  validation:
+    validator_role: System
+    validation_method: Graph consistency check
+    can_be_automated: true
+  refresh:
+    frequency: Event-driven
+    trigger_events: [LawChanged, RuleChanged, CodeDeployed, DecisionAdded]
+    detection_method: Change detection in upstream layers

@@ -1,0 +1,10 @@
+{
+  "goal": "Audit auth_manager.py for command injection vulnerabilities",
+  "type": "worker",
+  "scope": "scripts/auth_manager.py",
+  "flags": [
+    "candidate-only",
+    "evidence-first",
+    "scope-control"
+  ]
+}

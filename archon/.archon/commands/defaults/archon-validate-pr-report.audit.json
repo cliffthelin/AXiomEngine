@@ -1,0 +1,21 @@
+{
+  "file": "archon-validate-pr-report.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-VALIDATE-PR-REPORT",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-validate-pr-report logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-validate-pr-report status widget"
+    }
+  ]
+}

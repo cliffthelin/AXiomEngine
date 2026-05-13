@@ -1,0 +1,21 @@
+{
+  "file": "archon-test-coverage-agent.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-TEST-COVERAGE-AGENT",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-test-coverage-agent logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-test-coverage-agent status widget"
+    }
+  ]
+}

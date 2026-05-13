@@ -1,0 +1,21 @@
+{
+  "file": "archon-self-fix-all.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-SELF-FIX-ALL",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-self-fix-all logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-self-fix-all status widget"
+    }
+  ]
+}

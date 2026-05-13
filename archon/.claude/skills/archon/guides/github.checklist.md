@@ -1,0 +1,18 @@
+# Active ARCHON-GUIDES Checklist: github.md
+
+- [ ] G-ARCHON-GUIDES-GITHUB-001: IMPORTANT — Freeform input rule: This guide collects URLs, tokens, and usernames. Never use AskUserQuestion for freeform text input (URLs, tokens, usernames, paths). Ask the user directly in plain text — e.g., "Paste the ngrok URL here." Use AskUserQuestion only for multiplechoice decisions. (Section: GitHub Webhook Setup Guide)
+- [ ] G-ARCHON-GUIDES-GITHUB-002: If all are already filled in: Tell the user "GitHub tokens are already configured in `.env`. Skipping to webhook setup." Jump to Step 5 (configure the repo webhook). (Section: 0. Check Existing .env Values)
+- [ ] G-ARCHON-GUIDES-GITHUB-003: If some are filled in: Tell the user which values are already set and which are missing. Only collect the missing ones in the steps below. (Section: 0. Check Existing .env Values)
+- [ ] G-ARCHON-GUIDES-GITHUB-004: If none are filled in: Proceed with all steps. (Section: 0. Check Existing .env Values)
+- [ ] G-ARCHON-GUIDES-GITHUB-005: If not installed, use AskUserQuestion: (Section: 1. Set Up a Public URL (ngrok))
+- [ ] G-ARCHON-GUIDES-GITHUB-006: If ngrok is not authenticated, check and guide: (Section: 1. Set Up a Public URL (ngrok))
+- [ ] G-ARCHON-GUIDES-GITHUB-007: Only if `WEBHOOK_SECRET` is empty/missing in `.env`. (Section: 3. Generate a Webhook Secret)
+- [ ] G-ARCHON-GUIDES-GITHUB-008: Only collect values that are missing from `.env`. (Section: 4. Collect GitHub Token and Username)
+- [ ] G-ARCHON-GUIDES-GITHUB-009: Payload URL: `<ngrokurl>/webhooks/github` (Section: 6. Configure the Repository Webhook)
+- [ ] G-ARCHON-GUIDES-GITHUB-010: Content type: `application/json` (Section: 6. Configure the Repository Webhook)
+- [ ] G-ARCHON-GUIDES-GITHUB-011: Secret: `<webhooksecret>` (the value from step 3, or the existing value from `.env`) (Section: 6. Configure the Repository Webhook)
+- [ ] G-ARCHON-GUIDES-GITHUB-012: Select events: Issue comments + Pull request review comments (or "Send me everything") (Section: 6. Configure the Repository Webhook)
+- [ ] G-ARCHON-GUIDES-GITHUB-013: Click Add webhook (Section: 6. Configure the Repository Webhook)
+- [ ] G-ARCHON-GUIDES-GITHUB-014: Free tier URLs change on restart — you'll need to update the webhook URL in GitHub each time you restart ngrok. (Section: Notes)
+- [ ] G-ARCHON-GUIDES-GITHUB-015: Persistent URLs: Use a paid ngrok plan, Cloudflare Tunnel, or cloud deployment (see `docs/clouddeployment.md`). (Section: Notes)
+- [ ] G-ARCHON-GUIDES-GITHUB-016: Both the server (`bun run dev`) and ngrok must be running for GitHub webhooks to work. (Section: Notes)

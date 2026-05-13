@@ -1,0 +1,21 @@
+{
+  "file": "archon-simplify-changes.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-SIMPLIFY-CHANGES",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-simplify-changes logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-simplify-changes status widget"
+    }
+  ]
+}

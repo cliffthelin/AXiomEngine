@@ -1,0 +1,16 @@
+# Active ARCHON-ISSUE_TEMPLATE Checklist: bug_report.md
+
+- [ ] G-ARCHON-ISSUE_TEMPLATE-BUG_REPORT-001: What broke: (Section: Summary)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-BUG_REPORT-002: When it started (if known): (Section: Summary)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-BUG_REPORT-003: Severity: `blocker|major|minor|cosmetic` (Section: Summary)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-BUG_REPORT-004: Expected: (Section: Expected vs Actual)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-BUG_REPORT-005: Actual: (Section: Expected vs Actual)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-BUG_REPORT-006: Platform: (Slack / Telegram / GitHub / Discord / Web / CLI) (Section: Environment)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-BUG_REPORT-007: Database: (SQLite / PostgreSQL) (Section: Environment)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-BUG_REPORT-008: Running in worktree? (`Yes/No`) (Section: Environment)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-BUG_REPORT-009: Affected workflows/commands: (Section: Impact)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-BUG_REPORT-010: Reproduction rate: Always / Intermittent / Once (Section: Impact)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-BUG_REPORT-011: Workaround available? If so, describe: (Section: Impact)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-BUG_REPORT-012: Data loss risk? (`Yes/No`) (Section: Impact)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-BUG_REPORT-013: Package(s) likely involved: `core|workflows|isolation|git|adapters|server|web|cli|paths` (Section: Scope)
+- [ ] G-ARCHON-ISSUE_TEMPLATE-BUG_REPORT-014: Module (if known): e.g. `workflows:executor`, `adapters:slack` (Section: Scope)

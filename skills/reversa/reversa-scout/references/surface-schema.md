@@ -1,0 +1,87 @@
+```json
+{
+  "generated_at": "2026-04-26T10:00:00Z",
+  "project_root": "/path/to/project",
+  "languages": [
+    { "name": "TypeScript", "extensions": [".ts", ".tsx"], "file_count": 142 },
+    { "name": "JavaScript", "extensions": [".js", ".mjs"], "file_count": 23 }
+  ],
+  "primary_language": "TypeScript",
+  "frameworks": [
+    { "name": "Next.js", "version": "14.2.0", "source": "package.json" },
+    { "name": "Prisma", "version": "5.10.0", "source": "package.json" }
+  ],
+  "package_manager": "npm",
+  "entry_points": [
+    { "path": "src/app/layout.tsx", "type": "app_entry" },
+    { "path": "src/server.ts", "type": "server_entry" }
+  ],
+  "config_files": [
+    "next.config.js", ".env.example", "tsconfig.json"
+  ],
+  "ci_cd": [
+    ".github/workflows/deploy.yml"
+  ],
+  "docker": {
+    "dockerfile": "Dockerfile",
+    "compose": "docker-compose.yml"
+  },
+  "database_hints": [
+    { "path": "prisma/schema.prisma", "type": "prisma_schema" },
+    { "path": "prisma/migrations/", "type": "migrations_dir" }
+  ],
+  "test_framework": "Jest",
+  "test_file_count": 47,
+  "modules": [
+    "auth", "orders", "payments", "users", "notifications"
+  ],
+  "total_files": 312,
+  "organization_suggestion": {
+    "granularity": "module",
+    "rationale": "The top-level folder structure is organized by domain: auth/, orders/, payments/, users/, notifications/. ",
+    "signals": [
+      { "type": "top_level_domain_folders", "evidence": ["src/auth/", "src/orders/", "src/payments/"] }
+    ],
+    "features": []
+  }
+}
+```
+
+## Required Fields
+
+`generated_at`, `languages`, `primary_language`, `frameworks`, `entry_points`, `modules`, `organization_suggestion`
+
+## Optional Fields
+
+All others, include only what is found.
+
+## `organization_suggestion` Field
+
+Suggestion on how to organize the specs for this project.  Read by the Reversa orchestrator to pre-select the default option in the specs organization menu.
+
+### Subfields
+
+| Field | Type | Required | Description |
+|-------|------|-------------|-----------|
+| `granularity` | string | yes | One of: `module`, `use-case`, `endpoint`, `hybrid`, `feature`, `custom`.  The Scout never suggests `custom`, this value only comes from the user's choice. |
+| `rationale` | string | yes | Short phrase explaining why this granularity was chosen.  Appears in the menu as the "Reason:" from Scout. |
+| `signals` | array | yes | List of detected signals that led to the suggestion.  Each item has `type` and `evidence` (list of paths).  Can be empty when the `feature` fallback is used. |
+| `features` | array | yes when `granularity = "feature"` | List of feature names discovered by Scout.  Each name becomes a top-level folder. |
+
+### Heuristics for defining `granularity`
+
+| Detected signal | Suggested `granularity` |
+|-----------------|------------------------|
+| Centralized routing (`routes.*`, `urls.py`, `*Controller.cs`, `@RestController`) | `endpoint` |
+| Top-level folders with domain names (`auth/`, `orders/`, `payments/`) | `module` |
+| Gherkin / E2E specs oriented to behavior (`features/*.feature`, `*.spec.*` BDD) | `use-case` |
+| Multiple signals coexisting with similar weight | `hybrid` |
+| No clear signal of organization | `feature` (fallback, populate `features` with what was possible to extract) |
+
+### Immutability
+
+After the first execution, the orchestrator persists the suggested `granularity` in `.reversa/config.toml` in the `scout_suggestion` field. In re-executions, Scout may regenerate the `surface.json` (the legacy may have changed), but the orchestrator does NOT update the `scout_suggestion` in `config.toml` (RF-14 of the specs organization spec).
+
+## Note
+
+Use this schema as a guide. If a field does not apply to the project, omit it, except for the required fields listed above.

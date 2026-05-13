@@ -1,0 +1,21 @@
+{
+  "file": "e2e-echo-command.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-E2E-ECHO-COMMAND",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement e2e-echo-command logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "e2e-echo-command status widget"
+    }
+  ]
+}

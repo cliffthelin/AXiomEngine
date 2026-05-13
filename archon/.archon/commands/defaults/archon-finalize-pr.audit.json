@@ -1,0 +1,21 @@
+{
+  "file": "archon-finalize-pr.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-FINALIZE-PR",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-finalize-pr logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-finalize-pr status widget"
+    }
+  ]
+}

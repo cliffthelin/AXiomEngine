@@ -1,0 +1,58 @@
+{
+  "id": "G-ARCHON-ARCHON-PLAN-SETUP-008",
+  "descriptions": {
+    "long": "\nTECHNICAL DISSERTATION ON GOVERNANCE MANDATE: G-ARCHON-ARCHON-PLAN-SETUP-008\n\nI. PHILOSOPHICAL INTENT AND ARCHITECTURAL NECESSITY\nThe mandate defined by G-ARCHON-ARCHON-PLAN-SETUP-008 represents a critical cornerstone in the AXiomEngine governance framework. Specifically, the requirement to enforce \"\"ESLint/Prettier Integration\" \u2192 `feature/eslintprettierintegration`\" is not merely a stylistic preference but a systemic safeguard designed to ensure deterministic behavior across the ARCHON subsystem. By mandating this control, the architecture prevents high-entropy states where implementation-to-documentation drift could lead to cascading failures in automated reasoning passes. This rule is rooted in the principle of 'Atomic Accountability,' where every logical branch in the codebase must have a corresponding, provable governance anchor.\n\nII. TECHNICAL IMPLEMENTATION AND CONTROL SPECIFICATION\nFrom an engineering perspective, the implementation of this mandate requires a multi-layered approach. At the 'Core Tier,' the reasoning engine must intercept all activities related to this rule's domain. For example, if this rule pertains to archon, the implementation must involve strict schema validation and runtime assertion checks. The control mechanism should be decoupled from the business logic, utilizing a 'Governance Interceptor' pattern that logs every verification event with high-precision telemetry. This ensures that the rule is not just followed, but that its adherence is mathematically verifiable through the Data Catalog logs.\n\nIII. TDD SCENARIOS AND VERIFICATION STRATEGY\nA 'TDD-First' alignment for this rule necessitates the creation of comprehensive 'Red' and 'Green' test scenarios across all primary interfaces:\n1. CLI Scenarios: The Command Line Interface must provide a --verify-governance flag that specifically triggers an audit of this rule. The 'Red' test should simulate a missing implementation and verify that the exit code 1 is returned with a clear 'Governance Violation' message.\n2. TUI/GUI Scenarios: The Terminal and Graphical interfaces must visually represent the satisfaction state of this rule. The verification test must interact with the TUI menu tree (Navigation: TUI > Rule Details > G-ARCHON-ARCHON-PLAN-SETUP-008) and confirm that the status reflected matches the physical state of the codebase.\n3. Unit-Level Assertions: Each functional component associated with this rule must include a test case that specifically asserts that the governance tags (// RULE-START/END) are present and that the code within those tags satisfies the requirement.\n\nIV. SECURITY AND SCALABILITY IMPLICATIONS\nNeglecting this rule poses a 'Governance Debt' risk, where the accumulation of untracked logic branches degrades the system's ability to self-audit. From a security standpoint, this rule ensures that critical paths are always monitored and that no 'shadow logic' is introduced without a governance identifier. Scalability is achieved by the Data Catalog's ability to recursively audit this mandate across 11,407 other rules without performance degradation, thanks to the optimized grep-and-tagging pipeline implemented in the AXiomEngine orchestrator.\n",
+    "short": "Technical mandate enforcing \"ESLint/Prettier Integration\" \u2192 `feature/eslintprettierintegration`. Critical for systemic integrity and Atomic Accountability.",
+    "keywords": [
+      "g",
+      "archon",
+      "archon",
+      "plan",
+      "setup",
+      "008",
+      "governance",
+      "audit",
+      "tdd",
+      "dissertation",
+      "encyclopedic",
+      "accountability",
+      "systemic",
+      "integrity",
+      "verification",
+      "compliance"
+    ]
+  },
+  "tdd_governance": {
+    "test_verification": {
+      "exists": false,
+      "tdd_gap": "High - Required for CLI/TUI/GUI"
+    },
+    "how_to_validate_values": [
+      "Check for physical adherence to: G-ARCHON-ARCHON-PLAN-SETUP-008",
+      "Run linter pass."
+    ]
+  },
+  "audit_telemetry": {
+    "time_started": "2026-05-02 03:54:05",
+    "time_completed": "2026-05-02 03:54:05",
+    "time_failed": null
+  },
+  "interfaces": {
+    "cli": {
+      "path_of_file": "/mnt/usb-Seagate_Backup+_Hub_BK_NA9R7TTV-0:0-part2/Projects/axiomengine/archon/.archon/commands/defaults/archon-plan-setup.checklist.md",
+      "line_start": 38,
+      "start_comment_successful": true,
+      "line_end": 38,
+      "end_comment_successful": true,
+      "percent_rule_satisfied": "100%"
+    },
+    "tui": {
+      "status": "Missing",
+      "percent_satisfied": "0%"
+    },
+    "gui": {
+      "status": "Missing",
+      "percent_satisfied": "0%"
+    }
+  }
+}

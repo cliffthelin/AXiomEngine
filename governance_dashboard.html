@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AXiomEngine | Authoritative Governance Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #010409;
+            --panel-bg: #0d1117;
+            --accent-color: #79c0ff;
+            --text-color: #c9d1d9;
+            --border-color: #30363d;
+            --success-color: #3fb950;
+            --danger-color: #f85149;
+            --warning-color: #d29922;
+        }
+
+        body { margin: 0; background: var(--bg-color); color: var(--text-color); font-family: 'Outfit', sans-serif; padding: 40px; }
+        header { margin-bottom: 30px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+        h1 { margin: 0; font-weight: 600; color: var(--accent-color); }
+        .subtitle { color: #8b949e; font-size: 0.9rem; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .card { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; position: relative; }
+        
+        .status-strip { position: absolute; top: 0; left: 0; right: 0; height: 4px; border-radius: 12px 12px 0 0; }
+        .status-SUCCESS { background: var(--success-color); }
+        .status-DRY_RUN { background: var(--accent-color); }
+        .status-STRICT_ABORT { background: var(--danger-color); }
+        .status-PARTIAL_SUCCESS { background: var(--warning-color); }
+
+        .layer-list { display: flex; flex-direction: column; gap: 6px; }
+        .layer-item { display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: rgba(255,255,255,0.01); border-radius: 6px; border: 1px solid transparent; }
+        .layer-item.active { border-color: var(--success-color); background: rgba(63, 185, 80, 0.05); }
+        .layer-num { font-family: 'JetBrains Mono'; font-size: 0.75rem; color: #8b949e; width: 20px; }
+        .layer-name { flex: 1; font-weight: 500; font-size: 0.85rem; }
+        .layer-status { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; background: #21262d; }
+        .layer-item.active .layer-status { background: var(--success-color); color: white; }
+
+        .metric-group { margin-bottom: 20px; }
+        .metric-big { font-size: 2.5rem; font-weight: 600; color: white; }
+        .metric-label { font-size: 0.7rem; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; }
+
+        .progress-container { height: 6px; background: #21262d; border-radius: 3px; overflow: hidden; margin-top: 10px; }
+        .progress-fill { height: 100%; background: var(--success-color); transition: width 0.4s; }
+
+        #import-zone { border: 2px dashed var(--border-color); padding: 40px; text-align: center; border-radius: 12px; margin-bottom: 30px; cursor: pointer; transition: all 0.2s; }
+        #import-zone:hover { border-color: var(--accent-color); background: rgba(121, 192, 255, 0.03); }
+        
+        .badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; margin-left: 5px; }
+        .badge.dry { background: var(--accent-color); color: black; }
+        .badge.strict { background: #ab7df8; color: white; }
+        
+        .error-log { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--danger-color); background: #010409; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); margin-top: 10px; max-height: 100px; overflow-y: auto; white-space: pre-wrap; }
+
+        .historical-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; font-size: 0.8rem; }
+        .hist-val { font-weight: 600; color: var(--accent-color); }
+
+        .hidden { display: none !important; }
+        .empty-state { padding: 40px; text-align: center; color: #8b949e; border: 1px solid var(--border-color); border-radius: 12px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <h1>Authoritative Governance Dashboard</h1>
+        <div class="subtitle">Contract-Backed Sovereignty Monitor (v1.3.1)</div>
+    </div>
+    <div id="mission-info" class="hidden">
+        <span id="mission-id-badge" class="badge dry"></span>
+        <span id="policy-badge" class="badge strict"></span>
+    </div>
+</header>
+
+<div id="import-zone" onclick="document.getElementById('file-input').click()">
+    <h2>Import Mission Artifact Registry</h2>
+    <p style="color: #8b949e;">Select closer_report.json, decisions.json, and historical reports.</p>
+    <input type="file" id="file-input" multiple class="hidden" accept=".json">
+</div>
+
+<div id="dashboard-container" class="hidden">
+    <div class="grid">
+        <!-- LATEST MISSION STATUS -->
+        <div class="card" id="latest-mission-card">
+            <div id="status-strip" class="status-strip"></div>
+            <div class="metric-group">
+                <div class="metric-label">Latest Mission Status</div>
+                <div class="metric-big" id="mission-status">SUCCESS</div>
+            </div>
+            <div class="summary-details" style="font-size: 0.85rem; line-height: 1.6;">
+                <div><label style="color:#8b949e">Mission Pack:</label> <span id="pack-id"></span></div>
+                <div><label style="color:#8b949e">Processed At:</label> <span id="processed-at"></span></div>
+            </div>
+            <div id="validation-error-area" class="hidden">
+                <div class="metric-label" style="margin-top:15px; color:var(--danger-color)">Validation Errors</div>
+                <div id="error-log" class="error-log"></div>
+            </div>
+        </div>
+
+        <!-- COVERAGE METRICS -->
+        <div class="card">
+            <div class="metric-group">
+                <div class="metric-label">Layer Saturation</div>
+                <div class="metric-big" id="saturation-val">0/13</div>
+                <div class="progress-container"><div id="saturation-bar" class="progress-fill" style="width: 0%"></div></div>
+            </div>
+            <div class="metric-group">
+                <div class="metric-label">Latest Promotion Fidelity</div>
+                <div style="font-size: 1.1rem; font-weight:600; margin-top:5px;" id="promotion-stats">0 Accepted / 0 Promoted</div>
+            </div>
+        </div>
+
+        <!-- HISTORICAL TRENDS -->
+        <div class="card">
+            <div class="metric-label">Historical Trends</div>
+            <div class="historical-grid">
+                <div>Total Closer Runs:</div> <div class="hist-val" id="hist-total-runs">0</div>
+                <div>Dry Runs:</div> <div class="hist-val" id="hist-dry-runs">0</div>
+                <div>Strict Aborts:</div> <div class="hist-val" id="hist-aborts">0</div>
+                <div>Total Promoted:</div> <div class="hist-val" id="hist-total-promoted">0</div>
+                <div>Rejected Findings:</div> <div class="hist-val" id="hist-total-rejected">0</div>
+                <div>Duplicate Skips:</div> <div class="hist-val" id="hist-total-skips">0</div>
+            </div>
+        </div>
+
+        <!-- 13 LAYERS -->
+        <div class="card" style="grid-row: span 2;">
+            <div class="metric-label" style="margin-bottom:15px;">Sovereign Layers</div>
+            <div id="layer-container" class="layer-list"></div>
+        </div>
+
+        <!-- DECISION REGISTRY -->
+        <div class="card" style="grid-column: span 2;">
+            <div class="metric-label" style="margin-bottom:15px;">Authoritative Decision Registry</div>
+            <div id="decision-list" style="max-height: 400px; overflow-y: auto;"></div>
+            <div id="decisions-empty" class="empty-state hidden">No promoted determinations found in registry.</div>
+        </div>
+    </div>
+</div>
+
+<div id="no-data-state" class="empty-state">
+    <h3>No Artifacts Imported</h3>
+    <p>Please select your mission artifacts to initialize the sovereignty monitor.</p>
+</div>
+
+<script>
+    const LAYERS = [
+        "Identity & Intent", "Scope & Boundary", "Capability & Skill",
+        "Resource & Hardware", "Security & Trust", "Decision & Policy",
+        "Observation & Evidence", "Analysis & Rationale", "Memory & Context",
+        "Communication & Protocol", "Action & Execution", "Verification & Audit",
+        "Evolution & Meta"
+    ];
+
+    let state = {
+        latestReport: null,
+        historicalReports: [],
+        decisions: [],
+        globalMissionReport: null,
+        activeLayers: new Set()
+    };
+
+    // --- ARTIFACT CLASSIFIERS ---
+    const isCloserReport = (j) => j.closer_version && j.promoted_decision_ids && j.validation_errors !== undefined;
+    const isPromotedDecisionRegistry = (j) => Array.isArray(j.decisions) && (j.decisions.length === 0 || j.decisions[0].decision_id);
+    const isGlobalReviewExport = (j) => j.decisions && !Array.isArray(j.decisions) && j.mission_pack_id;
+    const isGlobalMissionReport = (j) => j.mission_pack_id && j.manager_run_id && j.pack_hash && !j.closer_version;
+
+    async function handleImport(e) {
+        const files = Array.from(e.target.files);
+        for (const file of files) {
+            try {
+                const json = JSON.parse(await file.text());
+                if (isCloserReport(json)) {
+                    // Decide if it's latest or historical based on filename or timestamp if we have multiple
+                    if (!state.latestReport || new Date(json.timestamp) > new Date(state.latestReport.timestamp)) {
+                        if (state.latestReport) state.historicalReports.push(state.latestReport);
+                        state.latestReport = json;
+                    } else {
+                        state.historicalReports.push(json);
+                    }
+                }
+                else if (isPromotedDecisionRegistry(json)) state.decisions = json.decisions;
+                else if (isGlobalMissionReport(json)) state.globalMissionReport = json;
+            } catch (err) {
+                console.error("Malformed JSON:", file.name, err);
+            }
+        }
+        render();
+    }
+
+    function render() {
+        if (!state.latestReport && state.decisions.length === 0 && !state.globalMissionReport) {
+            document.getElementById('no-data-state').classList.remove('hidden');
+            document.getElementById('dashboard-container').classList.add('hidden');
+            return;
+        }
+
+        document.getElementById('no-data-state').classList.add('hidden');
+        document.getElementById('dashboard-container').classList.remove('hidden');
+        document.getElementById('mission-info').classList.remove('hidden');
+
+        renderLatestMission();
+        renderHistoricalTrends();
+        calculateLayers();
+        renderLayers();
+        renderDecisions();
+    }
+
+    function renderLatestMission() {
+        const r = state.latestReport;
+        const card = document.getElementById('latest-mission-card');
+        const strip = document.getElementById('status-strip');
+        const statusEl = document.getElementById('mission-status');
+        
+        if (!r) {
+            statusEl.textContent = "MISSING REPORT";
+            strip.className = "status-strip";
+            return;
+        }
+
+        let status = "SUCCESS";
+        if (r.dry_run) status = "DRY_RUN";
+        else if (r.validation_errors.length > 0 && r.strict) status = "STRICT_ABORT";
+        else if (r.rejected_count > 0) status = "PARTIAL_SUCCESS";
+
+        statusEl.textContent = status;
+        strip.className = `status-strip status-${status}`;
+        
+        document.getElementById('pack-id').textContent = r.mission_pack_id || "N/A";
+        document.getElementById('processed-at').textContent = new Date(r.timestamp).toLocaleString();
+        
+        document.getElementById('mission-id-badge').textContent = r.mission_pack_id;
+        document.getElementById('policy-badge').textContent = r.strict ? "STRICT" : "ALLOW-PARTIAL";
+        
+        const errArea = document.getElementById('validation-error-area');
+        if (r.validation_errors.length > 0) {
+            errArea.classList.remove('hidden');
+            document.getElementById('error-log').textContent = r.validation_errors.join('\n');
+        } else {
+            errArea.classList.add('hidden');
+        }
+
+        document.getElementById('promotion-stats').textContent = `${r.requested_accept_count} Accepted / ${r.valid_promotion_count} Promoted`;
+    }
+
+    function renderHistoricalTrends() {
+        const all = [state.latestReport, ...state.historicalReports].filter(x => x);
+        document.getElementById('hist-total-runs').textContent = all.length;
+        document.getElementById('hist-dry-runs').textContent = all.filter(r => r.dry_run).length;
+        document.getElementById('hist-aborts').textContent = all.filter(r => r.validation_errors.length > 0 && r.strict).length;
+        
+        document.getElementById('hist-total-promoted').textContent = all.reduce((acc, r) => acc + (r.valid_promotion_count || 0), 0);
+        document.getElementById('hist-total-rejected').textContent = all.reduce((acc, r) => acc + (r.rejected_count || 0), 0);
+        document.getElementById('hist-total-skips').textContent = all.reduce((acc, r) => acc + (r.skipped_duplicate_count || 0), 0);
+    }
+
+    function calculateLayers() {
+        state.activeLayers.clear();
+        state.decisions.forEach(d => {
+            // Documented Mapping Contract (v1.3.1)
+            if (d.decision_type === "IntentValidation" || d.closer_version) state.activeLayers.add(0);
+            if (d.decision_type === "ScopeValidation" || d.closer_version) state.activeLayers.add(1);
+            if (d.decision_type === "SkillDetermination") state.activeLayers.add(2);
+            if (d.decision_type === "HardwarePolicy") state.activeLayers.add(3);
+            if (d.decision_type === "SecurityDetermination") state.activeLayers.add(4);
+            if (d.decision_type === "PolicyDefinition") state.activeLayers.add(5);
+            
+            if (d.evidence_context?.evidence_snapshots?.length > 0) state.activeLayers.add(6);
+            if (d.statement?.length > 10 && d.reviewed_at) state.activeLayers.add(7);
+            if (d.prompted_by?.context_type === "mission_audit") state.activeLayers.add(8);
+            
+            if (d.decision_type === "ProtocolValidation") state.activeLayers.add(9);
+            if (d.decision_type === "ExecutionPolicy") state.activeLayers.add(10);
+            if (d.prompted_by?.mission_pack_id) state.activeLayers.add(11);
+            if (d.decision_type === "GovernancePolicy") state.activeLayers.add(12);
+        });
+
+        const satCount = state.activeLayers.size;
+        document.getElementById('saturation-val').textContent = `${satCount}/13`;
+        document.getElementById('saturation-bar').style.width = `${(satCount/13)*100}%`;
+    }
+
+    function renderLayers() {
+        const container = document.getElementById('layer-container');
+        container.innerHTML = LAYERS.map((name, i) => `
+            <div class="layer-item ${state.activeLayers.has(i) ? 'active' : ''}">
+                <div class="layer-num">${(i+1).toString().padStart(2, '0')}</div>
+                <div class="layer-name">${name}</div>
+                <div class="layer-status">${state.activeLayers.has(i) ? 'GOVERNED' : 'UNMAPPED'}</div>
+            </div>
+        `).join('');
+    }
+
+    function renderDecisions() {
+        const list = document.getElementById('decision-list');
+        const empty = document.getElementById('decisions-empty');
+        
+        if (state.decisions.length === 0) {
+            list.innerHTML = "";
+            empty.classList.remove('hidden');
+            return;
+        }
+
+        empty.classList.add('hidden');
+        list.innerHTML = state.decisions.slice().reverse().map(d => `
+            <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-color);">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <strong style="color:var(--accent-color); font-family:JetBrains Mono; font-size:0.85rem;">${d.decision_id}</strong>
+                    <span style="font-size:0.7rem; color:#8b949e;">${new Date(d.promoted_at).toLocaleDateString()}</span>
+                </div>
+                <div style="font-size: 0.85rem; margin: 10px 0; color: #eee;">${d.statement}</div>
+                <div style="font-size: 0.7rem; color: #8b949e;">
+                    Type: ${d.decision_type} | Policy: ${d.promotion_policy?.strict ? 'Strict' : 'Partial'}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    document.getElementById('file-input').addEventListener('change', handleImport);
+</script>
+</body>
+</html>

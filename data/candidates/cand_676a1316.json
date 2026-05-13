@@ -1,0 +1,8 @@
+{
+  "statement": "Exception handling and debug output within secret resolution routines must automatically redact or exclude credential strings, raw commands, and sensitive environment context from logs and standard streams.",
+  "bounded_area": "AuthManager.resolve_key exception block and subprocess error propagation",
+  "evidence": [
+    "auth_manager.py",
+    "AuthManager.resolve_key"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "file": "archon-validate-pr-code-review-main.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-VALIDATE-PR-CODE-REVIEW-MAIN",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-validate-pr-code-review-main logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-validate-pr-code-review-main status widget"
+    }
+  ]
+}

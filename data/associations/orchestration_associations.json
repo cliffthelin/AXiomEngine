@@ -1,0 +1,42 @@
+[
+  {
+    "concept_id": "centralized_path_configuration",
+    "file_path": "pdd_stats_reporter_axiomengine.py",
+    "rationale": "Currently hardcodes /mnt/UBUNTU_8TB/ paths for data storage. Must be refactored to consume a centralized PI_CODING_AGENT_DIR variable or .env config to resolve path drift across the orchestration shard."
+  },
+  {
+    "concept_id": "centralized_path_configuration",
+    "file_path": "symphony_harness.py",
+    "rationale": "Uses /mnt/usb-Seagate_Backup+_Hub_.../ paths. Requires alignment with the standardized configuration loader to ensure consistent mount point resolution and prevent runtime failures."
+  },
+  {
+    "concept_id": "redis_state_sync_contract",
+    "file_path": "sync_state.py",
+    "rationale": "Depends on self.stitch.client returning a valid Redis/Valkey client instance. Needs explicit type validation and fallback handling to prevent AttributeError during state synchronization."
+  },
+  {
+    "concept_id": "redis_state_sync_contract",
+    "file_path": "stitch.py",
+    "rationale": "Must implement __init__() to properly instantiate and expose the Redis client, fulfilling the dependency contract expected by sync_state and other orchestration modules."
+  },
+  {
+    "concept_id": "mcp_dispatch_routing",
+    "file_path": "remote_gateway.py",
+    "rationale": "Bridges MCP tool calls to manager.emit(). Requires implementation of structured error responses (e.g., 400/404) when tool_name is unregistered or malformed."
+  },
+  {
+    "concept_id": "mcp_dispatch_routing",
+    "file_path": "manager.py",
+    "rationale": "Handles the emit() dispatch logic. Must include tool registry validation and graceful error propagation to prevent silent failures in the orchestration pipeline."
+  },
+  {
+    "concept_id": "redis_ttl_enforcement",
+    "file_path": "vgpu_manager.py",
+    "rationale": "Manages VGPU allocations via in-memory dicts backed by Redis keys. Requires explicit TTL/key expiration logic to automatically reclaim resources from leaked or idle agents."
+  },
+  {
+    "concept_id": "redis_ttl_enforcement",
+    "file_path": "session_manager.py",
+    "rationale": "Handles session lifecycles and exports. Shares the same Redis-backed state pattern and requires aligned TTL enforcement to prevent stale session data from consuming cluster memory."
+  }
+]

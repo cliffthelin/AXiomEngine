@@ -1,0 +1,21 @@
+{
+  "file": "maintainer-standup.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-MAINTAINER-STANDUP",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement maintainer-standup logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "maintainer-standup status widget"
+    }
+  ]
+}

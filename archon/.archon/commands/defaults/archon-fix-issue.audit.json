@@ -1,0 +1,21 @@
+{
+  "file": "archon-fix-issue.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-FIX-ISSUE",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-fix-issue logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-fix-issue status widget"
+    }
+  ]
+}

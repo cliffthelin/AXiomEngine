@@ -1,0 +1,21 @@
+{
+  "file": "archon-resolve-merge-conflicts.md",
+  "governance_rules": [
+    {
+      "id": "R-ARCHON-ARCHON-RESOLVE-MERGE-CONFLICTS",
+      "description": "Auto-sync rules"
+    }
+  ],
+  "checklists": [
+    {
+      "item": "Implement archon-resolve-merge-conflicts logic",
+      "status": "pending"
+    }
+  ],
+  "missing_features": [
+    {
+      "interface": "GUI",
+      "feature": "archon-resolve-merge-conflicts status widget"
+    }
+  ]
+}

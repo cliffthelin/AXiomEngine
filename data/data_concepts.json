@@ -1,0 +1,74 @@
+{
+  "concepts": [
+    {
+      "data_concept_id": "DC-GPU-THERMAL-LIMIT",
+      "name": "GPU Thermal Power Limit",
+      "definition": "Maximum sustained power draw for inference GPUs, dynamically adjusted by thermal zone monitoring.",
+      "status": "Active",
+      "aliases": ["PowerCap", "ThermalLimit", "gpu_thermal_optimizer"]
+    },
+    {
+      "data_concept_id": "DC-AGENT-SESSION",
+      "name": "Agent Session State",
+      "definition": "The lifecycle and context state of an active agent session, including PDD context inheritance.",
+      "status": "Active",
+      "aliases": ["AgentSession", "agent_session", "session_manager"]
+    },
+    {
+      "data_concept_id": "DC-PDD-INTENT-RETRIEVAL",
+      "name": "PDD Intent Retrieval",
+      "definition": "The process by which AI tools retrieve explicitly declared authoritative intent before generation.",
+      "status": "Active",
+      "aliases": ["load_rules", "pdd", "intent"]
+    },
+    {
+      "data_concept_id": "DC-MODEL-ROUTING",
+      "name": "GPU Model Routing",
+      "definition": "The assignment of inference models to specific GPU hardware based on VRAM capacity and thermal constraints.",
+      "status": "Active",
+      "aliases": ["router", "gpu-manager", "ollama", "vgpu_manager"]
+    },
+    {
+      "data_concept_id": "DC-SWARM-ORCHESTRATION",
+      "name": "Agent Swarm Orchestration",
+      "definition": "The decomposition of complex goals into atomic sub-tasks executed by bounded sub-agents inheriting root PDD context.",
+      "status": "Active",
+      "aliases": ["swarm", "swarm_coordinator", "symphony"]
+    },
+    {
+      "data_concept_id": "DC-KNOWLEDGE-GRAPH",
+      "name": "Knowledge Graph Maintenance",
+      "definition": "The structural dependency map of the codebase, with node pruning and relationship tracking.",
+      "status": "Active",
+      "aliases": ["knowledge_graph", "kg"]
+    },
+    {
+      "data_concept_id": "DC-REVERSA-EXTRACTION",
+      "name": "Reversa Behavioral Extraction",
+      "definition": "The process of reverse-engineering behavioral specifications from existing code using the Reversa agent framework.",
+      "status": "Active",
+      "aliases": ["reversa", "reversa_translator", "_reversa_sdd"]
+    },
+    {
+      "data_concept_id": "DC-WORKSPACE-SECURITY",
+      "name": "Workspace Security Scanning",
+      "definition": "Mandatory security scan for every newly provisioned workspace, with failure blocking execution.",
+      "status": "Active",
+      "aliases": ["workspace_sec_scan", "security"]
+    },
+    {
+      "data_concept_id": "DC-CONTEXT-AS-CODE",
+      "name": "Context-as-Code Manifestation",
+      "definition": "The practice of embedding governance rules as machine-readable, human-auditable context directly alongside code.",
+      "status": "Active",
+      "aliases": ["context", "pdd_context_manifest"]
+    },
+    {
+      "data_concept_id": "DC-AUDIT-TRAIL",
+      "name": "Computational Audit Trail",
+      "definition": "The system log of prompt identity, governing intent references, model versions, context inputs, and review outcomes.",
+      "status": "Active",
+      "aliases": ["audit", "governance_report", "drift"]
+    }
+  ]
+}
