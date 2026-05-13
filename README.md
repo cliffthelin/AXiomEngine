@@ -2,6 +2,8 @@
 
 AXiomEngine is a high-fidelity, 13-layer governance ecosystem designed to transform legacy applications into audit-defensible, self-governing entities. It uses an axiomatic **Policy-Driven Development (PDD)** methodology to ensure that application reality (Code) always aligns with human intent (Decisions).
 
+> **Note**: The **Reversa** component—including its cognitive skills and methodologies—has been translated into plain English to ensure maximum accessibility and human-readability.
+
 ---
 
 ## 🏗️ Architecture Rationale: The Stack
@@ -21,7 +23,7 @@ Every component in AXiomEngine is selected for its ability to support **High-Rat
 ### 3. Instrumental Tools
 *   **Docker**: Provides the "Cellular Wall" for environment isolation, ensuring governance policies are enforceable within a immutable container boundary.
 *   **Valkey**: The "High-Speed Synapse." Provides sub-millisecond state access and queue management for the agentic swarm.
-*   **GPU Orchestrator**: The "Resource Governor." Manages the heterogeneous hardware pool (RTX 3070 / Tesla P40), enforcing thermal and VRAM constraints.
+*   **GPU Orchestrator**: The "Resource Governor." Manages a heterogeneous hardware pool (e.g., orchestrating mixed setups like an RTX 3070 alongside a Tesla P40), enforcing thermal and VRAM constraints across diverse architectures.
 *   **Plannotaator**: The "Cognitive Sketchpad." Bridges the gap between intent and action by annotating plans with governance axioms before execution.
 
 ---
@@ -48,7 +50,7 @@ To avoid hardware timeouts and context limits, we process the application in log
 - **Security**: PII boundaries, auth resolution, and audit trails.
 
 ### 2. The Saturation Loop
-Uses the **Tesla P40** and **RTX 3070** to perform deep inference on the 1,800+ file codebase. The mission orchestrator injects source context directly into the LLM to ensure "High Rationale" extraction.
+Leverages your available multi-GPU compute (such as the Tesla P40 and RTX 3070 used in our reference architecture) to perform deep inference on the 1,800+ file codebase. The mission orchestrator injects source context directly into the LLM to ensure "High Rationale" extraction.
 
 ### 3. Policy-Driven Recovery
 The **Archon Harness** monitors the mission. If a stall or crash is detected, it evaluates the failure pattern against axiomatic policies and automatically relaunchs the mission with the required fixes.
