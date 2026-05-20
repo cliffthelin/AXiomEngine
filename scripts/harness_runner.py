@@ -64,8 +64,8 @@ class HarnessRunner:
         # Hard Type Guard
         if self.config["type"] != "worker":
             self.status = "BLOCKED"
-            self.log(f"⚠️ Harness type '{self.config['type']}' is recognized but NOT_IMPLEMENTED in this runner.")
-            raise NotImplementedError(f"Runner only supports 'worker' missions currently.")
+            self.log(f"⚠️ Unsupported harness type '{self.config['type']}'.")
+            raise ValueError(f"Unsupported harness type: {self.config['type']}")
         
         self.log(f"Config Validated. Run ID: {self.run_id}")
 

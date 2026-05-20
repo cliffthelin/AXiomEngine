@@ -1,0 +1,749 @@
+[
+  {
+    "run_id": "wf-run-c42e12d1",
+    "name": "",
+    "description": "Use when: Verifying that Minimax M2.7 loads via the Pi provider with the\nuser's local Pi auth (api_key in ~/.pi/agent/auth.json).\nTriggers: \"minimax smoke\", \"test minimax\", \"verify minimax\", \"minimax test\".\nDoes: Sends three tiny prompts to Minimax M2.7 (math, self-identification,\nstructured JSON), asserts non-empty output and basic plausibility.\nNOT for: Production work \u2014 connectivity / capability sanity check only.",
+    "status": "running",
+    "started_at": "2026-05-17 22:02:31",
+    "completed_at": null,
+    "steps": [
+      {
+        "id": "hello",
+        "command": "unknown",
+        "status": "completed",
+        "logs": [
+          "[System] Initiating unknown execution thread.",
+          "[System] Sandbox sandbox_layer_hello initialized successfully.",
+          "[System] Step hello completed successfully.",
+          "[System] Step hello completed successfully."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "identify",
+        "command": "unknown",
+        "status": "completed",
+        "logs": [
+          "[System] Initiating step identify (unknown).",
+          "[System] Step identify completed successfully.",
+          "[System] Initiating step identify (unknown).",
+          "[System] Step identify completed successfully."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "json",
+        "command": "unknown",
+        "status": "completed",
+        "logs": [
+          "[System] Initiating step json (unknown).",
+          "[System] Step json completed successfully.",
+          "[System] Initiating step json (unknown).",
+          "[System] Step json completed successfully."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-3",
+        "command": "unknown",
+        "status": "completed",
+        "logs": [
+          "[System] Initiating step step-3 (unknown).",
+          "[System] Step step-3 completed successfully.",
+          "[System] Initiating step step-3 (unknown).",
+          "[System] Step step-3 completed successfully."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-4",
+        "command": "unknown",
+        "status": "completed",
+        "logs": [
+          "[System] Initiating step step-4 (unknown).",
+          "[System] Step step-4 completed successfully.",
+          "[System] Initiating step step-4 (unknown).",
+          "[System] Step step-4 completed successfully."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "assert",
+        "command": "unknown",
+        "status": "paused",
+        "logs": [
+          "[System] Initiating step assert (unknown).",
+          "[PDD Policy] High-sovereignty step detected. Awaiting manual orchestrator validation...",
+          "[System] Initiating step assert (unknown).",
+          "[PDD Policy] High-sovereignty step detected. Awaiting manual orchestrator validation..."
+        ],
+        "approval_required": true,
+        "approved": false
+      }
+    ]
+  },
+  {
+    "run_id": "wf-run-845820cc",
+    "name": "archon-assist",
+    "description": "Use when: No other workflow matches the request.\nHandles: Questions, debugging, exploration, one-off tasks, explanations, CI failures, general help.\nCapability: Full Claude Code agent with all tools available.\nNote: Will inform user when assist mode is used for tracking.",
+    "status": "running",
+    "started_at": "2026-05-17 22:02:04",
+    "completed_at": null,
+    "steps": [
+      {
+        "id": "assist",
+        "command": "archon-assist",
+        "status": "paused",
+        "logs": [
+          "[System] Initiating archon-assist execution thread.",
+          "[System] Sandbox sandbox_layer_assist initialized successfully.",
+          "[PDD Policy] High-sovereignty step detected. Awaiting manual orchestrator validation..."
+        ],
+        "approval_required": true,
+        "approved": false
+      }
+    ]
+  },
+  {
+    "run_id": "wf-run-ab19e9f3",
+    "name": "archon-interactive-prd",
+    "description": "Use when: User wants to create a PRD through guided conversation.\nTriggers: \"create a prd\", \"new prd\", \"interactive prd\", \"plan a feature\",\n\"product requirements\", \"write a prd\".\nNOT for: Autonomous PRD generation without human input (use archon-ralph-generate).\nInteractive workflow that guides the user through problem-first PRD creation:\n1. Understand the idea \u2192 ask foundation questions \u2192 wait for answers\n2. Research market & codebase \u2192 ask deep dive questions \u2192 wait for answers\n3. Assess technical feasibility \u2192 ask scope questions \u2192 wait for answers\n4. Generate PRD \u2192 validate technical claims against codebase \u2192 output",
+    "status": "running",
+    "started_at": "2026-05-17 21:54:34",
+    "completed_at": null,
+    "steps": [
+      {
+        "id": "initiate",
+        "command": "unknown",
+        "status": "completed",
+        "logs": [
+          "[System] Initiating unknown execution thread.",
+          "[System] Sandbox sandbox_layer_initiate initialized successfully.",
+          "[System] Step initiate completed successfully.",
+          "[System] Step initiate completed successfully.",
+          "[System] Step initiate completed successfully."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "foundation-gate",
+        "command": "unknown",
+        "status": "completed",
+        "logs": [
+          "[System] Initiating step foundation-gate (unknown).",
+          "[System] Step foundation-gate completed successfully.",
+          "[System] Initiating step foundation-gate (unknown).",
+          "[System] Step foundation-gate completed successfully.",
+          "[System] Initiating step foundation-gate (unknown).",
+          "[System] Step foundation-gate completed successfully."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "research",
+        "command": "unknown",
+        "status": "completed",
+        "logs": [
+          "[System] Initiating step research (unknown).",
+          "[System] Step research completed successfully.",
+          "[System] Initiating step research (unknown).",
+          "[System] Step research completed successfully.",
+          "[System] Initiating step research (unknown).",
+          "[System] Step research completed successfully."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-3",
+        "command": "unknown",
+        "status": "completed",
+        "logs": [
+          "[System] Initiating step step-3 (unknown).",
+          "[System] Step step-3 completed successfully.",
+          "[System] Initiating step step-3 (unknown).",
+          "[System] Step step-3 completed successfully.",
+          "[System] Initiating step step-3 (unknown).",
+          "[System] Step step-3 completed successfully."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "deepdive-gate",
+        "command": "unknown",
+        "status": "completed",
+        "logs": [
+          "[System] Initiating step deepdive-gate (unknown).",
+          "[System] Step deepdive-gate completed successfully.",
+          "[System] Initiating step deepdive-gate (unknown).",
+          "[System] Step deepdive-gate completed successfully.",
+          "[System] Initiating step deepdive-gate (unknown).",
+          "[System] Step deepdive-gate completed successfully."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "technical",
+        "command": "unknown",
+        "status": "completed",
+        "logs": [
+          "[System] Initiating step technical (unknown).",
+          "[System] Step technical completed successfully.",
+          "[System] Initiating step technical (unknown).",
+          "[System] Step technical completed successfully.",
+          "[System] Initiating step technical (unknown).",
+          "[System] Step technical completed successfully."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-6",
+        "command": "unknown",
+        "status": "completed",
+        "logs": [
+          "[System] Initiating step step-6 (unknown).",
+          "[System] Step step-6 completed successfully.",
+          "[System] Initiating step step-6 (unknown).",
+          "[System] Step step-6 completed successfully.",
+          "[System] Initiating step step-6 (unknown).",
+          "[System] Step step-6 completed successfully."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-7",
+        "command": "unknown",
+        "status": "completed",
+        "logs": [
+          "[System] Initiating step step-7 (unknown).",
+          "[System] Step step-7 completed successfully.",
+          "[System] Initiating step step-7 (unknown).",
+          "[System] Step step-7 completed successfully.",
+          "[System] Initiating step step-7 (unknown).",
+          "[System] Step step-7 completed successfully."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-8",
+        "command": "unknown",
+        "status": "completed",
+        "logs": [
+          "[System] Initiating step step-8 (unknown).",
+          "[System] Step step-8 completed successfully.",
+          "[System] Initiating step step-8 (unknown).",
+          "[System] Step step-8 completed successfully.",
+          "[System] Initiating step step-8 (unknown).",
+          "[System] Step step-8 completed successfully."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-9",
+        "command": "unknown",
+        "status": "completed",
+        "logs": [
+          "[System] Initiating step step-9 (unknown).",
+          "[System] Step step-9 completed successfully.",
+          "[System] Initiating step step-9 (unknown).",
+          "[System] Step step-9 completed successfully.",
+          "[System] Initiating step step-9 (unknown).",
+          "[System] Step step-9 completed successfully."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-10",
+        "command": "unknown",
+        "status": "completed",
+        "logs": [
+          "[System] Initiating step step-10 (unknown).",
+          "[System] Step step-10 completed successfully.",
+          "[System] Initiating step step-10 (unknown).",
+          "[System] Step step-10 completed successfully.",
+          "[System] Initiating step step-10 (unknown).",
+          "[System] Step step-10 completed successfully."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-11",
+        "command": "unknown",
+        "status": "completed",
+        "logs": [
+          "[System] Initiating step step-11 (unknown).",
+          "[System] Step step-11 completed successfully.",
+          "[System] Initiating step step-11 (unknown).",
+          "[System] Step step-11 completed successfully.",
+          "[System] Initiating step step-11 (unknown).",
+          "[System] Step step-11 completed successfully."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-12",
+        "command": "unknown",
+        "status": "completed",
+        "logs": [
+          "[System] Initiating step step-12 (unknown).",
+          "[System] Step step-12 completed successfully.",
+          "[System] Initiating step step-12 (unknown).",
+          "[System] Step step-12 completed successfully.",
+          "[System] Initiating step step-12 (unknown).",
+          "[System] Step step-12 completed successfully."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-13",
+        "command": "unknown",
+        "status": "running",
+        "logs": [
+          "[System] Initiating step step-13 (unknown).",
+          "[System] Step step-13 completed successfully.",
+          "[System] Initiating step step-13 (unknown).",
+          "[System] Step step-13 completed successfully.",
+          "[System] Initiating step step-13 (unknown)."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "scope-gate",
+        "command": "unknown",
+        "status": "completed",
+        "logs": [
+          "[System] Initiating step scope-gate (unknown).",
+          "[System] Step scope-gate completed successfully.",
+          "[System] Initiating step scope-gate (unknown).",
+          "[System] Step scope-gate completed successfully."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "generate",
+        "command": "unknown",
+        "status": "completed",
+        "logs": [
+          "[System] Initiating step generate (unknown).",
+          "[System] Step generate completed successfully.",
+          "[System] Initiating step generate (unknown).",
+          "[System] Step generate completed successfully."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-16",
+        "command": "unknown",
+        "status": "completed",
+        "logs": [
+          "[System] Initiating step step-16 (unknown).",
+          "[System] Step step-16 completed successfully.",
+          "[System] Initiating step step-16 (unknown).",
+          "[System] Step step-16 completed successfully."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-17",
+        "command": "unknown",
+        "status": "completed",
+        "logs": [
+          "[System] Initiating step step-17 (unknown).",
+          "[System] Step step-17 completed successfully.",
+          "[System] Initiating step step-17 (unknown).",
+          "[System] Step step-17 completed successfully."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "validate",
+        "command": "unknown",
+        "status": "paused",
+        "logs": [
+          "[System] Initiating step validate (unknown).",
+          "[PDD Policy] High-sovereignty step detected. Awaiting manual orchestrator validation...",
+          "[System] Initiating step validate (unknown).",
+          "[PDD Policy] High-sovereignty step detected. Awaiting manual orchestrator validation..."
+        ],
+        "approval_required": true,
+        "approved": false
+      }
+    ]
+  },
+  {
+    "run_id": "wf-run-1a7fe342",
+    "name": "archon-architect",
+    "description": "Use when: User wants an architectural sweep, complexity reduction, or codebase health improvement.\nTriggers: \"architect\", \"simplify codebase\", \"reduce complexity\", \"architectural sweep\",\n\"clean up architecture\", \"codebase health\", \"fix architecture\".\nDoes: Scans codebase metrics -> analyzes architecture with principled lens -> plans targeted\nsimplifications -> executes fixes with self-review loops (hooks) -> validates -> creates PR.\nNOT for: Single-file fixes, feature development, bug fixes, PR reviews.\nDAG workflow showcasing per-node hooks:\n- PostToolUse hooks create organic quality loops (lint after write, self-review)\n- PreToolUse hooks inject architectural principles before changes\n- Different nodes have different trust levels and steering",
+    "status": "cancelled",
+    "started_at": "2026-05-17 21:35:25",
+    "completed_at": "2026-05-17 21:35:28",
+    "steps": [
+      {
+        "id": "scan-metrics",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[System] Initiating unknown execution thread.",
+          "[System] Sandbox sandbox_layer_scan-metrics initialized successfully.",
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-1",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-2",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "analyze",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-4",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-5",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-6",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "plan",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-8",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-9",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-10",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-11",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "simplify",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-13",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-14",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-15",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-16",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-17",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "validate",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "fix-failures",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-20",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-21",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "create-pr",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-23",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-24",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-25",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-26",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-27",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-28",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-29",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "step-30",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": false,
+        "approved": false
+      },
+      {
+        "id": "verify-pr-base",
+        "command": "unknown",
+        "status": "cancelled",
+        "logs": [
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": true,
+        "approved": false
+      }
+    ]
+  },
+  {
+    "run_id": "wf-run-50928f1e",
+    "name": "archon-assist",
+    "description": "Use when: No other workflow matches the request.\nHandles: Questions, debugging, exploration, one-off tasks, explanations, CI failures, general help.\nCapability: Full Claude Code agent with all tools available.\nNote: Will inform user when assist mode is used for tracking.",
+    "status": "cancelled",
+    "started_at": "2026-05-17 21:35:20",
+    "completed_at": "2026-05-17 21:35:24",
+    "steps": [
+      {
+        "id": "assist",
+        "command": "archon-assist",
+        "status": "cancelled",
+        "logs": [
+          "[System] Initiating archon-assist execution thread.",
+          "[System] Sandbox sandbox_layer_assist initialized successfully.",
+          "[Orchestrator] Step aborted by manual cancellation request."
+        ],
+        "approval_required": true,
+        "approved": false
+      }
+    ]
+  }
+]

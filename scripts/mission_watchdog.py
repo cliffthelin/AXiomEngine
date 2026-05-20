@@ -7,9 +7,10 @@ import psutil
 from pathlib import Path
 
 # --- CONFIGURATION ---
-MISSION_SCRIPT = "/mnt/UBUNTU_8TB/Projects/axiomengine/scripts/DataCatalogFactory.py"
-MISSION_LOG = "/mnt/UBUNTU_8TB/Projects/axiomengine/MISSION_ROI_TELEMETRY.log"
-STATS_FILE = "/mnt/UBUNTU_8TB/Projects/axiomengine/MISSION_STATS.json"
+ROOT_DIR = Path(__file__).resolve().parents[1]
+MISSION_SCRIPT = str(ROOT_DIR / "scripts" / "DataCatalogFactory.py")
+MISSION_LOG = str(ROOT_DIR / "MISSION_ROI_TELEMETRY.log")
+STATS_FILE = str(ROOT_DIR / "MISSION_STATS.json")
 CHECK_INTERVAL = 60  # Check every minute
 STALL_TIMEOUT = 900  # 15 minutes
 RAM_BUFFER = 8 * 1024 * 1024 * 1024  # 8 GB

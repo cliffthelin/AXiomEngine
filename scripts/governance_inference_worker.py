@@ -41,9 +41,10 @@ class GovernanceInferenceWorker:
             self.log("❌ CRITICAL: Tesla P40 not detected. Mission aborted.")
             return False
         
-        if p40["utilization"]["gpu_pct"] > 80:
-            self.log(f"⚠️ P40 is heavily utilized ({p40['utilization']['gpu_pct']}%). Waiting or aborting.")
-            return False
+        # Note: A loaded Ollama model shows high utilization even when idle.
+        # Only block if truly maxed AND memory is exhausted.
+        if p40["memory"]["free_mib"] < 500:
+            self.log(f"⚠️ P40 VRAM nearly full ({p40['memory']['free_mib']} MiB free). Mission may be slow.")
         
         # 2. Check Ollama
         ollama = report["providers"]["ollama"]
@@ -66,16 +67,53 @@ class GovernanceInferenceWorker:
         self.log(f"Starting Mission: {goal}")
         self.log(f"Applying Skill: {skill_name} to {scope.name}")
 
-        # 1. Prepare Context
-        source_code = scope.read_text()
-        source_hash = hashlib.sha256(source_code.encode()).hexdigest()
+        # 1. Prepare Context — handle both files and directories
+        if scope.is_dir():
+            self.log(f"📁 Scope is a directory. Discovering files...")
+            files_found = []
+            source_snippets = []
+            skip_dirs = {".git", "__pycache__", "node_modules", ".venv", "venv", ".tox", ".mypy_cache"}
+            for root, dirs, filenames in os.walk(scope):
+                dirs[:] = [d for d in dirs if d not in skip_dirs]
+                for fname in filenames:
+                    if fname.endswith((".py", ".js", ".ts", ".md", ".toml", ".yaml", ".yml", ".json", ".cfg")):
+                        fpath = os.path.join(root, fname)
+                        rel = os.path.relpath(fpath, scope)
+                        files_found.append(rel)
+                        # Include first 50 lines of each Python file for context
+                        if fname.endswith(".py") and len(source_snippets) < 20:
+                            try:
+                                with open(fpath, "r", errors="ignore") as f:
+                                    lines = f.readlines()[:50]
+                                source_snippets.append(f"### {rel}\n```python\n{''.join(lines)}```\n")
+                            except Exception:
+                                pass
 
-        # 2. Load Skill
-        skill_path = Path(__file__).parent.parent / "skills" / "reversa" / skill_name / "SKILL.md"
-        if not skill_path.exists():
-            self.log(f"❌ Skill not found: {skill_name}")
-            return {"status": "FAILED", "reason": "Skill not found"}
-        skill_content = skill_path.read_text()
+            self.log(f"📊 Found {len(files_found)} analyzable files in {scope.name}")
+            file_tree = "\n".join(f"  {f}" for f in sorted(files_found)[:200])
+            source_code = f"# Project Structure: {scope.name}\n# Total files: {len(files_found)}\n\n## File Tree:\n{file_tree}\n\n## Key Source Samples:\n{''.join(source_snippets)}"
+            source_hash = hashlib.sha256(source_code.encode()).hexdigest()
+        else:
+            source_code = scope.read_text()
+            source_hash = hashlib.sha256(source_code.encode()).hexdigest()
+
+        # 2. Load Skill — search multiple locations
+        skill_path = None
+        search_paths = [
+            Path(__file__).parent.parent / "skills" / "reversa" / skill_name / "SKILL.md",
+            Path(__file__).parent.parent / "reversa" / "agents" / skill_name / "SKILL.md",
+            Path(__file__).parent.parent / "skills" / f"{skill_name}.md",
+        ]
+        for sp in search_paths:
+            if sp.exists():
+                skill_path = sp
+                break
+
+        if not skill_path:
+            self.log(f"⚠️ Skill '{skill_name}' not found in standard paths. Using generic prompt.")
+            skill_content = f"You are {skill_name}, an expert analyst. Provide thorough, accurate analysis."
+        else:
+            skill_content = skill_path.read_text()
 
         # 3. Execute Inference (via Ollama)
         prompt = f"GOAL: {goal}\n\n### SOURCE CODE CONTEXT ({scope.name}):\n{source_code}"

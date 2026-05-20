@@ -55,11 +55,12 @@ THINKING_BUDGETS = {
 
 class AgentState(BaseModel):
     system_prompt: str = ""
-    model: str = "qwen3.6"
+    model: str = "ollama/qwen3.6:27b"
     thinking_level: ThinkingLevel = "low"
     messages: List[AgentMessage] = Field(default_factory=list)
     is_streaming: bool = False
     pending_tool_calls: List[str] = Field(default_factory=list)
+    tools: List[Any] = Field(default_factory=list)
     error_message: Optional[str] = None
     session_id: str = "default_session"
 
@@ -98,6 +99,8 @@ class AgentLoopConfig(BaseModel):
     steering_mode: Literal["one-at-a-time", "all"] = "one-at-a-time"
     follow_up_mode: Literal["one-at-a-time", "all"] = "one-at-a-time"
     should_stop_after_turn: Optional[bool] = False
+    steering_queue: List[str] = Field(default_factory=list)
+    follow_up_queue: List[str] = Field(default_factory=list)
     
     # Compaction settings
     compaction_enabled: bool = True

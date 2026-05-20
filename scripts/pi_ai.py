@@ -6,6 +6,7 @@ import os
 import time
 from typing import List, Dict, Optional, Any, AsyncGenerator, Literal, Union
 from pydantic import BaseModel, Field
+from pathlib import Path
 from scripts.pi_config import get_agent_dir
 
 # --- Types ---
@@ -49,7 +50,36 @@ class AIEvent(BaseModel):
 
 class AIRegistry:
     def __init__(self):
+        ollama_compat = OpenAICompletionsCompat(
+            supportsStore=False,
+            supportsDeveloperRole=False,
+            supportsReasoningEffort=False,
+            supportsUsageInStreaming=False,
+            supportsStrictMode=False,
+            maxTokensField="max_tokens",
+            thinkingFormat="qwen",
+        )
         self.models: Dict[str, Model] = {
+            "ollama/qwen3.6:27b": Model(
+                id="qwen3.6:27b", name="Qwen 3.6 27B (Ollama/P40)", api="openai-completions", provider="ollama",
+                base_url="http://127.0.0.1:11437/v1", context_window=32768, max_tokens=4096, reasoning=True,
+                compat=ollama_compat
+            ),
+            "ollama/gemma4:e2b": Model(
+                id="gemma4:e2b", name="Gemma4 E2B Researcher (Ollama/RTX 3070)", api="openai-completions", provider="ollama",
+                base_url="http://127.0.0.1:11436/v1", context_window=32768, max_tokens=2048,
+                compat=ollama_compat
+            ),
+            "ollama/cmdmbox/skill-expert": Model(
+                id="cmdmbox/skill-expert", name="Skill Expert (Ollama/RTX 3070)", api="openai-completions", provider="ollama",
+                base_url="http://127.0.0.1:11436/v1", context_window=32768, max_tokens=2048,
+                compat=ollama_compat
+            ),
+            "ollama/qwen3.6:35b": Model(
+                id="qwen3.6:35b", name="Qwen 3.6 35B (Ollama fallback)", api="openai-completions", provider="ollama",
+                base_url="http://127.0.0.1:11434/v1", context_window=32768, max_tokens=4096, reasoning=True,
+                compat=ollama_compat
+            ),
             "openai/gpt-4o": Model(
                 id="gpt-4o", name="GPT-4o", api="openai-completions", provider="openai",
                 cost=ModelCost(input=5.0, output=15.0), context_window=128000, input=["text", "image"]
@@ -68,19 +98,35 @@ class AIRegistry:
         self.load_custom_models()
 
     def load_custom_models(self):
-        config_path = get_agent_dir() / "models.json"
-        if not config_path.exists(): return
-        try:
-            with open(config_path, "r") as f:
-                config = json.load(f)
-                providers = config.get("providers", {})
-                for p_name, p_config in providers.items():
-                    self.register_provider(p_name, p_config)
-        except Exception as e:
-            print(f"Failed to load custom models: {e}")
+        config_paths = [
+            get_agent_dir() / "models.json",
+            Path.cwd() / ".pi" / "models.json",
+        ]
+        for config_path in config_paths:
+            if not config_path.exists():
+                continue
+            try:
+                with open(config_path, "r") as f:
+                    config = json.load(f)
+                    providers = config.get("providers", {})
+                    for p_name, p_config in providers.items():
+                        self.register_provider(p_name, p_config)
+            except Exception as e:
+                print(f"Failed to load custom models from {config_path}: {e}")
 
     def get_model(self, id: str) -> Optional[Model]:
-        return self.models.get(id)
+        model = self.models.get(id)
+        if model:
+            return model
+        # Convenience aliases keep local Ollama usable from short model names.
+        aliases = {
+            "qwen3.6": "ollama/qwen3.6:27b",
+            "qwen3.6:27b": "ollama/qwen3.6:27b",
+            "gemma4:e2b": "ollama/gemma4:e2b",
+            "cmdmbox/skill-expert": "ollama/cmdmbox/skill-expert",
+        }
+        alias = aliases.get(id)
+        return self.models.get(alias) if alias else None
 
     def register_provider(self, provider_name: str, config: Dict[str, Any]):
         base_url = config.get("baseUrl")
@@ -153,8 +199,14 @@ async def _stream_openai(model: Model, context: Dict[str, Any], options: Dict[st
     auth = get_auth_manager()
     api_key = options.get("apiKey") or auth.get_api_key(model.provider)
     
-    headers = {"Authorization": f"Bearer {api_key}"}
-    payload = {"model": model.id, "messages": [{"role": m["role"], "content": m["content"]} for m in context["messages"]], "stream": True, "temperature": options.get("temperature", 0.7)}
+    headers = {"Authorization": f"Bearer {api_key or 'ollama'}"}
+    payload = {
+        "model": model.id,
+        "messages": [{"role": m["role"], "content": m["content"]} for m in context["messages"]],
+        "stream": True,
+        "temperature": options.get("temperature", 0.7),
+        model.compat.maxTokensField if model.compat else "max_completion_tokens": options.get("max_tokens", model.max_tokens),
+    }
     try:
         async with httpx.AsyncClient() as client:
             async with client.stream("POST", base_url, json=payload, headers=headers, timeout=60) as response:
@@ -167,6 +219,7 @@ async def _stream_openai(model: Model, context: Dict[str, Any], options: Dict[st
                         choice = data["choices"][0]; delta = choice.get("delta", {})
                         if "content" in delta and delta["content"]: yield AIEvent(type="text_delta", delta=delta["content"])
                         if "reasoning_content" in delta: yield AIEvent(type="thinking_delta", delta=delta["reasoning_content"])
+                        if "reasoning" in delta: yield AIEvent(type="thinking_delta", delta=delta["reasoning"])
                 yield AIEvent(type="done", reason="stop")
     except Exception as e: yield AIEvent(type="error", content=str(e))
 

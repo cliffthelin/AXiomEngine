@@ -1,24 +1,45 @@
 #!/usr/bin/env bash
+set -euo pipefail
 # Managed Ollama Launcher for AXiomEngine
-# Starts two instances: 11436 (3070) and 11437 (P40)
+# Starts two additional governed instances:
+#   11436 -> RTX 3070 researcher/skill lanes
+#   11437 -> Tesla P40 architect lane
 
-OLLAMA_BIN="/tmp/ollama_dist/bin/ollama"
-LOG_DIR="/mnt/UBUNTU_8TB/Projects/axiomengine/logs"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+OLLAMA_BIN="${OLLAMA_BIN:-$(command -v ollama || true)}"
+LOG_DIR="$ROOT_DIR/logs"
 mkdir -p "$LOG_DIR"
 
-# Kill existing cane-owned ollama serve
-pkill -u "$USER" -f "ollama serve" || true
-sleep 2
+if [[ -z "$OLLAMA_BIN" || ! -x "$OLLAMA_BIN" ]]; then
+  echo "ERROR: ollama executable not found. Set OLLAMA_BIN=/path/to/ollama." >&2
+  exit 1
+fi
 
-echo "🚀 Starting Ollama Instance 11436 (RTX 3070)..."
-OLLAMA_HOST=127.0.0.1:11436 \
-CUDA_VISIBLE_DEVICES=0 \
-"$OLLAMA_BIN" serve >> "$LOG_DIR/ollama_3070_managed.log" 2>&1 &
+start_lane() {
+  local port="$1"
+  local gpu="$2"
+  local name="$3"
+  local log_file="$LOG_DIR/ollama_${name}_managed.log"
 
-echo "🚀 Starting Ollama Instance 11437 (Tesla P40)..."
-OLLAMA_HOST=127.0.0.1:11437 \
-CUDA_VISIBLE_DEVICES=1 \
-"$OLLAMA_BIN" serve >> "$LOG_DIR/ollama_p40_managed.log" 2>&1 &
+  if curl -fsS --max-time 1 "http://127.0.0.1:${port}/api/tags" >/dev/null 2>&1; then
+    echo "✅ Ollama ${name} lane already listening on ${port}."
+    return 0
+  fi
+
+  echo "🚀 Starting Ollama ${name} lane on ${port} (CUDA_VISIBLE_DEVICES=${gpu})..."
+  OLLAMA_HOST="127.0.0.1:${port}" \
+  CUDA_VISIBLE_DEVICES="${gpu}" \
+  "$OLLAMA_BIN" serve >> "$log_file" 2>&1 &
+}
+
+start_lane 11436 0 "rtx3070"
+start_lane 11437 1 "p40"
 
 sleep 5
-echo "✅ Ollama instances launched."
+for port in 11436 11437; do
+  if curl -fsS --max-time 2 "http://127.0.0.1:${port}/api/tags" >/dev/null; then
+    echo "✅ Port ${port} ready."
+  else
+    echo "⚠️ Port ${port} did not become ready. Check $LOG_DIR/ollama_*_managed.log" >&2
+  fi
+done

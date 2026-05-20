@@ -12,6 +12,12 @@ import os
 from datetime import datetime
 from pathlib import Path
 
+# Make direct script execution robust when the project path contains ':' and
+# cannot be represented safely in PYTHONPATH.
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
 # Delegate Targets
 from scripts.governance_manifest_verifier import build_manifest_verification_result
 from scripts.governance_closer import GovernanceCloser

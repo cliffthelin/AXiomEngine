@@ -16,7 +16,7 @@ echo "  Project: $AXIOMENGINE"
 if [ ! -f "$VENV/bin/python" ]; then
     echo "Venv not found — creating $VENV..."
     python3 -m venv "$VENV"
-    "$VENV/bin/pip" install fastapi uvicorn httpx asyncpg "valkey>=6.0" pydantic numpy -q
+    "$VENV/bin/pip" install fastapi uvicorn httpx asyncpg "valkey>=6.0" pydantic numpy redis jinja2 -q
 fi
 
 # Verify backends

@@ -16,8 +16,7 @@ def get_bash_path() -> str:
     if sys.platform != "win32":
         return "/bin/bash"
 
-    # 1. Custom path from settings (Placeholder: we'll check ~/.pi/agent/settings.json)
-    # 2. Git Bash default location
+    # 1. Git Bash default location
     git_bash = Path("C:/Program Files/Git/bin/bash.exe")
     if git_bash.exists():
         return str(git_bash)
@@ -42,8 +41,13 @@ def get_shell_aliases() -> str:
 
 def run_in_shell(command: str):
     """Executes a command using the detected bash shell."""
+    import subprocess
     bash = get_bash_path()
     aliases = get_shell_aliases()
     full_cmd = f"{aliases}\n{command}" if aliases else command
-    # Logic to run subprocess with bash -c
-    pass
+    
+    try:
+        result = subprocess.run([bash, "-c", full_cmd], capture_output=True, text=True)
+        return result.stdout, result.stderr, result.returncode
+    except Exception as e:
+        return "", str(e), 1

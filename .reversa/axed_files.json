@@ -1,0 +1,19 @@
+{
+  "files": {
+    "skills/codex.md": {
+      "axed": true,
+      "date": "2026-05-20T06:02:24Z",
+      "model": "nemotron",
+      "device": "gpu",
+      "rules_generated": [
+        "R-PDD-AXIOM-C9682BD4"
+      ]
+    }
+  },
+  "settings": {
+    "preserve_cores": 1,
+    "preserve_ram_mb": 4096,
+    "parallel_instances": 1,
+    "default_model": "nemotron"
+  }
+}

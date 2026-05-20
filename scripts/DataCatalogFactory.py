@@ -9,17 +9,22 @@ from pathlib import Path
 from typing import List, Dict, Any
 
 # Add scripts to path
-sys.path.append("/mnt/UBUNTU_8TB/Projects/axiomengine/scripts")
+ROOT_DIR = Path(__file__).resolve().parents[1]
+SCRIPTS_DIR = ROOT_DIR / "scripts"
+sys.path.append(str(SCRIPTS_DIR))
 import psutil
 
 HEARTBEAT_FILE = Path("/tmp/axiomengine_swarm_heartbeat")
 RAM_BUFFER = 8 * 1024 * 1024 * 1024  # 8 GB
 VRAM_BUFFER_3070 = 500 * 1024 * 1024  # 500 MB
+RESEARCH_MODEL = "gemma4:e2b"
+SKILL_MODEL = "cmdmbox/skill-expert"
+ARCHITECT_MODEL = "qwen3.6:27b"
 
 class DataCatalogFactory:
     def __init__(self):
-        self.catalog_dir = Path("/mnt/UBUNTU_8TB/Projects/axiomengine/data/catalog")
-        self.roi_log = Path("/mnt/UBUNTU_8TB/Projects/axiomengine/MISSION_ROI_TELEMETRY.log")
+        self.catalog_dir = ROOT_DIR / "data" / "catalog"
+        self.roi_log = ROOT_DIR / "MISSION_ROI_TELEMETRY.log"
         self.rules = []
         self.failures = []
         self.pass_count = 1
@@ -31,7 +36,7 @@ class DataCatalogFactory:
         
         # Telemetry Stats
         self.start_time = time.time()
-        self.stats_file = Path("/mnt/UBUNTU_8TB/Projects/axiomengine/MISSION_STATS.json")
+        self.stats_file = ROOT_DIR / "MISSION_STATS.json"
         if self.stats_file.exists():
             self.stats = json.loads(self.stats_file.read_text())
         else:
@@ -58,7 +63,7 @@ class DataCatalogFactory:
     def exhaustive_discovery(self):
         print("🔭 EXHAUSTIVE DISCOVERY: Scanning all directories for governance identifiers...")
         import subprocess
-        search_path = "/mnt/UBUNTU_8TB/Projects/axiomengine"
+        search_path = str(ROOT_DIR)
         # Optimized grep: Get only the IDs to avoid massive output buffers
         cmd = f"grep -rohI -E \"(G-|R-|RULE-)[A-Z0-9-]{{5,}}\" {search_path} --exclude-dir={{data,cache,.git,.context}}"
         try:
@@ -88,7 +93,7 @@ class DataCatalogFactory:
         """Trifecta Layer 3: Build a structural knowledge graph of the entire codebase."""
         import subprocess
         print("🕸️  BUILDING KNOWLEDGE GRAPH: Indexing codebase structure...", flush=True)
-        search_path = "/mnt/UBUNTU_8TB/Projects/axiomengine"
+        search_path = str(ROOT_DIR)
         graph = {
             "files": {},          # path -> {type, imports, exports, functions, subsystem}
             "subsystems": {},     # subsystem_name -> [file_paths]
@@ -249,7 +254,7 @@ class DataCatalogFactory:
     async def search_codebase(self, rule):
         # 1. Primary Search: Rule ID (Explicit Tags)
         rule_id = rule["id"]
-        search_path = "/mnt/UBUNTU_8TB/Projects/axiomengine"
+        search_path = str(ROOT_DIR)
         cmd_id = f"grep -rnI '{rule_id}' {search_path} --exclude-dir={{docs,data,cache,.git,.context}}"
         proc = await asyncio.create_subprocess_shell(cmd_id, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL)
         stdout, _ = await proc.communicate()
@@ -363,25 +368,47 @@ class DataCatalogFactory:
             return False
 
     async def lint_file(self, file_path):
-        # Run tsc, eslint, or ruff depending on extension
-        return True # Simulation
+        import subprocess
+        ext = str(file_path).split('.')[-1]
+        try:
+            if ext in ['ts', 'tsx']:
+                res = subprocess.run(['npx', 'tsc', '--noEmit', str(file_path)], capture_output=True)
+                return res.returncode == 0
+            elif ext in ['js', 'jsx']:
+                res = subprocess.run(['npx', 'eslint', str(file_path)], capture_output=True)
+                return res.returncode == 0
+            elif ext == 'py':
+                res = subprocess.run(['python3', '-m', 'py_compile', str(file_path)], capture_output=True)
+                return res.returncode == 0
+        except Exception:
+            return False
+        return True
 
     async def expand_to_natural_block(self, file_path, start, end):
-        # Uses AST or scope detection to find function boundaries
-        return (start - 5, end + 5) # Placeholder
+        try:
+            with open(file_path, "r") as f:
+                lines = f.readlines()
+            total_lines = len(lines)
+            
+            # Simple boundary expansion
+            new_start = max(1, start - 5)
+            new_end = min(total_lines, end + 5)
+            return (new_start, new_end)
+        except Exception:
+            return (start, end)
 
     async def audit_interfaces(self, rule, alignment):
         import re
         rule_id = rule["id"]
         rule_text = rule["text"].replace('"', '\\"').split("\n")[0]
         interfaces = {"cli": {"status": "Missing"}, "tui": {"status": "Missing"}, "gui": {"status": "Missing"}}
-        base = "/mnt/UBUNTU_8TB/Projects/axiomengine/pi/pi-mono-main/packages"
+        base = ROOT_DIR / "pi" / "pi-mono-main" / "packages"
         
         # Mapping subsystems to interface directories
         paths = {
-            "cli": [f"{base}/agent", f"{base}/coding-agent", "/mnt/UBUNTU_8TB/Projects/axiomengine/archon/.archon/commands"],
-            "tui": [f"{base}/tui", "/mnt/UBUNTU_8TB/Projects/axiomengine/pi"],
-            "gui": [f"{base}/web-ui", "/mnt/UBUNTU_8TB/Projects/axiomengine/router/templates"]
+            "cli": [str(base / "agent"), str(base / "coding-agent"), str(ROOT_DIR / "archon" / ".archon" / "commands")],
+            "tui": [str(base / "tui"), str(ROOT_DIR / "pi")],
+            "gui": [str(base / "web-ui"), str(ROOT_DIR / "router" / "templates")]
         }
         
         for intf, dirs in paths.items():
@@ -439,7 +466,17 @@ class DataCatalogFactory:
         """Signal to Watchdog that mission is alive."""
         HEARTBEAT_FILE.write_text(str(time.time()))
 
-    async def local_ai_inference(self, prompt, model="qwen3.6:27b", port=None, options=None):
+    def select_model_for_task(self, task_type: str) -> str:
+        """Select the governed model lane for a mission subtask."""
+        if task_type == "skill_authoring":
+            return SKILL_MODEL
+        if task_type == "research":
+            return RESEARCH_MODEL
+        if task_type == "architecture":
+            return ARCHITECT_MODEL
+        return ARCHITECT_MODEL
+
+    async def local_ai_inference(self, prompt, model=ARCHITECT_MODEL, port=None, options=None):
         import urllib.request
         import json
         import asyncio
@@ -453,15 +490,13 @@ class DataCatalogFactory:
 
         def _sync_inference():
             # 🚀 HARDWARE-AWARE PORT ROUTING
-            # 11437: Tesla P40 (24GB) -> Primary (Architect: qwen3.6:27b)
-            # 11436: RTX 3070 (8GB) -> Secondary (Researcher: gemma4:e2b)
+            # 11437: Tesla P40 (24GB) -> Architect lane (qwen3.6:27b)
+            # 11436: RTX 3070 (8GB) -> Researcher/Skill lanes (gemma4:e2b, cmdmbox/skill-expert)
             # 11434: Default -> Fallback
             
             # Auto-assign port based on model if not specified
             if not port:
-                # Architect (Qwen) moves to System RAM on 11438
-                # Researcher (Gemma) stays on 3070 on 11436
-                target_port = 11438 if "qwen" in model.lower() else 11436
+                target_port = 11437 if "qwen" in model.lower() else 11436
             else:
                 target_port = port
                 
@@ -514,7 +549,9 @@ class DataCatalogFactory:
         """
         
         self.stats["sub_tasks"]["ai_dissertation"] += 1
-        ai_desc, ai_model = await self.local_ai_inference(prompt, model="qwen3.6:27b")
+        ai_desc, ai_model = await self.local_ai_inference(
+            prompt, model=self.select_model_for_task("architecture"), options={"num_ctx": 4096, "temperature": 0.3}
+        )
         
         # 2. TECHNICAL TEMPLATE: Python-Engineered (Structured)
         python_desc = f"""
@@ -538,14 +575,18 @@ Neglecting this rule poses a 'Governance Debt' risk, where the accumulation of u
 
         # 3. SHORT: Summary
         short_prompt = f"Summarize Rule {rule['id']} in 1-2 sentences: {rule['text']}"
-        short_desc, short_model = await self.local_ai_inference(short_prompt, model="qwen3.6:27b")
+        short_desc, short_model = await self.local_ai_inference(
+            short_prompt, model=self.select_model_for_task("research"), options={"num_ctx": 2048, "temperature": 0.2}
+        )
         if not short_desc:
             short_desc = f"Governance mandate enforcing: {rule['text'][:200]}"
             short_model = "Python (Fallback)"
         
         # 4. KEYWORDS: Taxonomy
         kw_prompt = f"Extract exactly 100 highly relevant technical keywords for governance rule {rule['id']}: {rule['text']}. Return as a comma-separated list."
-        kw_text, kw_model = await self.local_ai_inference(kw_prompt, model="qwen3.6:27b")
+        kw_text, kw_model = await self.local_ai_inference(
+            kw_prompt, model=self.select_model_for_task("research"), options={"num_ctx": 2048, "temperature": 0.2}
+        )
         if kw_text:
             keywords = [k.strip() for k in kw_text.split(",")][:100]
         else:
@@ -589,7 +630,7 @@ Neglecting this rule poses a 'Governance Debt' risk, where the accumulation of u
         # Search for test files (TDD Alignment)
         rule_id = rule["id"]
         # Search in the 'tests' directory or anywhere matching test patterns
-        test_search_path = "/mnt/UBUNTU_8TB/Projects/axiomengine"
+        test_search_path = str(ROOT_DIR)
         cmd = f"grep -rnI '{rule_id}' {test_search_path} --include='*test*' --include='*spec*'"
         proc = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL)
         stdout, _ = await proc.communicate()
@@ -694,14 +735,16 @@ Neglecting this rule poses a 'Governance Debt' risk, where the accumulation of u
                 self.log_failure(rule["id"], "SWARM_CRASH", str(e), start_time, fail_time)
 
     async def generate_metadata_swarm(self, rule, code_found, graph_context):
-        # Specialist Multi-Agent Prompting (Standardized on Qwen 27B)
+        # Specialist Multi-Agent Prompting with governed model lanes.
         
-        # 1. RESEARCH PASS (RTX 3070 - Gemma 4)
+        # 1. RESEARCH PASS (RTX 3070 - Gemma 4 generalist)
         short_prompt = f"Extract keywords and summary for {rule['id']} in context of {rule['text']}"
         self.stats["sub_tasks"]["ai_research"] += 1
-        short_desc, _ = await self.local_ai_inference(short_prompt, model="gemma4:e2b", port=11436)
+        short_desc, _ = await self.local_ai_inference(
+            short_prompt, model=self.select_model_for_task("research"), options={"num_ctx": 2048, "temperature": 0.2}
+        )
         
-        # 2. DISSERTATION PASS (Tesla P40 - Qwen 27B)
+        # 2. DISSERTATION PASS (Primary large-model lane - Qwen 27B)
         prompt = f"""
         GOVERNANCE ARCHITECT REPORT: {rule['id']}
         CONTEXT: {rule['text']}
@@ -719,7 +762,9 @@ Neglecting this rule poses a 'Governance Debt' risk, where the accumulation of u
         Be precise, technical, and encyclopedic.
         """
         self.stats["sub_tasks"]["ai_dissertation"] += 1
-        ai_desc, ai_model = await self.local_ai_inference(prompt, model="qwen3.6:27b", port=11437)
+        ai_desc, ai_model = await self.local_ai_inference(
+            prompt, model=self.select_model_for_task("architecture"), options={"num_ctx": 8192, "temperature": 0.3}
+        )
         
         # Return composite metadata
         return {
@@ -839,7 +884,7 @@ Neglecting this rule poses a 'Governance Debt' risk, where the accumulation of u
         self.exhaustive_discovery()
         
         # 2. Deep Markdown Discovery (Targeted Libraries + Queue)
-        search_path = Path("/mnt/UBUNTU_8TB/Projects/axiomengine")
+        search_path = ROOT_DIR
         
         # KEY CHANGE: Instances are (ID, Source, Context)
         instance_keys = set()

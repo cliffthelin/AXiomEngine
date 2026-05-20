@@ -1,0 +1,69 @@
+{
+  "id": "R-PDD-AXIOM-C9682BD4",
+  "generated_by": "Axioming Pipeline (nemotron)",
+  "ai_dissertation": {
+    "content": "Automatic system-wide integrity check for context file: skills/codex.md",
+    "generated_by": "Axiom Extractor (nemotron)"
+  },
+  "technical_template": {
+    "content": "Automatic system-wide integrity check for context file: skills/codex.md",
+    "generated_by": "Axiom Extractor"
+  },
+  "knowledge_graph": {
+    "related_files": [
+      "skills/codex.md"
+    ],
+    "dependency_chain": [],
+    "subsystem_neighbors": [],
+    "confidence_boost": 6,
+    "generated_by": "KnowledgeGraph"
+  },
+  "short_summary": {
+    "content": "Structural sanity and module integrity of codex.md.",
+    "generated_by": "Axiom Extractor"
+  },
+  "keywords": {
+    "content": [
+      "axiom",
+      "extracted",
+      "rule",
+      "c9682bd4"
+    ],
+    "generated_by": "Axiom Extractor"
+  },
+  "tdd_governance": {
+    "test_verification": {
+      "exists": true,
+      "tdd_gap": "None"
+    },
+    "how_to_validate_values": {
+      "how_to_follow": [
+        "Follow governance mandate R-PDD-AXIOM-C9682BD4"
+      ],
+      "how_to_validate": [
+        "Verify telemetry logs for R-PDD-AXIOM-C9682BD4"
+      ]
+    },
+    "generated_by": "Axiom Extractor"
+  },
+  "audit_telemetry": {
+    "time_started": "2026-05-20 06:02:24",
+    "time_completed": "2026-05-20 06:02:24",
+    "time_failed": null,
+    "generated_by": "Axiom Extractor"
+  },
+  "interfaces": {
+    "cli": {
+      "status": "Implemented",
+      "percent_satisfied": "100%"
+    },
+    "tui": {
+      "status": "Implemented",
+      "percent_satisfied": "100%"
+    },
+    "gui": {
+      "status": "Implemented",
+      "percent_satisfied": "100%"
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "providers": {
+    "ollama-local": {
+      "api": "openai-completions",
+      "baseUrl": "http://127.0.0.1:11434/v1",
+      "compat": {
+        "supportsStore": false,
+        "supportsDeveloperRole": false,
+        "supportsReasoningEffort": false,
+        "supportsUsageInStreaming": false,
+        "supportsStrictMode": false,
+        "maxTokensField": "max_tokens",
+        "thinkingFormat": "qwen"
+      },
+      "models": [
+        {"id": "qwen3.6:27b", "name": "Qwen 3.6 27B via default Ollama", "reasoning": true, "contextWindow": 32768},
+        {"id": "gemma4:e2b", "name": "Gemma4 E2B via default Ollama", "contextWindow": 32768},
+        {"id": "cmdmbox/skill-expert", "name": "Skill Expert via default Ollama", "contextWindow": 32768}
+      ]
+    },
+    "ollama-rtx3070": {
+      "api": "openai-completions",
+      "baseUrl": "http://127.0.0.1:11436/v1",
+      "compat": {
+        "supportsStore": false,
+        "supportsDeveloperRole": false,
+        "supportsReasoningEffort": false,
+        "supportsUsageInStreaming": false,
+        "supportsStrictMode": false,
+        "maxTokensField": "max_tokens",
+        "thinkingFormat": "qwen"
+      },
+      "models": [
+        {"id": "gemma4:e2b", "name": "Gemma4 E2B Researcher on RTX 3070", "contextWindow": 32768},
+        {"id": "cmdmbox/skill-expert", "name": "Skill Expert on RTX 3070", "contextWindow": 32768}
+      ]
+    },
+    "ollama-p40": {
+      "api": "openai-completions",
+      "baseUrl": "http://127.0.0.1:11437/v1",
+      "compat": {
+        "supportsStore": false,
+        "supportsDeveloperRole": false,
+        "supportsReasoningEffort": false,
+        "supportsUsageInStreaming": false,
+        "supportsStrictMode": false,
+        "maxTokensField": "max_tokens",
+        "thinkingFormat": "qwen"
+      },
+      "models": [
+        {"id": "qwen3.6:27b", "name": "Qwen 3.6 27B Architect on P40", "reasoning": true, "contextWindow": 32768}
+      ]
+    }
+  }
+}

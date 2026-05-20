@@ -1,0 +1,300 @@
+{
+    "error": "File not found",
+    "path": "sessions.json",
+    "sessions": [
+        {
+            "id": "session-reversa-1779048601450",
+            "project_id": "splinkforge",
+            "agent": "reversa",
+            "name": "Session from May 17, 14:10",
+            "messages": [
+                {
+                    "role": "agent",
+                    "content": "Hello! I am Reversa, your guidance agent. How can I assist you with this project today?"
+                }
+            ],
+            "timestamp": "2026-05-17T14:10:01.458131"
+        },
+        {
+            "id": "session-reversa-1779049076736",
+            "project_id": "splinkforge",
+            "agent": "reversa",
+            "name": "Session from May 17, 14:17",
+            "messages": [
+                {
+                    "role": "agent",
+                    "content": "Hello! I am Reversa, your guidance agent. How can I assist you with this project today?"
+                }
+            ],
+            "timestamp": "2026-05-17T14:17:56.744365"
+        },
+        {
+            "id": "session-reversa-1779073426340",
+            "project_id": "splinkforge",
+            "agent": "reversa",
+            "name": "Session from May 17, 21:03",
+            "messages": [
+                {
+                    "role": "agent",
+                    "content": "Hello! I am Reversa, your guidance agent. How can I assist you with this project today?"
+                }
+            ],
+            "timestamp": "2026-05-17T21:03:46.347486"
+        },
+        {
+            "id": "session-archon-1779073426340",
+            "project_id": "splinkforge",
+            "agent": "archon",
+            "name": "PLease determine what fea...",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "PLease determine what features are native to archon ant not available on Axiom Engine and not wired up to the GUI and add them and wire them up so that it can fully run Archon and all of its abilities"
+                },
+                {
+                    "role": "agent",
+                    "content": "\ud83e\udd16 Sovereign Swarm Controller acknowledged command. Initiating isolated execution mapping across the 13 layers. Telemetry looks stable."
+                },
+                {
+                    "role": "user",
+                    "content": "PLease determine what features are native to archon ant not available on Axiom Engine and not wired up to the GUI and add them and wire them up so that it can fully run Archon and all of its abilities"
+                },
+                {
+                    "role": "agent",
+                    "content": "\ud83e\udd16 Sovereign Swarm Controller acknowledged command. Initiating isolated execution mapping across the 13 layers. Telemetry looks stable."
+                }
+            ],
+            "timestamp": "2026-05-17T21:07:20.074220"
+        },
+        {
+            "id": "session-hermes-1779073426340",
+            "project_id": "splinkforge",
+            "agent": "hermes",
+            "name": "PLease determine what fea...",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "PLease determine what features are native to Hermes ant not available on Axiom Engine and not wired up to the GUI and add them and wire them up so that it can fully run Hermes and all of its abilities"
+                },
+                {
+                    "role": "agent",
+                    "content": "Querying LLM proxy..."
+                },
+                {
+                    "role": "agent",
+                    "content": "Error: Direct LLM query failed. Ensure the router is running on port 9001."
+                }
+            ],
+            "timestamp": "2026-05-17T21:10:12.820463"
+        },
+        {
+            "id": "session-reversa-1779074028841",
+            "project_id": "splinkforge",
+            "agent": "reversa",
+            "name": "Session from May 17, 21:13",
+            "messages": [
+                {
+                    "role": "agent",
+                    "content": "Hello! I am Reversa, your guidance agent. How can I assist you with this project today?"
+                }
+            ],
+            "timestamp": "2026-05-17T21:13:48.849766"
+        },
+        {
+            "id": "session-reversa-1779074096507",
+            "project_id": "splinkforge",
+            "agent": "reversa",
+            "name": "Session from May 17, 21:14",
+            "messages": [
+                {
+                    "role": "agent",
+                    "content": "Hello! I am Reversa, your guidance agent. How can I assist you with this project today?"
+                }
+            ],
+            "timestamp": "2026-05-17T21:14:56.515389"
+        },
+        {
+            "id": "session-reversa-1779074546627",
+            "project_id": "axiomengine-core",
+            "agent": "reversa",
+            "name": "Session from May 17, 21:22",
+            "messages": [
+                {
+                    "role": "agent",
+                    "content": "Hello! I am Reversa, your guidance agent. How can I assist you with this project today?"
+                }
+            ],
+            "timestamp": "2026-05-17T21:22:26.674282"
+        },
+        {
+            "id": "session-reversa-1779075164893",
+            "project_id": "axiomengine-core",
+            "agent": "reversa",
+            "name": "Session from May 17, 21:32",
+            "messages": [
+                {
+                    "role": "agent",
+                    "content": "Hello! I am Reversa, your guidance agent. How can I assist you with this project today?"
+                }
+            ],
+            "timestamp": "2026-05-17T21:32:44.959321"
+        },
+        {
+            "id": "session-reversa-1779075164975",
+            "project_id": "axiomengine-core",
+            "agent": "reversa",
+            "name": "Session from May 17, 21:32",
+            "messages": [
+                {
+                    "role": "agent",
+                    "content": "Hello! I am Reversa, your guidance agent. How can I assist you with this project today?"
+                }
+            ],
+            "timestamp": "2026-05-17T21:32:45.049211"
+        },
+        {
+            "id": "session-reversa-1779076014332",
+            "project_id": "axiomengine-core",
+            "agent": "reversa",
+            "name": "Session from May 17, 21:46",
+            "messages": [
+                {
+                    "role": "agent",
+                    "content": "Hello! I am Reversa, your guidance agent. How can I assist you with this project today?"
+                }
+            ],
+            "timestamp": "2026-05-17T21:46:54.395725"
+        },
+        {
+            "id": "session-hermes-1779076014332",
+            "project_id": "axiomengine-core",
+            "agent": "hermes",
+            "name": "hello",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "hello"
+                },
+                {
+                    "role": "agent",
+                    "content": "Querying LLM proxy..."
+                },
+                {
+                    "role": "agent",
+                    "content": "Hello! How can I assist you today?"
+                },
+                {
+                    "role": "user",
+                    "content": "PLease list what sills you can add from the officially supported skills you have available"
+                },
+                {
+                    "role": "agent",
+                    "content": "Querying LLM proxy..."
+                },
+                {
+                    "role": "agent",
+                    "content": "Error: Direct LLM query failed. Ensure the router is running on port 9001."
+                }
+            ],
+            "timestamp": "2026-05-17T21:53:40.797830"
+        },
+        {
+            "id": "session-reversa-1779077610323",
+            "project_id": "axiomengine-core",
+            "agent": "reversa",
+            "name": "Session from May 17, 22:13",
+            "messages": [
+                {
+                    "role": "agent",
+                    "content": "Hello! I am Reversa, your guidance agent. How can I assist you with this project today?"
+                }
+            ],
+            "timestamp": "2026-05-17T22:13:30.392551"
+        },
+        {
+            "id": "session-reversa-1779077757079",
+            "project_id": "axiomengine-core",
+            "agent": "reversa",
+            "name": "Session from May 17, 22:15",
+            "messages": [
+                {
+                    "role": "agent",
+                    "content": "Hello! I am Reversa, your guidance agent. How can I assist you with this project today?"
+                }
+            ],
+            "timestamp": "2026-05-17T22:15:57.168216"
+        },
+        {
+            "id": "session-reversa-1779078022283",
+            "project_id": "axiomengine-core",
+            "agent": "reversa",
+            "name": "Session from May 17, 22:20",
+            "messages": [
+                {
+                    "role": "agent",
+                    "content": "Hello! I am Reversa, your guidance agent. How can I assist you with this project today?"
+                }
+            ],
+            "timestamp": "2026-05-17T22:20:22.358559"
+        },
+        {
+            "id": "session-reversa-1779084525012",
+            "project_id": "axiomengine-core",
+            "agent": "reversa",
+            "name": "Session from May 18, 00:08",
+            "messages": [
+                {
+                    "role": "agent",
+                    "content": "Hello! I am Reversa, your guidance agent. How can I assist you with this project today?"
+                }
+            ],
+            "timestamp": "2026-05-18T00:08:45.158870"
+        },
+        {
+            "id": "session-archon-1779084525012",
+            "project_id": "axiomengine-core",
+            "agent": "archon",
+            "name": "hello",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "hello"
+                },
+                {
+                    "role": "agent",
+                    "content": "Querying PI coding-agent..."
+                },
+                {
+                    "role": "agent",
+                    "content": "Hello! How can I help you today?"
+                },
+                {
+                    "role": "user",
+                    "content": "lease do the code investigation skill on /mnt/usb-Seagate_Backup+_Hub_BK_NA9R7TTV-0:0-part2/Projects/agentos and report to me what you find and then take next steps to determine what is being worked on or should be worked and propose that work"
+                },
+                {
+                    "role": "agent",
+                    "content": "Querying PI coding-agent..."
+                },
+                {
+                    "role": "agent",
+                    "content": "Error: Personal Intelligence agent core offline. Ensure Ollama and the server are active."
+                }
+            ],
+            "timestamp": "2026-05-18T00:15:25.305180"
+        },
+        {
+            "id": "session-reversa-1779258153809",
+            "project_id": "splinkforge",
+            "agent": "reversa",
+            "name": "Session from May 20, 00:22",
+            "messages": [
+                {
+                    "role": "agent",
+                    "content": "Hello! I am Reversa, your guidance agent. How can I assist you with this project today?"
+                }
+            ],
+            "timestamp": "2026-05-20T00:22:33.987002"
+        }
+    ]
+}

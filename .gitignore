@@ -37,3 +37,8 @@ mission_pack_*/
 .agent_keychain.json
 .env
 *.code-workspace
+axiomengine_settings.json
+
+# Reversa
+.reversa/config.user.toml
+_reversa_output/

@@ -110,5 +110,75 @@ class TestGovernanceDashboardServer(unittest.TestCase):
         matches = content.count("class GovernanceDiscoveryHandler")
         self.assertEqual(matches, 1, f"Found {matches} definitions of GovernanceDiscoveryHandler (Expected 1)")
 
+    def test_project_update_and_agent_organize(self):
+        # Create a mock projects.json
+        projects_file = self.project_root / "data" / "projects.json"
+        projects_file.write_text(json.dumps({
+            "projects": [
+                {
+                    "id": "test-project",
+                    "name": "Test Project",
+                    "allowed_runtimes": ["python"],
+                    "allowed_models": ["qwen"],
+                    "approval_requirements": "HITM Required",
+                    "promotion_rules": "",
+                    "policy_references": ""
+                }
+            ]
+        }))
+        
+        # Test update project
+        payload = json.dumps({
+            "id": "test-project",
+            "allowed_runtimes": ["python", "powershell"],
+            "allowed_models": ["qwen", "llama"],
+            "approval_requirements": "Strict Multi-Sign",
+            "promotion_rules": "Strict",
+            "policy_references": "Policy A",
+            "root_path": "/home/cane",
+            "associated_reversa_instances": ["http://localhost:9001"],
+            "default_artifact_locations": ["/tmp"],
+            "technical_stack_references": ["bash"]
+        }).encode("utf-8")
+        
+        req = urllib.request.Request(
+            self.get_url("/api/governance/project/update"),
+            data=payload,
+            headers={"Content-Type": "application/json"}
+        )
+        with urllib.request.urlopen(req) as r:
+            data = json.load(r)
+            self.assertEqual(data["project"]["approval_requirements"], "Strict Multi-Sign")
+            self.assertEqual(data["project"]["root_path"], "/home/cane")
+            self.assertIn("powershell", data["project"]["allowed_runtimes"])
+            self.assertIn("llama", data["project"]["allowed_models"])
+
+        # Test agent organize
+        # Create a mock agent in skills/
+        skills_dir = self.project_root / "skills"
+        skills_dir.mkdir(exist_ok=True)
+        agent_file = skills_dir / "test-agent.md"
+        agent_file.write_text("---\nname: Test Agent\napplication: skills\nversion: 1.0.0\n---\n\nInstructions here")
+
+        organize_payload = json.dumps({
+            "paths": ["skills/test-agent.md"],
+            "target_application": "reversa"
+        }).encode("utf-8")
+        
+        req_org = urllib.request.Request(
+            self.get_url("/api/agent_manager/organize"),
+            data=organize_payload,
+            headers={"Content-Type": "application/json"}
+        )
+        with urllib.request.urlopen(req_org) as r:
+            data = json.load(r)
+            self.assertTrue(data["success"])
+            self.assertEqual(data["organized"], 1)
+            
+        # Verify old path is deleted and new path exists under reversa/agents/
+        new_agent_path = self.project_root / "reversa" / "agents" / "test-agent.md"
+        self.assertTrue(new_agent_path.exists())
+        self.assertFalse(agent_file.exists())
+
 if __name__ == "__main__":
     unittest.main()

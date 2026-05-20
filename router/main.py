@@ -59,7 +59,18 @@ PG_DSN = "postgresql://axiomengine:axiomengine_local_dev@localhost:5433/axiomeng
 VALKEY_HOST = "127.0.0.1"
 VALKEY_PORT = 6379
 
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI(title="AXiomEngine Router")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 stitch = Stitch()
 
 # ── State ─────────────────────────────────────────────────────────────────────

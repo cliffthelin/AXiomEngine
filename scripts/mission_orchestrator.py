@@ -11,7 +11,7 @@ import glob
 from pathlib import Path
 
 # Paths
-ROOT_DIR = Path("/mnt/UBUNTU_8TB/Projects/axiomengine")
+ROOT_DIR = Path(__file__).resolve().parents[1]
 SCRIPTS_DIR = ROOT_DIR / "scripts"
 VENV_PYTHON = "/run/media/cane/f2a4492f-959f-4385-b87a-134ac4769088/home/cane/.axiomengine_venv/bin/python3"
 
@@ -93,7 +93,7 @@ def main():
 
         # Run with --prompt-file
         run_task(f"Extract {shard['name']}", 
-                 f"{VENV_PYTHON} {SCRIPTS_DIR}/reversa_runner.py {shard['skill']} dummy "
+                 f"{VENV_PYTHON} {SCRIPTS_DIR}/reversa_runner.py {shard['skill']} "
                  f"--prompt-file {prompt_file} --output {out_file}")
         
         os.remove(prompt_file)

@@ -22,6 +22,10 @@ class AuthManager:
         1. auth.json entry
         2. Environment variable
         """
+        # Local Ollama/OpenAI-compatible lanes do not require a real API key.
+        if provider_id.startswith("ollama"):
+            return "ollama"
+
         # 1. Check auth.json
         if self.auth_path.exists():
             try:

@@ -39,26 +39,65 @@ class WorkflowLoader:
         return self.config, self.prompt_template
 
 class LinearClient:
-    """Mockable Linear client for issue tracking."""
+    """Linear API client for issue tracking."""
     def __init__(self, api_key: str, project_slug: str):
         self.api_key = api_key
         self.project_slug = project_slug
-        self.is_mock = (api_key == "MOCK")
+        if not self.api_key:
+            print("WARNING: Symphony started without a real Linear API key. Provide LINEAR_API_KEY.")
+            self.api_key = None
 
     async def get_active_issues(self, active_states: List[str]) -> List[Dict]:
-        if self.is_mock:
-            return [
-                {
-                    "id": "ISSUE-1",
-                    "identifier": "AGO-1",
-                    "title": "Fix memory leak in stitch.py",
-                    "description": "The stitch messaging system leaks file descriptors.",
-                    "state": "Todo",
-                    "priority": 1
+        if not self.api_key:
+            return []
+        
+        query = """
+        query($filter: IssueFilter) {
+            issues(filter: $filter) {
+                nodes {
+                    id
+                    identifier
+                    title
+                    description
+                    state { name }
+                    priority
                 }
-            ]
-        # Real Linear GraphQL implementation would go here
-        return []
+            }
+        }
+        """
+        variables = {
+            "filter": {
+                "state": { "name": { "in": active_states } }
+            }
+        }
+        
+        try:
+            async with httpx.AsyncClient() as client:
+                resp = await client.post(
+                    "https://api.linear.app/graphql",
+                    headers={"Authorization": self.api_key},
+                    json={"query": query, "variables": variables}
+                )
+                resp.raise_for_status()
+                data = resp.json()
+                
+                issues = data.get("data", {}).get("issues", {}).get("nodes", [])
+                
+                # Format to match internal representation
+                formatted = []
+                for i in issues:
+                    formatted.append({
+                        "id": i.get("id"),
+                        "identifier": i.get("identifier"),
+                        "title": i.get("title"),
+                        "description": i.get("description", ""),
+                        "state": i.get("state", {}).get("name", ""),
+                        "priority": i.get("priority", 0)
+                    })
+                return formatted
+        except Exception as e:
+            print(f"Linear API error: {e}")
+            return []
 
 from atlas_bridge import AtlasBridge
 from swarm_coordinator import SwarmCoordinator
@@ -95,7 +134,7 @@ class SymphonyOrchestrator:
         try:
             config, template = self.loader.load()
             tracker_cfg = config.get('tracker', {})
-            api_key = os.environ.get("LINEAR_API_KEY", tracker_cfg.get('api_key', "MOCK"))
+            api_key = os.environ.get("LINEAR_API_KEY", tracker_cfg.get('api_key'))
             
             client = LinearClient(api_key, tracker_cfg.get('project_slug', 'axiomengine'))
             active_states = tracker_cfg.get('active_states', ["Todo", "In Progress"])

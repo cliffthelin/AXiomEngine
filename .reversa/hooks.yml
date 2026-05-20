@@ -1,0 +1,48 @@
+# hooks.yml
+# Optional hooks executed before or after Reversa forward skills.
+#
+# Hook Schema:
+#   command:     command that will be suggested (optional: true) or required (optional: false)
+#   description: short text displayed to the user
+#   enabled:     true | false. Defaults to true if missing.
+#   optional:    true (shows clickable link) | false (runs automatically and blocks)
+#
+# Rules:
+#   Invalid YAML here is tolerated: the skill proceeds normally, just without hooks.
+#   There is no condition DSL in this file. If a hook should not run, set enabled: false.
+#
+# By default, all hooks start empty. Add only those that make sense for your project.
+
+schema-version: 1
+
+# Hooks for /reversa-requirements
+before-requirements: []
+after-requirements: []
+
+# Hooks for /reversa-clarify
+before-clarify: []
+after-clarify: []
+
+# Hooks for /reversa-plan
+before-plan: []
+after-plan: []
+
+# Hooks for /reversa-to-do
+before-to-do: []
+after-to-do: []
+
+# Hooks for /reversa-audit
+before-audit: []
+after-audit: []
+
+# Hooks for /reversa-quality
+before-quality: []
+after-quality: []
+
+# Hooks for /reversa-coding
+before-coding: []
+after-coding: []
+
+# Hooks for /reversa-principles
+before-principles: []
+after-principles: []

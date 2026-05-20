@@ -9,16 +9,17 @@ Perform these checks before resuming the 33,196-instance mission:
 
 - [ ] **BIOS/iGPU Check**: Confirm AMD iGPU is handling primary display (Gnome/X11).
 - [ ] **NVIDIA Isolation**: `nvidia-smi` must show **0MiB** on GPU 0 (RTX 3070).
-- [ ] **Ollama Recovery**: `ollama serve` must be restarted and verified.
-- [ ] **Model Hot-Swap**: Verify `qwen3.6:27b` and `gemma4:e4b` are responsive via the Router.
+- [x] **Ollama Recovery**: `ollama serve` must be restarted and verified. Managed lanes are active on `11436` (RTX 3070) and `11437` (P40), with default fallback on `11434`.
+- [x] **Model Hot-Swap**: Verify `qwen3.6:27b` and `gemma4:e2b` are responsive via the Router/Ollama lanes. Current local check: `gemma4:e2b` and `cmdmbox/skill-expert` respond on `11436`; `qwen3.6:27b` responds on `11437`. `gemma4:e4b` is not assigned to RTX 3070 because its ~9GB footprint exceeds the 8GB card.
 
 ## 🐝 Swarm Configuration (Model Routing)
 The `DataCatalogFactory.py` mission is optimized for dual-GPU orchestration:
 
 | Agent Role | Model | Hardware Target | Task Description |
 | :--- | :--- | :--- | :--- |
-| **Researcher** | `gemma4:e4b` | **RTX 3070** | Extract keywords, summary, and taxonomy. |
-| **Architect** | `qwen3.6:27b` | **Primary GPU** | Synthesize technical dissertations. |
+| **Researcher** | `gemma4:e2b` | **RTX 3070** | General high-volume extraction: keywords, summaries, taxonomy, classification, and pre-digests. This is the RTX-safe Gemma4 lane (~7.2GB for an 8GB card). |
+| **Skill Specialist** | `cmdmbox/skill-expert` | **RTX 3070** | Specialized Gemma4-derived lane for creating/refining agent skills, skill triggers, and skill validation checklists. |
+| **Architect** | `qwen3.6:27b` | **Primary GPU** | Synthesize technical dissertations and deep governance reasoning. |
 | **Auditor** | Programmatic | **CPU** | Regex, Grep, and AST structural indexing. |
 
 ## 📅 Mission Tasks & Milestones
@@ -26,7 +27,8 @@ The `DataCatalogFactory.py` mission is optimized for dual-GPU orchestration:
 ### 1. Swarm Orchestration Stabilizing
 - [x] Integrate `scripts/pi_ai.py` into the swarm controller.
 - [x] Implement dynamic model routing (Gemma-4 vs Qwen-27B).
-- [ ] **[TODO]** Fix `DataCatalogFactory.py` to explicitly pass model parameters to `local_ai_inference`.
+- [x] Fix `DataCatalogFactory.py` to explicitly pass model parameters to `local_ai_inference`.
+- [x] Record RTX 3070 model routing: use `gemma4:e2b` for general Researcher work and reserve `cmdmbox/skill-expert` for skill-authoring tasks only.
 
 ### 2. 33,196-Instance Audit Execution
 - [x] Initial rule discovery (11,407 rules).

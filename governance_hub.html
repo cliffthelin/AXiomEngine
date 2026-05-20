@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AXiomEngine | Unified Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #010409;
+            --panel-bg: #0d1117;
+            --accent-color: #79c0ff;
+            --text-color: #c9d1d9;
+            --border-color: #30363d;
+            --hover-bg: rgba(121, 192, 255, 0.1);
+        }
+
+        * { box-sizing: border-box; }
+        body { 
+            margin: 0; 
+            background: var(--bg-color); 
+            color: var(--text-color); 
+            font-family: 'Outfit', sans-serif; 
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Navigation */
+        nav {
+            width: 280px;
+            background: var(--panel-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .brand {
+            padding: 25px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand h1 {
+            margin: 0;
+            font-size: 1.3rem;
+            color: var(--accent-color);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-links {
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--text-color);
+            font-weight: 400;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: var(--hover-bg);
+            color: var(--accent-color);
+            font-weight: 600;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .section-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #8b949e;
+            margin: 15px 0 5px 15px;
+            font-weight: 600;
+        }
+
+        /* User Footer */
+        .user-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--bg-color);
+            font-weight: bold;
+        }
+
+        /* Viewport */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-color);
+            position: relative;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: var(--bg-color);
+        }
+
+        /* Loading overlay */
+        #loader {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(121, 192, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--accent-color);
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Draggable Resizer */
+        .resizer {
+            width: 4px;
+            cursor: col-resize;
+            background: var(--border-color);
+            transition: background 0.2s;
+            z-index: 101;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .resizer:hover, .resizer.dragging {
+            background: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+
+        /* Collapsed Sidebar State */
+        nav.minimized {
+            width: 60px !important;
+        }
+        nav.minimized .brand-text,
+        nav.minimized .project-selector-container,
+        nav.minimized .section-label,
+        nav.minimized .nav-item span:not(.nav-icon) {
+            display: none !important;
+        }
+        nav.minimized .brand {
+            padding: 15px 5px;
+            justify-content: center !important;
+        }
+        nav.minimized #sidebar-toggle {
+            position: absolute;
+            right: -12px;
+            top: 22px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            z-index: 110;
+            padding: 0;
+            font-size: 0.7rem;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        nav.minimized .nav-links {
+            padding: 10px 5px;
+        }
+        nav.minimized .nav-item {
+            justify-content: center;
+            padding: 12px 0;
+            border-left: none;
+        }
+        nav.minimized .nav-item.active {
+            border-left: none;
+            background: var(--hover-bg);
+        }
+        nav {
+            position: relative;
+        }
+        nav:not(.dragging) {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="brand" style="display: flex; justify-content: space-between; align-items: center; width: 100%; position: relative;">
+            <div style="display: flex; align-items: center; gap: 12px; overflow: hidden;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink: 0;">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                <h1 class="brand-text" style="margin: 0; font-size: 1.3rem; color: var(--accent-color); font-weight: 600; letter-spacing: 0.5px; white-space: nowrap;">AXiomEngine</h1>
+            </div>
+            <button id="sidebar-toggle" onclick="toggleSidebar(event)" style="background: none; border: none; color: var(--text-color); cursor: pointer; font-size: 0.85rem; padding: 4px 8px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: background 0.2s;" title="Minimize Sidebar">
+                ◀
+            </button>
+        </div>
+
+        <div class="project-selector-container" style="padding: 15px; border-bottom: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 8px;">
+            <label class="section-label" style="margin: 0; padding: 0;">Active Project</label>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <select id="project-dropdown" onchange="onProjectSelect(this.value)" style="flex: 1; background: var(--bg-color); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px 10px; font-family: inherit; font-size: 0.85rem; outline: none; cursor: pointer; transition: border-color 0.2s;">
+                    <option value="">-- Select Project --</option>
+                </select>
+                <button onclick="loadApp('/project/new')" title="Create Project" style="background: var(--accent-color); color: var(--bg-color); border: none; padding: 8px 12px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; height: 33px; width: 33px;">+</button>
+            </div>
+        </div>
+
+        <div class="nav-links">
+            <div class="section-label">Operations</div>
+            <div class="nav-item active" onclick="loadApp('/c2', this)">
+                <span class="nav-icon">🖥️</span>
+                <span>C2 Dashboard</span>
+            </div>
+            
+            <div class="section-label">Governance</div>
+            <div class="nav-item" onclick="loadApp('/layers', this)">
+                <span class="nav-icon">📚</span>
+                <span>Sovereign Layers</span>
+            </div>
+            <div class="nav-item" onclick="loadApp('/visualizer', this)">
+                <span class="nav-icon">📊</span>
+                <span>Topology Graph</span>
+            </div>
+            
+            <div class="section-label">Configuration</div>
+            <div class="nav-item" onclick="loadApp('/agent_manager', this)">
+                <span class="nav-icon">🤖</span>
+                <span>Agent & Skill Manager</span>
+            </div>
+            <div class="nav-item" onclick="loadApp('/user-profile', this)">
+                <span class="nav-icon">👤</span>
+                <span>User Profile & Lingo</span>
+            </div>
+        </div>
+    </nav>
+    <div id="sidebar-resizer" class="resizer"></div>
+    <main>
+        <div id="loader">
+            <div class="spinner"></div>
+            <div style="color: #8b949e; font-family: 'JetBrains Mono'; font-size: 0.8rem;">Initializing Module...</div>
+        </div>
+        <iframe id="viewport" src="/c2" onload="hideLoader()"></iframe>
+    </main>
+
+    <script>
+        const viewport = document.getElementById('viewport');
+        const loader = document.getElementById('loader');
+
+        let projectsList = [];
+        async function fetchProjects() {
+            try {
+                const r = await fetch('/api/governance/projects');
+                const data = await r.json();
+                projectsList = data.projects || [];
+                const dropdown = document.getElementById('project-dropdown');
+                
+                // Clear existing except placeholder
+                dropdown.innerHTML = '<option value="">-- Select Project --</option>';
+                
+                projectsList.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = p.name;
+                    dropdown.appendChild(opt);
+                });
+
+                // Retrieve active project from iframe source if already on one
+                syncDropdownFromIframe();
+            } catch (e) {
+                console.error("Failed to load projects:", e);
+            }
+        }
+
+        function onProjectSelect(projectId) {
+            if (!projectId) return;
+            loadApp(`/project/${projectId}`);
+        }
+
+        function syncDropdownFromIframe() {
+            const dropdown = document.getElementById('project-dropdown');
+            const src = viewport.src;
+            const match = src.match(/\/project\/([^\/]+)/);
+            if (match && match[1] && match[1] !== 'new') {
+                dropdown.value = match[1];
+            } else {
+                dropdown.value = "";
+            }
+        }
+
+        // Expose a helper to let child iframes request dropdown sync
+        window.syncActiveProject = function(projectId) {
+            const dropdown = document.getElementById('project-dropdown');
+            if (dropdown) {
+                // Refresh list first to ensure the new project is loaded
+                fetchProjects().then(() => {
+                    dropdown.value = projectId;
+                });
+            }
+        };
+
+        // When the iframe finishes loading, automatically sync dropdown selection
+        viewport.addEventListener('load', () => {
+            syncDropdownFromIframe();
+            hideLoader();
+        });
+
+        function loadApp(url, el) {
+            // Update active state
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            if (el) el.classList.add('active');
+
+            // Show loader and navigate
+            loader.style.opacity = '1';
+            viewport.src = url;
+        }
+
+        function hideLoader() {
+            loader.style.opacity = '0';
+        }
+
+        // --- Sidebar Resizing & Minimization Logic ---
+        const resizer = document.getElementById('sidebar-resizer');
+        const nav = document.querySelector('nav');
+        const toggleBtn = document.getElementById('sidebar-toggle');
+        let isDragging = false;
+
+        resizer.addEventListener('mousedown', (e) => {
+            if (nav.classList.contains('minimized')) return;
+            isDragging = true;
+            document.body.style.cursor = 'col-resize';
+            resizer.classList.add('dragging');
+            nav.classList.add('dragging');
+            viewport.style.pointerEvents = 'none'; // Disable pointer events on iframe
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            let width = e.clientX;
+            if (width < 180) width = 180;
+            if (width > 500) width = 500;
+            nav.style.width = width + 'px';
+            localStorage.setItem('sidebar-width', width);
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                document.body.style.cursor = 'default';
+                resizer.classList.remove('dragging');
+                nav.classList.remove('dragging');
+                viewport.style.pointerEvents = 'auto'; // Enable pointer events on iframe
+            }
+        });
+
+        function toggleSidebar(event) {
+            if (event) {
+                event.stopPropagation();
+                event.preventDefault();
+            }
+            const isMinimized = nav.classList.contains('minimized');
+            if (isMinimized) {
+                nav.classList.remove('minimized');
+                toggleBtn.textContent = '◀';
+                const savedWidth = localStorage.getItem('sidebar-width') || '280';
+                nav.style.width = savedWidth + 'px';
+                localStorage.setItem('sidebar-minimized', 'false');
+            } else {
+                nav.classList.add('minimized');
+                toggleBtn.textContent = '▶';
+                nav.style.width = '60px';
+                localStorage.setItem('sidebar-minimized', 'true');
+            }
+        }
+
+        // Initialize state from local storage
+        const isSavedMinimized = localStorage.getItem('sidebar-minimized') === 'true';
+        const savedWidth = localStorage.getItem('sidebar-width');
+
+        if (isSavedMinimized) {
+            nav.classList.add('minimized');
+            toggleBtn.textContent = '▶';
+            nav.style.width = '60px';
+        } else if (savedWidth) {
+            nav.style.width = savedWidth + 'px';
+        }
+
+        // Initialize projects list
+        fetchProjects();
+    </script>
+</body>
+</html>

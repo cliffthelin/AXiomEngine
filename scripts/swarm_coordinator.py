@@ -25,7 +25,7 @@ class SwarmCoordinator:
         self.workers = {
             "coding": "Pi",
             "review": "Archon",
-            "security": "Guardian" # Placeholder for future agent
+            "security": "Guardian"
         }
 
     async def decompose_goal(self, goal: str) -> list:

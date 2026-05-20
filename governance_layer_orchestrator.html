@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AXiomEngine | Layer Orchestrator v1.7.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #010409;
+            --panel-bg: #0d1117;
+            --accent-color: #79c0ff;
+            --text-color: #c9d1d9;
+            --border-color: #30363d;
+            --success-color: #3fb950;
+            --danger-color: #f85149;
+            --warning-color: #d29922;
+        }
+
+        * { box-sizing: border-box; }
+        body { 
+            margin: 0; background: var(--bg-color); color: var(--text-color); font-family: 'Outfit', sans-serif; 
+            display: grid; grid-template-columns: 350px 1fr; height: 100vh; overflow: hidden;
+        }
+
+        /* Sidebar: The 13 Layers */
+        .sidebar {
+            background: var(--panel-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border-color); }
+        .sidebar-header h1 { margin: 0; font-size: 1.1rem; color: var(--accent-color); }
+        
+        .project-selector {
+            padding: 15px 20px;
+            background: #161b22;
+            border-bottom: 1px solid var(--border-color);
+        }
+        select {
+            width: 100%;
+            background: #0d1117;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .layer-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .layer-item:hover { background: rgba(255,255,255,0.02); }
+        .layer-item.active { background: rgba(121, 192, 255, 0.05); border-left: 4px solid var(--accent-color); }
+
+        .layer-num { font-family: 'JetBrains Mono'; font-size: 0.8rem; color: #8b949e; min-width: 25px; }
+        .layer-info { flex: 1; }
+        .layer-name { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; }
+        .layer-status { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .status-HARDENED { color: var(--success-color); }
+        .status-Under_Construction { color: var(--warning-color); }
+        .status-Empty { color: #484f58; }
+
+        /* Main Content */
+        .main { display: flex; flex-direction: column; overflow: hidden; background: #010409; }
+
+        .content-header {
+            padding: 20px 40px;
+            background: var(--panel-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .viewer { flex: 1; display: grid; grid-template-columns: 1fr 350px; overflow: hidden; }
+
+        .contract-view { padding: 40px; overflow-y: auto; }
+        .contract-card { background: #161b22; border: 1px solid var(--border-color); border-radius: 12px; padding: 30px; margin-bottom: 20px; }
+        .contract-title { font-size: 1.2rem; font-weight: 600; color: var(--accent-color); margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        
+        .mission-feed {
+            background: var(--panel-bg);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .section-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; color: #8b949e; margin-bottom: 15px; font-weight: 600; }
+
+        /* GPU Mini Stats */
+        .gpu-mini { display: flex; gap: 20px; font-size: 0.8rem; }
+        .gpu-stat { display: flex; align-items: center; gap: 8px; }
+        .gpu-bar { width: 40px; height: 4px; background: #30363d; border-radius: 2px; position: relative; }
+        .gpu-fill { height: 100%; background: var(--success-color); border-radius: 2px; }
+
+        .msg { font-size: 0.85rem; padding: 10px; border-radius: 6px; background: #161b22; margin-bottom: 10px; border: 1px solid var(--border-color); }
+        .msg-time { font-size: 0.6rem; color: #8b949e; margin-top: 4px; display: block; }
+
+        .empty-state { height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0.5; }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <h1>Sovereign Layers</h1>
+        <div style="font-size: 0.75rem; color: #8b949e; margin-top: 5px;">Axiomatic Governance Engine</div>
+    </div>
+    <div class="project-selector">
+        <div class="section-title" style="margin-bottom:8px">Active Project</div>
+        <select id="project-dropdown" onchange="switchProject(this.value)">
+            <option value="axiomengine-core">AXiomEngine Core</option>
+        </select>
+        <a href="/project/new" style="display:block; width:100%; margin-top:10px; font-size: 0.7rem; padding: 5px; background: #30363d; color: white; border: none; border-radius: 4px; cursor: pointer; text-align:center; text-decoration:none;">+ NEW PROJECT</a>
+    </div>
+    <div id="layer-list">
+        <!-- Layers injected here -->
+    </div>
+</aside>
+
+<section class="main">
+    <header class="content-header">
+        <div id="active-layer-title">
+            <h2 style="margin:0; font-size: 1.4rem;">Select a Layer to Orchestrate</h2>
+        </div>
+        <div class="gpu-mini" id="gpu-stats">
+            <!-- GPU stats here -->
+        </div>
+    </header>
+
+    <div class="viewer">
+        <div class="contract-view" id="contract-view">
+            <div class="empty-state">
+                <div style="font-size: 3rem; margin-bottom: 20px;">🏗️</div>
+                <div>Building Governance Layers...</div>
+            </div>
+        </div>
+
+        <aside class="mission-feed">
+            <div class="section-title">Live Governance Feed</div>
+            <div id="feed">
+                <div class="msg">System ready. Awaiting layer selection.</div>
+            </div>
+            
+            <div class="section-title" style="margin-top: 30px;">Associated Artifacts</div>
+            <div id="artifact-list" style="font-size: 0.8rem;">
+                <!-- Artifacts here -->
+            </div>
+        </aside>
+    </div>
+</section>
+
+<script>
+    const API_BASE = window.location.origin;
+    let state = {
+        projects: [],
+        activeProject: "axiomengine-core",
+        layers: [],
+        activeLayer: null,
+        gpus: []
+    };
+
+    async function refresh() {
+        try {
+            // Load Projects first
+            const pr = await fetch(`${API_BASE}/api/governance/projects`);
+            const pdata = await pr.json();
+            state.projects = pdata.projects;
+            renderProjectDropdown();
+
+            // Load Layers for active project
+            const lr = await fetch(`${API_BASE}/api/governance/layers?project_id=${state.activeProject}`);
+            const ldata = await lr.json();
+            state.layers = ldata.layers;
+            
+            const gr = await fetch(`${API_BASE}/api/governance/gpu-status`);
+            const gdata = await gr.json();
+            state.gpus = gdata.hardware.gpus;
+            
+            renderLayers();
+            renderGPU();
+        } catch (e) {}
+    }
+
+    function renderProjectDropdown() {
+        const dropdown = document.getElementById('project-dropdown');
+        const current = dropdown.value;
+        dropdown.innerHTML = state.projects.map(p => `
+            <option value="${p.id}" ${state.activeProject === p.id ? 'selected' : ''}>${p.name}</option>
+        `).join('');
+    }
+
+    function switchProject(id) {
+        window.location.href = `/project/${id}`;
+    }
+
+    function showNewProjectModal() {
+        const name = prompt("Enter Project Name:");
+        if (!name) return;
+        
+        let sources = [];
+        let adding = true;
+        while(adding) {
+            const type = prompt("Enter Source Type (local_folder, git_repo, web_page):", "local_folder");
+            const target = prompt("Enter Target (Path or URL):");
+            if(type && target) {
+                sources.push({ type, target });
+            }
+            adding = confirm("Add another source to this project?");
+        }
+
+        if (name && sources.length > 0) {
+            createProject(name, sources);
+        }
+    }
+
+    async function createProject(name, sources) {
+        try {
+            const r = await fetch(`${API_BASE}/api/governance/projects`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, sources })
+            });
+            const data = await r.json();
+            if (data.status === "CREATED") {
+                state.activeProject = data.project.id;
+                refresh();
+            }
+        } catch (e) { alert("Failed to create project"); }
+    }
+
+    function renderLayers() {
+        const container = document.getElementById('layer-list');
+        container.innerHTML = state.layers.map(l => `
+            <div class="layer-item ${state.activeLayer?.id === l.id ? 'active' : ''}" onclick="selectLayer(${l.id})">
+                <div class="layer-num">${l.id.toString().padStart(2, '0')}</div>
+                <div class="layer-info">
+                    <div class="layer-name">${l.name}</div>
+                    <div class="layer-status status-${l.status.replace(' ', '_')}">${l.status}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderGPU() {
+        const container = document.getElementById('gpu-stats');
+        container.innerHTML = state.gpus.map(g => `
+            <div class="gpu-stat">
+                <span>${g.name.includes('P40') ? 'P40' : '3070'}</span>
+                <div class="gpu-bar"><div class="gpu-fill" style="width: ${g.utilization.gpu_pct}%"></div></div>
+                <span>${g.utilization.gpu_pct}%</span>
+            </div>
+        `).join('');
+    }
+
+    function selectLayer(id) {
+        state.activeLayer = state.layers.find(l => l.id === id);
+        renderLayers();
+        renderContent();
+    }
+
+    function renderContent() {
+        const l = state.activeLayer;
+        const view = document.getElementById('contract-view');
+        const artifacts = document.getElementById('artifact-list');
+        const header = document.getElementById('active-layer-title');
+
+        header.innerHTML = `
+            <h2 style="margin:0; font-size: 1.4rem; color: var(--accent-color);">Layer ${l.id.toString().padStart(2, '0')}: ${l.name}</h2>
+            <div style="font-size: 0.8rem; color: #8b949e; margin-top: 4px;">Status: ${l.status}</div>
+        `;
+
+        if (l.active_contracts.length === 0) {
+            view.innerHTML = `
+                <div class="empty-state">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">📄</div>
+                    <div>No verified contracts for this layer yet.</div>
+                    <div style="font-size: 0.8rem; margin-top: 10px;">Building layer axioms...</div>
+                </div>
+            `;
+            artifacts.innerHTML = "<div style='opacity:0.5'>None</div>";
+        } else {
+            view.innerHTML = l.active_contracts.map(c => `
+                <div class="contract-card">
+                    <div class="contract-title">${c.name}</div>
+                    <div style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: #8b949e;">
+                        Path: ${c.path}<br><br>
+                        [Contract Verified: ✅ HARDENED]<br>
+                        [Governed By: AXiomEngine v1.5.0]
+                    </div>
+                </div>
+            `).join('');
+
+            artifacts.innerHTML = l.active_contracts.map(c => `
+                <div style="padding: 8px; background: #161b22; border-radius: 4px; margin-bottom: 6px; border: 1px solid var(--border-color);">
+                    ${c.name}
+                </div>
+            `).join('');
+        }
+    }
+
+    setInterval(refresh, 5000);
+    refresh();
+</script>
+</body>
+</html>

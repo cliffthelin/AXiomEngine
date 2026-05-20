@@ -1,0 +1,5 @@
+{
+  "defaultProvider": "ollama",
+  "defaultModel": "ollama/gemma4:e2b",
+  "defaultThinkingLevel": "low"
+}

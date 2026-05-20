@@ -1,0 +1,51 @@
+{
+    "projects": [
+        {
+            "id": "axiomengine-core",
+            "name": "AXiomEngine Core",
+            "sources": [
+                {
+                    "type": "local_folder",
+                    "target": "."
+                }
+            ],
+            "description": "The self-governing core of the AXiomEngine platform.",
+            "created_at": "2026-05-12T23:07:00Z"
+        },
+        {
+            "id": "gpu-switcher",
+            "name": "AXiomEngine GPU Switcher",
+            "sources": [
+                {
+                    "type": "local_folder",
+                    "target": "/mnt/usb-Seagate_Backup+_Hub_BK_NA9R7TTV-0:0-part2/Projects/GPU_Switcher/gpu-orchestrator"
+                }
+            ],
+            "description": "NVIDIA driver and profile orchestration layer.",
+            "created_at": "2026-05-12T23:07:00Z"
+        },
+        {
+            "id": "splinkforge",
+            "name": "SPLinkForge",
+            "sources": [
+                {
+                    "type": "local_folder",
+                    "target": "/mnt/usb-Seagate_Backup+_Hub_BK_NA9R7TTV-0:0-part2/Projects/SPLinkForge",
+                    "recursive": true,
+                    "file_count": 25542,
+                    "total_size_bytes": 3356321551
+                },
+                {
+                    "type": "git_repo",
+                    "target": "https://github.com/moj-analytical-services/splink",
+                    "recursive": true,
+                    "file_count": 0,
+                    "total_size_bytes": 0
+                }
+            ],
+            "created_at": "2026-05-12T23:56:02.736229",
+            "reversa_target": "/mnt/usb-Seagate_Backup+_Hub_BK_NA9R7TTV-0:0-part2/Projects/SPLinkForge",
+            "reversa_output": "/mnt/usb-Seagate_Backup+_Hub_BK_NA9R7TTV-0:0-part2/Projects/SPLinkForge/AXE_Output"
+        }
+    ]
+}

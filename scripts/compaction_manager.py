@@ -91,11 +91,13 @@ class CompactionManager:
         
         summary = await self.generate_summary(model_id, conv_text)
         
+        first_kept_id = kept_messages[0].id if kept_messages and hasattr(kept_messages[0], 'id') else None
+
         entry = CompactionEntry(
             id=str(uuid.uuid4()),
             parent_id="root", # Simplified
             summary=summary,
-            first_kept_entry_id="entry_id_0", # Placeholder
+            first_kept_entry_id=first_kept_id,
             tokens_before=total_len // 4,
             details=CompactionDetails(read_files=read, modified_files=mod)
         )

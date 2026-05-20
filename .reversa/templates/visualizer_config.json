@@ -1,0 +1,39 @@
+{
+  "theme": "dark",
+  "d3_config": {
+    "node_colors": {
+      "skills": "#ff7b72",
+      "agents": "#79c0ff",
+      "reversa": "#d29922",
+      "pdd": "#3fb950",
+      "specs": "#bc8cff",
+      "default": "#8b949e"
+    },
+    "link_color": "rgba(139, 148, 158, 0.4)",
+    "node_radius": {
+      "root": 18,
+      "category": 12,
+      "leaf": 6
+    },
+    "forces": {
+      "charge": -250,
+      "link_distance": 60,
+      "center_x": 0,
+      "center_y": 0
+    }
+  },
+  "mermaid_config": {
+    "theme": "base",
+    "themeVariables": {
+      "primaryColor": "#0d1117",
+      "primaryTextColor": "#c9d1d9",
+      "primaryBorderColor": "#30363d",
+      "lineColor": "#79c0ff",
+      "secondaryColor": "#161b22",
+      "tertiaryColor": "#21262d"
+    },
+    "flowchart": {
+      "curve": "basis"
+    }
+  }
+}

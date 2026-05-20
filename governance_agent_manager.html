@@ -1,0 +1,2273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent & Skill Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <style>
+        :root {
+            --bg-color: #010409;
+            --panel-bg: rgba(13, 17, 23, 0.7);
+            --accent-color: #58a6ff;
+            --accent-glow: rgba(88, 166, 255, 0.15);
+            --text-color: #c9d1d9;
+            --muted-color: #8b949e;
+            --border-color: #30363d;
+            --hover-bg: rgba(88, 166, 255, 0.08);
+            --warn-color: #d29922;
+            --success-color: #3fb950;
+        }
+
+        * { box-sizing: border-box; }
+        body { 
+            margin: 0; 
+            background: var(--bg-color); 
+            color: var(--text-color); 
+            font-family: 'Outfit', sans-serif; 
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Layout */
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(88, 166, 255, 0.03) 0%, transparent 80%);
+        }
+
+        /* Left Panel - Agent List */
+        .left-panel {
+            width: 320px;
+            min-width: 200px;
+            max-width: 600px;
+            background: var(--panel-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+            position: relative;
+        }
+        .left-panel.collapsed {
+            display: none !important;
+        }
+        .header {
+            padding: 18px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h2 { margin: 0; font-size: 1.15rem; color: var(--accent-color); font-weight: 600; }
+        
+        .toolbar { 
+            padding: 12px 18px; 
+            display: flex; 
+            flex-wrap: wrap;
+            gap: 8px; 
+            border-bottom: 1px solid var(--border-color); 
+            background: rgba(0,0,0,0.15);
+            align-items: center;
+        }
+        .toolbar-row {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn {
+            background: var(--border-color); 
+            color: #f0f6fc; 
+            border: 1px solid rgba(240, 246, 252, 0.1); 
+            padding: 6px 12px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-family: inherit; 
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        .btn-primary { 
+            background: var(--accent-color); 
+            color: #010409; 
+            font-weight: 600; 
+            border: none;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+        .btn:hover { 
+            opacity: 0.9; 
+            transform: translateY(-1px);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 0 15px rgba(88, 166, 255, 0.3);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .agent-list { flex: 1; overflow-y: auto; padding: 12px; }
+        .app-group { margin-bottom: 20px; }
+        .app-group-title { 
+            font-size: 0.72rem; 
+            text-transform: uppercase; 
+            color: var(--muted-color); 
+            letter-spacing: 1px; 
+            margin-bottom: 8px; 
+            font-weight: 600; 
+            padding-left: 5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .agent-item {
+            padding: 10px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            margin-bottom: 4px;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        .agent-item:hover { 
+            background: var(--hover-bg); 
+            border-color: rgba(88, 166, 255, 0.1);
+        }
+        .agent-item.selected { 
+            background: var(--hover-bg); 
+            border-left: 3px solid var(--accent-color); 
+            border-color: rgba(88, 166, 255, 0.2);
+            box-shadow: inset 0 0 8px rgba(88, 166, 255, 0.05);
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .checkbox-container input[type="checkbox"] {
+            cursor: pointer;
+            accent-color: var(--accent-color);
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Center Panel - Editor */
+        .center-panel {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+            background: rgba(1, 4, 9, 0.85);
+            position: relative;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tabs { 
+            display: flex; 
+            border-bottom: 1px solid var(--border-color); 
+            background: var(--panel-bg); 
+            padding: 0 10px;
+        }
+        .tab { 
+            padding: 14px 20px; 
+            cursor: pointer; 
+            font-size: 0.9rem; 
+            color: var(--muted-color); 
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+        .tab:hover {
+            color: #f0f6fc;
+        }
+        .tab.active { 
+            color: var(--accent-color); 
+            border-bottom-color: var(--accent-color); 
+            font-weight: 500; 
+        }
+        
+        .editor-container, .versions-container, .workbench-container { flex: 1; display: none; flex-direction: column; }
+        .editor-container.active, .versions-container.active, .workbench-container.active { display: flex; }
+        
+        textarea.code-editor {
+            flex: 1; 
+            width: 100%; 
+            background: var(--bg-color); 
+            color: #e6edf3; 
+            font-family: 'JetBrains Mono', monospace; 
+            font-size: 0.82rem; 
+            border: none; 
+            padding: 18px; 
+            resize: none; 
+            outline: none;
+            line-height: 1.5;
+        }
+        
+        .version-item { 
+            padding: 12px 18px; 
+            border-bottom: 1px solid var(--border-color); 
+            cursor: pointer; 
+            transition: background 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .version-item:hover { background: var(--hover-bg); }
+        
+        .panel-footer { 
+            padding: 12px 18px; 
+            border-top: 1px solid var(--border-color); 
+            background: var(--panel-bg); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+
+        /* Right Panel - Chat & Test Drive */
+        .right-panel {
+            width: 380px;
+            min-width: 250px;
+            max-width: 600px;
+            background: var(--panel-bg);
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+            position: relative;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .right-panel.collapsed {
+            display: none !important;
+        }
+
+        /* Draggable Panel Resizers */
+        .panel-resizer {
+            width: 4px;
+            cursor: col-resize;
+            background: var(--border-color);
+            transition: background 0.2s;
+            z-index: 10;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .panel-resizer:hover, .panel-resizer.dragging {
+            background: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+        
+        .container.dragging .left-panel,
+        .container.dragging .right-panel,
+        .container.dragging .center-panel {
+            transition: none !important;
+            pointer-events: none;
+        }
+        
+        .chat-header { 
+            padding: 18px; 
+            border-bottom: 1px solid var(--border-color); 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+            background: rgba(0,0,0,0.15);
+        }
+        .select-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .select-group label {
+            font-size: 0.7rem;
+            color: var(--muted-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        select.input-control { 
+            width: 100%; 
+            padding: 8px; 
+            background: var(--bg-color); 
+            color: var(--text-color); 
+            border: 1px solid var(--border-color); 
+            border-radius: 6px; 
+            outline: none; 
+            font-family: inherit;
+            font-size: 0.85rem;
+        }
+        
+        .chat-box { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+        .message { 
+            padding: 12px 16px; 
+            border-radius: 10px; 
+            max-width: 90%; 
+            font-size: 0.88rem; 
+            line-height: 1.45; 
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+        .message.user { 
+            background: rgba(88, 166, 255, 0.1); 
+            border: 1px solid rgba(88, 166, 255, 0.25);
+            color: #f0f6fc;
+            align-self: flex-end; 
+        }
+        .message.ai { 
+            background: rgba(48, 54, 61, 0.5); 
+            border: 1px solid var(--border-color); 
+            color: #c9d1d9;
+            align-self: flex-start; 
+        }
+        .message.system-note {
+            background: rgba(210, 153, 34, 0.08);
+            border: 1px solid rgba(210, 153, 34, 0.2);
+            color: #f08c3a;
+            align-self: center;
+            text-align: center;
+            max-width: 95%;
+            font-size: 0.8rem;
+        }
+
+        /* Compare Split Mode */
+        .compare-wrapper {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            align-self: flex-start;
+        }
+        .compare-col {
+            flex: 1;
+            min-width: 0;
+            background: rgba(33, 38, 45, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+        }
+        .compare-col-header {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            color: var(--accent-color);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .compare-col-body {
+            font-size: 0.85rem;
+            line-height: 1.45;
+            color: #e6edf3;
+            white-space: pre-wrap;
+        }
+        
+        .chat-input-container { 
+            padding: 15px 18px; 
+            border-top: 1px solid var(--border-color); 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+            background: rgba(0,0,0,0.1);
+        }
+        textarea.chat-input { 
+            width: 100%; 
+            height: 65px; 
+            background: var(--bg-color); 
+            color: white; 
+            border: 1px solid var(--border-color); 
+            border-radius: 8px; 
+            padding: 10px 12px; 
+            resize: none; 
+            font-family: inherit; 
+            outline: none;
+            font-size: 0.88rem;
+        }
+        textarea.chat-input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 1px var(--accent-color);
+        }
+        .chat-actions { display: flex; justify-content: space-between; align-items: center; }
+
+        .loader-dots span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            margin: 0 2px;
+            animation: bounce 0.6s infinite alternate;
+        }
+        .loader-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loader-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce {
+            to { transform: translateY(-4px); opacity: 0.4; }
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: #0d1117;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            width: 550px;
+            max-width: 90vw;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 15px var(--accent-glow);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        .modal-header h3 {
+            margin: 0;
+            color: var(--accent-color);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--muted-color);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: color 0.2s;
+        }
+        .modal-close:hover {
+            color: #ff7b72;
+        }
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .form-row {
+            display: flex;
+            gap: 10px;
+        }
+        .form-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .warning-banner {
+            background: rgba(210, 153, 34, 0.08);
+            border: 1px solid rgba(210, 153, 34, 0.25);
+            color: #d29922;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+        .progress-bar-container {
+            width: 100%;
+            background: var(--border-color);
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background: var(--success-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Left Panel -->
+    <div class="left-panel" id="leftPanel">
+        <div class="header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <button class="btn" onclick="toggleLeftPanel()" style="padding: 2px 6px; font-size: 0.75rem; border: none; background: none; color: var(--muted-color);" title="Minimize Panel">◀</button>
+                <h2>Context Library</h2>
+            </div>
+            <button class="btn btn-primary" onclick="createNewAgent()">+ New</button>
+        </div>
+        <div class="search-panel" style="padding: 10px; display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.15);">
+            <input type="text" id="sidebarSearch" placeholder="Search files (name, path)..." class="input-control" style="width: 100%; padding: 6px 10px; font-size: 0.8rem;" oninput="filterAndRenderList()">
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <select id="categoryFilter" class="input-control" style="flex: 1; min-width: 80px; padding: 4px 6px; font-size: 0.75rem;" onchange="filterAndRenderList()">
+                    <option value="all">All Categories</option>
+                    <option value="skills">Skills</option>
+                    <option value="agents">System Agents</option>
+                    <option value="reversa">Reversa Agents</option>
+                    <option value="standalone">Standalone Agents</option>
+                    <option value="specs">Specs (SDD)</option>
+                    <option value="pdd">PDD Policies</option>
+                    <option value="configs">Config Assets</option>
+                </select>
+                <select id="sortSelect" class="input-control" style="flex: 1; min-width: 80px; padding: 4px 6px; font-size: 0.75rem;" onchange="filterAndRenderList()">
+                    <option value="name">Sort by Name</option>
+                    <option value="mtime">Sort by Change Date</option>
+                    <option value="ctime">Sort by Create Date</option>
+                </select>
+                <select id="axiomFilter" class="input-control" style="flex: 1; min-width: 80px; padding: 4px 6px; font-size: 0.75rem;" onchange="filterAndRenderList()">
+                    <option value="all">All Axiom Status</option>
+                    <option value="axed">🪓 Axed Only</option>
+                    <option value="not_axed">⏳ Not Axed Only</option>
+                </select>
+            </div>
+        </div>
+        <div class="toolbar">
+            <div class="toolbar-row">
+                <label style="font-size: 0.78rem; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                    <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)" style="accent-color: var(--accent-color);"> Select All
+                </label>
+                <div style="display: flex; gap: 6px;">
+                    <button class="btn btn-primary" onclick="openAxiomModal()" style="background: var(--success-color); border-color: var(--success-color); color: #010409;">🪓 Axe Selected</button>
+                    <button class="btn" onclick="bulkDelete()" style="background: rgba(248, 81, 73, 0.1); border-color: rgba(248, 81, 73, 0.2); color: #ff7b72;">Delete</button>
+                </div>
+            </div>
+            <div class="toolbar-row" style="margin-top: 5px;">
+                <select class="input-control" id="bulkMoveSelect" onchange="bulkMove(this)" style="padding: 4px 8px; font-size: 0.75rem; flex: 1;">
+                    <option value="">Bulk Move Category...</option>
+                    <option value="skills">Skills (Axiom Engine)</option>
+                    <option value="agents">System Agents</option>
+                    <option value="reversa">Reversa Agents</option>
+                    <option value="standalone">Standalone Agents</option>
+                    <option value="specs">Specs (SDD)</option>
+                    <option value="pdd">PDD Policies</option>
+                    <option value="configs">Config Assets</option>
+                </select>
+                <button class="btn" onclick="fetchAgents()" style="padding: 4px 8px; font-size: 0.75rem;">Refresh</button>
+            </div>
+        </div>
+        <div class="agent-list" id="agentList">
+            <!-- Grouped by application -->
+        </div>
+    </div>
+    
+    <div id="left-resizer" class="panel-resizer"></div>
+
+    <!-- Center Panel -->
+    <div class="center-panel" id="centerPanel">
+        <div class="tabs">
+            <button id="restore-left-btn" class="btn" onclick="toggleLeftPanel()" style="margin: 6px; padding: 4px 8px; display: none; font-size: 0.75rem; margin-right: 10px; background: rgba(88,166,255,0.1); border-color: rgba(88,166,255,0.2); color: var(--accent-color);">▶ Library</button>
+            <div class="tab active" id="tabEditor" onclick="switchTab('editor', this)">Context Editor</div>
+            <div class="tab" id="tabVersions" onclick="switchTab('versions', this)">Version History</div>
+            <div class="tab" id="tabWorkbench" onclick="switchTab('workbench', this)">Reversa Workbench</div>
+            <button id="restore-right-btn" class="btn" onclick="toggleRightPanel()" style="margin: 6px 6px 6px auto; padding: 4px 8px; display: none; font-size: 0.75rem; background: rgba(88,166,255,0.1); border-color: rgba(88,166,255,0.2); color: var(--accent-color);">Console ◀</button>
+        </div>
+        
+        <div class="editor-container active" id="editorView">
+            <div style="padding: 12px 18px; display:flex; gap: 12px; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.15);">
+                <div style="flex:1;" class="select-group">
+                    <label>Context Identifier / ID</label>
+                    <input type="text" id="agentId" placeholder="e.g. my-context-doc" style="width: 100%; padding: 6px 10px; background:var(--bg-color); color:white; border:1px solid var(--border-color); border-radius:6px; outline:none; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;">
+                </div>
+                <div style="flex:1;" class="select-group">
+                    <label>Context Category / Folder</label>
+                    <select id="agentApp" class="input-control" style="padding: 5px 8px; font-size: 0.8rem;">
+                        <option value="skills">Skills (Axiom Engine)</option>
+                        <option value="agents">System Agents</option>
+                        <option value="reversa">Reversa Agents</option>
+                        <option value="standalone">Standalone Agents</option>
+                        <option value="specs">Specs (SDD)</option>
+                        <option value="pdd">PDD Policies</option>
+                        <option value="configs">Config Assets</option>
+                    </select>
+                </div>
+            </div>
+            <textarea class="code-editor" id="mdEditor" placeholder="---
+name: my-agent
+description: Custom agent profile
+category: Custom
+application: skills
+version: 1.0.0
+---
+
+# Instructions
+You are an autonomous AI Agent. Describe your behavior here.
+"></textarea>
+            <div class="panel-footer">
+                <span id="filePathLabel" style="font-size:0.75rem; color: var(--muted-color); font-family: 'JetBrains Mono', monospace;">New Agent Profile</span>
+                <button class="btn btn-primary" onclick="saveAgent()">Save & Replace</button>
+            </div>
+        </div>
+        
+        <div class="versions-container" id="versionsView">
+            <div style="flex:1; overflow-y:auto;" id="versionList">
+                <div style="padding:20px; text-align:center; color:var(--muted-color);">Select an agent from the library to view history</div>
+            </div>
+        </div>
+
+        <div class="workbench-container" id="workbenchView">
+            <div style="padding: 15px; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; height: 100%;">
+                
+                <!-- AUTO-DISCOVERY & GLOBAL ACTIONS -->
+                <div style="background: rgba(88,166,255,0.05); border: 1px solid rgba(88,166,255,0.15); border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 600; color: var(--accent-color); font-size: 0.9rem;">📍 Reversa Active Instance</div>
+                        <div style="font-size: 0.75rem; color: var(--muted-color); margin-top: 2px;">Local directories auto-detected: <code style="color: #bc8cff;">.reversa/</code> & <code style="color: #bc8cff;">_reversa_sdd/</code></div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <label style="font-size: 0.75rem; display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-color);">
+                            <input type="checkbox" id="gitignoreToggle" onchange="toggleGitignore(this)" style="accent-color: var(--accent-color);"> Ignored in .gitignore
+                        </label>
+                        <button class="btn btn-primary" onclick="loadWorkbench()" style="padding: 4px 10px; font-size: 0.75rem;">Reload All</button>
+                    </div>
+                </div>
+
+                <!-- CONFIG EDITOR -->
+                <div style="background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 10px;">
+                    <div style="font-weight: 600; font-size: 0.85rem; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                        <span>⚙️ Configuration Editor (setup.json & config.toml)</span>
+                        <button class="btn btn-primary" onclick="saveReversaConfig()" style="padding: 4px 10px; font-size: 0.75rem;">Save Config Files</button>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <!-- setup.json fields (Form) -->
+                        <div style="flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 8px;">
+                            <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--muted-color); font-weight: 600;">setup.json Parameters</div>
+                            <div class="select-group">
+                                <label>Project Name</label>
+                                <input type="text" id="setupProjectName" class="input-control" style="padding: 5px 8px; font-size: 0.75rem;">
+                            </div>
+                            <div class="select-group">
+                                <label>Prefix Format</label>
+                                <select id="setupPrefixFormat" class="input-control" style="padding: 5px 8px; font-size: 0.75rem;">
+                                    <option value="sequential">sequential</option>
+                                    <option value="none">none</option>
+                                </select>
+                            </div>
+                            <div class="select-group">
+                                <label>Language</label>
+                                <select id="setupLanguage" class="input-control" style="padding: 5px 8px; font-size: 0.75rem;">
+                                    <option value="en">en (English)</option>
+                                    <option value="pt">pt (Portuguese)</option>
+                                </select>
+                            </div>
+                            <div class="select-group">
+                                <label>Specs Dir</label>
+                                <input type="text" id="setupSddDir" class="input-control" style="padding: 5px 8px; font-size: 0.75rem;">
+                            </div>
+                        </div>
+
+                        <!-- config.toml (TOML area) -->
+                        <div style="flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 8px;">
+                            <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--muted-color); font-weight: 600;">config.toml</div>
+                            <textarea id="configTomlEditor" style="flex: 1; min-height: 120px; background: var(--bg-color); color: #e6edf3; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; padding: 10px; resize: vertical; outline: none;"></textarea>
+                        </div>
+
+                        <!-- config.user.toml (TOML area) -->
+                        <div style="flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 8px;">
+                            <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--muted-color); font-weight: 600;">config.user.toml</div>
+                            <textarea id="configUserTomlEditor" style="flex: 1; min-height: 120px; background: var(--bg-color); color: #e6edf3; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; padding: 10px; resize: vertical; outline: none;"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONTEXT ASSETS EDITOR & PREVIEW -->
+                <div style="background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 10px;">
+                    <div style="font-weight: 600; font-size: 0.85rem; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                        <span>📝 Context & Specification Assets (Markdown & Rules)</span>
+                        <div style="display: flex; gap: 8px;">
+                            <select id="assetSelect" onchange="loadAssetContent(this.value)" style="padding: 4px 8px; background: var(--bg-color); color: white; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.75rem; font-family: inherit; outline: none;">
+                                <option value="">Select an asset to edit...</option>
+                            </select>
+                            <button class="btn btn-primary" onclick="saveAssetContent()" style="padding: 4px 10px; font-size: 0.75rem;">Save Asset</button>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 12px; height: 350px;">
+                        <!-- Raw Editor -->
+                        <div style="flex: 1; display: flex; flex-direction: column; gap: 5px;">
+                            <div style="font-size: 0.7rem; color: var(--muted-color); font-weight: 600; text-transform: uppercase;">Markdown Editor</div>
+                            <textarea id="assetRawEditor" oninput="updateAssetPreview()" style="flex: 1; background: var(--bg-color); color: #e6edf3; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; padding: 10px; resize: none; outline: none;" placeholder="Choose an asset to load..."></textarea>
+                        </div>
+
+                        <!-- Live Preview -->
+                        <div style="flex: 1; display: flex; flex-direction: column; gap: 5px;">
+                            <div style="font-size: 0.7rem; color: var(--muted-color); font-weight: 600; text-transform: uppercase;">Live Preview</div>
+                            <div id="assetPreviewBox" style="flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 6px; padding: 12px; overflow-y: auto; font-size: 0.8rem; line-height: 1.5; color: var(--text-color); border-left: 2px solid var(--accent-color);">
+                                <em style="color: var(--muted-color);">No asset loaded.</em>
+                            </div>
+                        </div>
+                    </div>
+                    <span id="assetBackupLabel" style="font-size: 0.7rem; color: var(--success-color); font-family: 'JetBrains Mono', monospace; display: none;">✓ Save completed. Backup copy saved to .reversa/backups/</span>
+                </div>
+
+                <!-- LOCAL SCRIPT RUNNER -->
+                <div style="background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 10px;">
+                    <div style="font-weight: 600; font-size: 0.85rem; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                        <span>🚀 Local Script Orchestration</span>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <label style="font-size: 0.75rem; display: flex; align-items: center; gap: 4px; cursor: pointer; color: var(--text-color);">
+                                <input type="checkbox" id="scriptDryRun" style="accent-color: var(--accent-color);"> Dry Run Mode
+                            </label>
+                            <button class="btn btn-primary" onclick="runSelectedScript()" style="padding: 4px 10px; font-size: 0.75rem; background: var(--success-color); border-color: var(--success-color);">Execute</button>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 15px;">
+                        <!-- Left pane: Select Script & Parameters -->
+                        <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                            <div class="select-group">
+                                <label>Target Script</label>
+                                <select id="scriptSelect" onchange="updateScriptParamsForm(this.value)" class="input-control" style="padding: 5px 8px; font-size: 0.75rem;">
+                                    <option value="">Choose a script to run...</option>
+                                    <option value=".reversa/scripts/ps/verify-prerequisites.ps1">verify-prerequisites.ps1</option>
+                                    <option value=".reversa/scripts/ps/prepare-roadmap.ps1">prepare-roadmap.ps1</option>
+                                    <option value=".reversa/scripts/ps/bind-to-extraction.ps1">bind-to-extraction.ps1</option>
+                                    <option value=".reversa/scripts/ps/search_reports.ps1">search_reports.ps1</option>
+                                    <option value=".reversa/scripts/ps/Folder_flattener.ps1">Folder_flattener.ps1</option>
+                                    <option value=".reversa/scripts/ps/Folder_flattener_gui.ps1">Folder_flattener_gui.ps1</option>
+                                    <option value=".reversa/scripts/ps/New-ReversaFeatureFreshRun.ps1">New-ReversaFeatureFreshRun.ps1</option>
+                                    <option value=".reversa/scripts/ps/ReversaManager_gui.ps1">ReversaManager_gui.ps1</option>
+                                    <option value=".reversa/scripts/py/migrate_vscode.py">migrate_vscode.py</option>
+                                </select>
+                            </div>
+                            
+                            <div id="scriptParamsHeader" style="font-size: 0.72rem; text-transform: uppercase; color: var(--muted-color); font-weight: 600; margin-top: 5px; display: none;">Script Parameters</div>
+                            <div id="scriptParamsContainer" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                        </div>
+
+                        <!-- Right pane: Console Stream Logs -->
+                        <div style="flex: 2; display: flex; flex-direction: column; gap: 5px;">
+                            <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--muted-color); font-weight: 600; display: flex; justify-content: space-between;">
+                                <span>Output Console Stream</span>
+                                <span id="scriptStatusBadge" style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--muted-color);">IDLE</span>
+                            </div>
+                            <div id="scriptTerminal" style="height: 180px; background: #000; border: 1px solid #111; border-radius: 6px; padding: 10px; overflow-y: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #39db6d; white-space: pre-wrap; line-height: 1.4; border-left: 2px solid #39db6d;">Waiting for execution...</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    
+    <div id="right-resizer" class="panel-resizer"></div>
+
+    <!-- Right Panel -->
+    <div class="right-panel" id="rightPanel">
+        <div class="chat-header">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div style="font-weight: 600; color: var(--accent-color); font-size: 0.95rem;">Test Drive Console</div>
+                <button class="btn" onclick="toggleRightPanel()" style="padding: 2px 6px; font-size: 0.75rem; border: none; background: none; color: var(--muted-color);" title="Minimize Panel">▶</button>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div class="select-group">
+                    <label>Interviewer System</label>
+                    <select class="input-control" id="systemSelect" onchange="toggleAgentSystem(this)">
+                        <option value="direct">Direct Ollama</option>
+                        <option value="reversa">Reversa Router (Port 9001)</option>
+                        <option value="archon">Archon swarm (Port 9001)</option>
+                        <option value="hermes">Hermes dev (Port 9001)</option>
+                    </select>
+                </div>
+                
+                <div class="select-group">
+                    <label>Primary Model A</label>
+                    <select class="input-control" id="modelSelect">
+                        <option value="">Loading...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin: 4px 0;">
+                <label style="font-size: 0.78rem; display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--muted-color);">
+                    <input type="checkbox" id="compareCheckbox" onchange="toggleCompareMode(this)" style="accent-color: var(--accent-color);"> Compare Models Side-by-Side
+                </label>
+            </div>
+
+            <div class="select-group" id="compareModelGroup" style="display:none;">
+                <label>Secondary Model B</label>
+                <select class="input-control" id="modelBSelect">
+                    <!-- Loaded dynamically -->
+                </select>
+            </div>
+
+            <div style="display:flex; gap:6px;">
+                <button class="btn" style="flex:1;" onclick="startInterview()">AI Interview Wizard</button>
+                <button class="btn" style="flex:1;" onclick="wireInWizard()">Wire-in Wizard</button>
+            </div>
+        </div>
+        
+        <div class="chat-box" id="chatBox">
+            <div class="message ai">Welcome! Open an agent from the library and select a model. Chat with it, test its instruction prompts, or launch the Interview Wizard to generate new agents step-by-step.</div>
+        </div>
+        
+        <div class="chat-input-container">
+            <textarea class="chat-input" id="chatInput" placeholder="Type a test drive query or run the interview..."></textarea>
+            <div class="chat-actions">
+                <button class="btn" onclick="clearChat()">Clear Chat</button>
+                <div style="display:flex; gap: 6px;">
+                    <div id="chatLoader" style="display:none; align-items:center;" class="loader-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <button class="btn btn-primary" id="sendBtn" onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+</div>
+
+<!-- Axiom Setup Modal -->
+<div id="axiomSetupModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>🪓 Axiom Extraction Setup</h3>
+            <button class="modal-close" onclick="closeAxiomModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div style="font-size: 0.85rem; color: var(--muted-color);">
+                Configure how AXiomEngine breaks down the selected files into atomic verifiable rules.
+            </div>
+
+            <div class="form-row">
+                <div class="form-col">
+                    <label style="font-size: 0.72rem; text-transform: uppercase; color: var(--muted-color); font-weight:600;">Extraction Model</label>
+                    <select id="axiomModelSelect" class="input-control" onchange="evaluateAxiomHardware()"></select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-col">
+                    <label style="font-size: 0.72rem; text-transform: uppercase; color: var(--muted-color); font-weight:600;">Compute Device</label>
+                    <select id="axiomDeviceSelect" class="input-control" onchange="updateAxiomModalWarning()">
+                        <option value="gpu">GPU Swarm (Accelerated)</option>
+                        <option value="cpu">CPU & RAM (Verification Fallback)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="axiomWarningBanner" class="warning-banner" style="display: none;"></div>
+
+            <div style="font-weight: 600; font-size: 0.8rem; color: var(--accent-color); border-bottom: 1px solid var(--border-color); padding-bottom: 4px; margin-top: 5px;">
+                System Resource Preservation (Configurable)
+            </div>
+
+            <div class="form-row">
+                <div class="form-col">
+                    <label style="font-size: 0.7rem; color: var(--muted-color);">Preserve CPU Cores</label>
+                    <input type="number" id="axiomPreserveCores" class="input-control" min="1" max="64" value="1" onchange="evaluateAxiomHardware()">
+                </div>
+                <div class="form-col">
+                    <label style="font-size: 0.7rem; color: var(--muted-color);">Preserve RAM (MB)</label>
+                    <input type="number" id="axiomPreserveRam" class="input-control" min="512" max="65536" value="4096" onchange="evaluateAxiomHardware()">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-col">
+                    <label style="font-size: 0.7rem; color: var(--muted-color);">Parallel Model Instances</label>
+                    <input type="number" id="axiomParallelInstances" class="input-control" min="1" max="16" value="1">
+                </div>
+            </div>
+
+            <div id="axiomResourceSummary" style="font-size: 0.75rem; color: var(--muted-color); font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);">
+                Loading system status...
+            </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: 5px;">
+            <button class="btn" onclick="closeAxiomModal()">Cancel</button>
+            <button class="btn btn-primary" id="startAxiomBtn" onclick="submitAxiomQueue()">🚀 Start Axing Queue</button>
+        </div>
+    </div>
+</div>
+
+<!-- Axiom Progress Modal -->
+<div id="axiomProgressModal" class="modal-overlay">
+    <div class="modal-content" style="width: 600px;">
+        <div class="modal-header">
+            <h3>⚙️ Axiom Queue Running...</h3>
+            <button class="modal-close" onclick="closeAxiomProgressModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 500;">
+                <span id="axiomProgressStatus">Processing queue...</span>
+                <span id="axiomProgressCount">0 / 0 Files</span>
+            </div>
+            
+            <div class="progress-bar-container">
+                <div id="axiomProgressBar" class="progress-bar"></div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--muted-color);">
+                <span id="axiomActiveWorkers">Active Workers: 0</span>
+                <span>Press stop to pause execution safely.</span>
+            </div>
+
+            <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--muted-color); font-weight: 600; margin-top: 5px;">
+                Console Stream Logs
+            </div>
+            <pre id="axiomConsoleLogs" style="height: 200px; background: #000; border: 1px solid #111; border-radius: 6px; padding: 10px; overflow-y: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #39db6d; white-space: pre-wrap; line-height: 1.4; border-left: 2px solid #39db6d; margin: 0;"></pre>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: 5px;">
+            <button class="btn" id="stopAxiomQueueBtn" onclick="stopAxiomQueue()" style="background: rgba(248, 81, 73, 0.1); border-color: rgba(248, 81, 73, 0.2); color: #ff7b72;">Stop Queue</button>
+            <button class="btn btn-primary" id="closeAxiomProgressBtn" onclick="closeAxiomProgressModal()" disabled>Close Window</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API = window.location.origin;
+    let agents = [];
+    let currentAgent = null;
+    let chatHistory = [];
+    let ollamaModels = [];
+
+    async function fetchAgents() {
+        try {
+            const res = await fetch(`${API}/api/agent_manager/list`);
+            const data = await res.json();
+            agents = data.agents || [];
+            filterAndRenderList();
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    async function fetchModels() {
+        try {
+            const res = await fetch(`${API}/api/agent_manager/models`);
+            const data = await res.json();
+            ollamaModels = data.models || [];
+            
+            const selectA = document.getElementById('modelSelect');
+            const selectB = document.getElementById('modelBSelect');
+            
+            selectA.innerHTML = '';
+            selectB.innerHTML = '';
+            
+            if (ollamaModels.length === 0) {
+                const opt = document.createElement('option');
+                opt.value = "";
+                opt.textContent = "No models found";
+                selectA.appendChild(opt);
+                return;
+            }
+
+            ollamaModels.forEach(m => {
+                let optA = document.createElement('option');
+                optA.value = m;
+                optA.textContent = m;
+                selectA.appendChild(optA);
+
+                let optB = document.createElement('option');
+                optB.value = m;
+                optB.textContent = m;
+                selectB.appendChild(optB);
+            });
+            
+            // Set secondary default if available
+            if (ollamaModels.length > 1) {
+                selectB.selectedIndex = 1;
+            }
+        } catch(e) {
+            console.error(e);
+            ollamaModels = ["nemotron", "llama3", "mistral", "phi3", "qwen2.5:32b"];
+            const selectA = document.getElementById('modelSelect');
+            const selectB = document.getElementById('modelBSelect');
+            selectA.innerHTML = '';
+            selectB.innerHTML = '';
+            ollamaModels.forEach(m => {
+                let optA = document.createElement('option');
+                optA.value = m;
+                optA.textContent = m;
+                selectA.appendChild(optA);
+
+                let optB = document.createElement('option');
+                optB.value = m;
+                optB.textContent = m;
+                selectB.appendChild(optB);
+            });
+            if (ollamaModels.length > 1) {
+                selectB.selectedIndex = 1;
+            }
+        }
+    }
+
+    function filterAndRenderList() {
+        const query = document.getElementById('sidebarSearch').value.toLowerCase().trim();
+        const category = document.getElementById('categoryFilter').value;
+        const sortBy = document.getElementById('sortSelect').value;
+        const axiomStatus = document.getElementById('axiomFilter').value;
+        
+        let filtered = agents.filter(a => {
+            // Category check
+            if (category !== 'all' && a.application !== category) return false;
+            
+            // Axiom status check
+            if (axiomStatus !== 'all') {
+                const isAxed = !!a.axed;
+                if (axiomStatus === 'axed' && !isAxed) return false;
+                if (axiomStatus === 'not_axed' && isAxed) return false;
+            }
+            
+            // Search query check
+            if (query) {
+                const name = (a.name || '').toLowerCase();
+                const id = (a.id || '').toLowerCase();
+                const path = (a.path || '').toLowerCase();
+                const cat = (a.category || '').toLowerCase();
+                const desc = (a.description || '').toLowerCase();
+                return name.includes(query) || id.includes(query) || path.includes(query) || cat.includes(query) || desc.includes(query);
+            }
+            return true;
+        });
+        
+        // Sorting
+        filtered.sort((a, b) => {
+            if (sortBy === 'name') {
+                return (a.name || '').localeCompare(b.name || '');
+            } else if (sortBy === 'mtime') {
+                return new Date(b.mtime || 0) - new Date(a.mtime || 0); // newest first
+            } else if (sortBy === 'ctime') {
+                return new Date(b.ctime || 0) - new Date(a.ctime || 0); // newest first
+            }
+            return 0;
+        });
+        
+        renderFilteredList(filtered);
+    }
+
+    function renderFilteredList(filteredAgents) {
+        const list = document.getElementById('agentList');
+        list.innerHTML = '';
+        
+        if (filteredAgents.length === 0) {
+            list.innerHTML = '<div style="padding:20px; text-align:center; color:var(--muted-color); font-size:0.8rem;">No files found</div>';
+            return;
+        }
+        
+        // Group by application/category tag
+        const groups = {};
+        filteredAgents.forEach(a => {
+            const app = a.category || "Uncategorized";
+            if(!groups[app]) groups[app] = [];
+            groups[app].push(a);
+        });
+
+        for(const app in groups) {
+            const grpDiv = document.createElement('div');
+            grpDiv.className = 'app-group';
+            grpDiv.innerHTML = `<div class="app-group-title">📁 ${app.toUpperCase()}</div>`;
+            
+            groups[app].forEach(a => {
+                const item = document.createElement('div');
+                item.className = 'agent-item' + (currentAgent && currentAgent.path === a.path ? ' selected' : '');
+                
+                // Format times
+                const mtimeStr = a.mtime ? new Date(a.mtime).toLocaleString() : '';
+                
+                // Axiom badge
+                const isAxed = !!a.axed;
+                const axedBadge = isAxed 
+                    ? `<span style="background: rgba(63, 185, 80, 0.15); color: var(--success-color); border: 1px solid rgba(63, 185, 80, 0.3); padding: 1px 4px; border-radius: 4px; font-size: 0.65rem; font-weight: 600; flex-shrink: 0;">🪓 AXED</span>` 
+                    : `<span style="background: rgba(210, 153, 34, 0.15); color: var(--warn-color); border: 1px solid rgba(210, 153, 34, 0.3); padding: 1px 4px; border-radius: 4px; font-size: 0.65rem; font-weight: 600; flex-shrink: 0;">⏳ NOT AXED</span>`;
+                
+                item.innerHTML = `
+                    <div class="checkbox-container" onclick="event.stopPropagation()">
+                        <input type="checkbox" class="agent-cb" value="${a.path}">
+                    </div>
+                    <div style="flex:1; overflow:hidden;">
+                        <div style="font-weight:500; font-size:0.88rem; color:#f0f6fc; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; display: flex; justify-content: space-between; align-items: center; gap: 8px;" title="${a.name}">
+                            <span style="text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${a.name}</span>
+                            ${axedBadge}
+                        </div>
+                        <div style="font-size:0.72rem; color:var(--muted-color); font-family:'JetBrains Mono',monospace; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" title="${a.path}">${a.path}</div>
+                        <div style="font-size:0.65rem; color:rgba(255,255,255,0.3); margin-top:2px;">
+                            <span>Change: ${mtimeStr}</span>
+                        </div>
+                    </div>
+                `;
+                item.onclick = () => selectAgent(a);
+                grpDiv.appendChild(item);
+            });
+            list.appendChild(grpDiv);
+        }
+    }
+
+    function toggleSelectAll(cb) {
+        const checkBoxes = document.querySelectorAll('.agent-cb');
+        checkBoxes.forEach(box => {
+            box.checked = cb.checked;
+        });
+    }
+
+    async function bulkDelete() {
+        const checked = document.querySelectorAll('.agent-cb:checked');
+        const paths = Array.from(checked).map(c => c.value);
+        if(!paths.length) return alert("Select files to delete first.");
+        if(!confirm(`Are you sure you want to delete the ${paths.length} selected file(s)? This action is permanent.`)) return;
+        
+        try {
+            const res = await fetch(`${API}/api/agent_manager/delete`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({paths})
+            });
+            const data = await res.json();
+            alert(`Successfully deleted ${data.deleted || 0} file(s).`);
+            document.getElementById('selectAllCheckbox').checked = false;
+            fetchAgents();
+            
+            if (currentAgent && paths.includes(currentAgent.path)) {
+                createNewAgent();
+            }
+        } catch(e) {
+            console.error(e);
+            alert("Delete operation failed.");
+        }
+    }
+
+    async function bulkMove(select) {
+        const targetApp = select.value;
+        if(!targetApp) return;
+        
+        const checked = document.querySelectorAll('.agent-cb:checked');
+        const paths = Array.from(checked).map(c => c.value);
+        
+        if(!paths.length) {
+            alert("Select files to organize first.");
+            select.value = "";
+            return;
+        }
+
+        if(!confirm(`Move ${paths.length} file(s) to folder category '${targetApp}'?`)) {
+            select.value = "";
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API}/api/agent_manager/organize`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({paths, target_application: targetApp})
+            });
+            const data = await res.json();
+            alert(`Moved ${data.organized || 0} files successfully.`);
+            select.value = "";
+            document.getElementById('selectAllCheckbox').checked = false;
+            fetchAgents();
+            if(currentAgent) {
+                const matching = agents.find(x => x.id === currentAgent.id);
+                if (matching) selectAgent(matching);
+            }
+        } catch(e) {
+            console.error(e);
+            alert("Organize operation failed.");
+            select.value = "";
+        }
+    }
+
+    function selectAgent(agent) {
+        currentAgent = agent;
+        document.getElementById('agentId').value = agent.id;
+        
+        const appSelect = document.getElementById('agentApp');
+        if (["skills", "agents", "reversa", "standalone", "specs", "pdd", "configs"].includes(agent.application)) {
+            appSelect.value = agent.application;
+        } else {
+            appSelect.value = "skills"; // default
+        }
+        
+        document.getElementById('mdEditor').value = agent.content;
+        document.getElementById('filePathLabel').textContent = agent.path;
+        filterAndRenderList();
+        loadVersions(agent.id);
+        clearChat();
+        chatHistory = [];
+        addAiMessage(`Loaded ${agent.name} (${agent.id}). Chat test driving is active.`);
+    }
+
+    function createNewAgent() {
+        currentAgent = null;
+        document.getElementById('agentId').value = "new-document";
+        document.getElementById('agentApp').value = "skills";
+        document.getElementById('mdEditor').value = "---\nname: new-document\ndescription: Custom workbench context file\ncategory: Custom\napplication: skills\nversion: 1.0.0\n---\n\n# Context Title\nDescribe context details here.\n";
+        document.getElementById('filePathLabel').textContent = "New Context Document";
+        filterAndRenderList();
+    }
+
+    async function saveAgent() {
+        const id = document.getElementById('agentId').value.trim();
+        const app = document.getElementById('agentApp').value;
+        const content = document.getElementById('mdEditor').value;
+        
+        if(!id) return alert("Context ID / file name required");
+        
+        const payload = {
+            id, 
+            application: app, 
+            content
+        };
+        
+        if (currentAgent) {
+            payload.previous_path = currentAgent.path;
+            payload.path = currentAgent.path;
+        } else {
+            let folder = "skills";
+            if (app === "reversa") folder = "reversa/agents";
+            else if (app === "standalone") folder = "standalone_agents";
+            else if (app === "agents") folder = ".agents";
+            else if (app === "specs") folder = "_reversa_sdd";
+            else if (app === "pdd") folder = "docs/pdd";
+            else if (app === "configs") folder = ".reversa";
+            
+            // Standardize extension
+            let ext = ".md";
+            if (app === "configs" && id.includes(".")) {
+                ext = ""; // Use provided extension for config files
+            }
+            payload.path = `${folder}/${id}${ext}`;
+        }
+        
+        try {
+            const res = await fetch(`${API}/api/agent_manager/save`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if(data.success) {
+                alert("Saved successfully!");
+                await fetchAgents();
+                const matching = agents.find(x => x.path === data.path);
+                if (matching) {
+                    selectAgent(matching);
+                } else {
+                    const matchingId = agents.find(x => x.id === id);
+                    if (matchingId) selectAgent(matchingId);
+                }
+            } else {
+                alert("Error saving: " + data.error);
+            }
+        } catch(e) {
+            console.error(e);
+            alert("Error connecting to server to save context file.");
+        }
+    }
+
+    async function loadVersions(agentId) {
+        const list = document.getElementById('versionList');
+        list.innerHTML = 'Loading historical snapshots...';
+        try {
+            const res = await fetch(`${API}/api/agent_manager/versions?id=` + agentId);
+            const data = await res.json();
+            if(!data.versions || !data.versions.length) {
+                list.innerHTML = '<div style="padding:20px; text-align:center; color:var(--muted-color);">No version history found for this agent. Version history is captured when overwriting an existing agent.</div>';
+                return;
+            }
+            list.innerHTML = '';
+            data.versions.forEach(v => {
+                const item = document.createElement('div');
+                item.className = 'version-item';
+                item.innerHTML = `
+                    <div>
+                        <div style="font-weight:500; font-size: 0.88rem; color:#f0f6fc;">Snapshot: ${new Date(v.date).toLocaleString()}</div>
+                        <div style="font-size:0.75rem; color:var(--muted-color); margin-top:2px;">Size: ${v.content.length} characters</div>
+                    </div>
+                    <button class="btn btn-primary" style="padding: 4px 10px; font-size:0.7rem;">Restore</button>
+                `;
+                item.onclick = () => {
+                    if(confirm("Restore this historic snapshot into the editor? Any unsaved changes in the editor will be overwritten.")) {
+                        document.getElementById('mdEditor').value = v.content;
+                        switchTab('editor', document.getElementById('tabEditor'));
+                    }
+                };
+                list.appendChild(item);
+            });
+        } catch(e) {
+            console.error(e);
+            list.innerHTML = '<div style="padding:20px; text-align:center; color:#ff7b72;">Failed to load history versions.</div>';
+        }
+    }
+
+    function switchTab(tabId, el) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('editorView').classList.remove('active');
+        document.getElementById('versionsView').classList.remove('active');
+        document.getElementById('workbenchView').classList.remove('active');
+        document.getElementById(tabId + 'View').classList.add('active');
+        if(tabId === 'workbench') {
+            loadWorkbench();
+        }
+    }
+
+    function toggleCompareMode(cb) {
+        const compareGroup = document.getElementById('compareModelGroup');
+        if (cb.checked) {
+            compareGroup.style.display = 'flex';
+        } else {
+            compareGroup.style.display = 'none';
+        }
+    }
+
+    function toggleAgentSystem(select) {
+        const modelSelect = document.getElementById('modelSelect');
+        const compareCb = document.getElementById('compareCheckbox');
+        const compareGroup = document.getElementById('compareModelGroup');
+        
+        if (select.value !== "direct") {
+            // Router routes systems automatically, disable secondary model comparison
+            compareCb.checked = false;
+            compareCb.disabled = true;
+            compareGroup.style.display = 'none';
+            modelSelect.disabled = true;
+        } else {
+            compareCb.disabled = false;
+            modelSelect.disabled = false;
+        }
+    }
+
+    // Chat Box rendering
+    function addMessage(text, type) {
+        const box = document.getElementById('chatBox');
+        const msg = document.createElement('div');
+        msg.className = `message ${type}`;
+        msg.textContent = text;
+        box.appendChild(msg);
+        box.scrollTop = box.scrollHeight;
+    }
+    
+    function addUserMessage(text) { addMessage(text, 'user'); }
+    function addAiMessage(text) { addMessage(text, 'ai'); }
+    function addSystemNote(text) { addMessage(text, 'system-note'); }
+    
+    function clearChat() { 
+        document.getElementById('chatBox').innerHTML = ''; 
+        chatHistory = []; 
+    }
+
+    function appendComparePlaceholder(modelA, modelB) {
+        const box = document.getElementById('chatBox');
+        const wrapper = document.createElement('div');
+        const id = 'compare-' + Date.now();
+        wrapper.id = id;
+        wrapper.className = 'compare-wrapper';
+        wrapper.style.flexDirection = 'column';
+        wrapper.innerHTML = `
+            <div style="display: flex; gap: 10px; width: 100%;">
+                <div class="compare-col" style="flex:1;">
+                    <div class="compare-col-header">🤖 ${modelA}</div>
+                    <div class="compare-col-body" id="${id}-colA">
+                        <span class="loader-dots"><span></span><span></span><span></span></span>
+                    </div>
+                </div>
+                <div class="compare-col" style="flex:1;">
+                    <div class="compare-col-header">🤖 ${modelB}</div>
+                    <div class="compare-col-body" id="${id}-colB">
+                        <span class="loader-dots"><span></span><span></span><span></span></span>
+                    </div>
+                </div>
+            </div>
+            <div id="${id}-chart" style="width: 100%; height: 160px; margin-top: 10px; border-radius: 8px; display: none; background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); padding: 5px;"></div>
+        `;
+        box.appendChild(wrapper);
+        box.scrollTop = box.scrollHeight;
+        return id;
+    }
+
+    function updateCompareMessage(id, textA, textB, resA, resB, modelA, modelB) {
+        const colA = document.getElementById(`${id}-colA`);
+        const colB = document.getElementById(`${id}-colB`);
+        if (colA) colA.textContent = textA;
+        if (colB) colB.textContent = textB;
+        document.getElementById('chatBox').scrollTop = document.getElementById('chatBox').scrollHeight;
+
+        if (resA && resB && resA.latency !== undefined && resB.latency !== undefined) {
+            const chartDiv = document.getElementById(`${id}-chart`);
+            if (chartDiv) {
+                chartDiv.style.display = 'block';
+                Highcharts.chart(`${id}-chart`, {
+                    chart: {
+                        type: 'bar',
+                        backgroundColor: 'transparent',
+                        height: 150,
+                        spacing: [5, 5, 5, 5]
+                    },
+                    title: {
+                        text: 'Model Arena Performance Metrics',
+                        style: { color: '#c9d1d9', fontSize: '11px', fontFamily: 'Outfit' }
+                    },
+                    xAxis: {
+                        categories: ['Latency (s)', 'Tokens', 'Score'],
+                        labels: { style: { color: '#8b949e', fontFamily: 'Outfit', fontSize: '9px' } },
+                        lineColor: '#30363d'
+                    },
+                    yAxis: {
+                        title: null,
+                        labels: { style: { color: '#8b949e', fontFamily: 'Outfit', fontSize: '9px' } },
+                        gridLineColor: '#30363d',
+                        lineColor: '#30363d'
+                    },
+                    legend: {
+                        itemStyle: { color: '#c9d1d9', fontFamily: 'Outfit', fontSize: '9px' },
+                        margin: 5,
+                        padding: 0
+                    },
+                    tooltip: {
+                        backgroundColor: '#0d1117',
+                        borderColor: '#30363d',
+                        style: { color: '#c9d1d9', fontFamily: 'Outfit' }
+                    },
+                    plotOptions: {
+                        bar: {
+                            dataLabels: {
+                                enabled: true,
+                                style: { color: '#c9d1d9', fontSize: '9px', fontFamily: 'Outfit', textOutline: 'none' }
+                            },
+                            borderWidth: 0
+                        }
+                    },
+                    series: [{
+                        name: modelA,
+                        data: [resA.latency, resA.tokens, resA.score],
+                        color: '#58a6ff'
+                    }, {
+                        name: modelB,
+                        data: [resB.latency, resB.tokens, resB.score],
+                        color: '#bc8cff'
+                    }],
+                    credits: { enabled: false }
+                });
+            }
+        }
+    }
+
+    async function sendMessage(sysPromptOverride = null) {
+        const input = document.getElementById('chatInput');
+        const text = input.value.trim();
+        if(!text && !sysPromptOverride) return;
+        
+        if(text) addUserMessage(text);
+        input.value = '';
+
+        const agentSystem = document.getElementById('systemSelect').value;
+        const modelA = document.getElementById('modelSelect').value;
+        const compare = document.getElementById('compareCheckbox').checked && agentSystem === "direct";
+        const modelB = document.getElementById('modelBSelect').value;
+        const systemPrompt = sysPromptOverride || document.getElementById('mdEditor').value || "You are a helpful assistant.";
+        
+        // Prep history
+        if(chatHistory.length === 0) {
+            chatHistory.push({role: "system", content: systemPrompt});
+        } else {
+            if(chatHistory[0].role === "system") {
+                chatHistory[0].content = systemPrompt;
+            } else {
+                chatHistory.unshift({role: "system", content: systemPrompt});
+            }
+        }
+        
+        if(text) chatHistory.push({role: "user", content: text});
+        
+        document.getElementById('chatLoader').style.display = 'flex';
+        document.getElementById('sendBtn').disabled = true;
+
+        if (compare) {
+            // Comparative UI split pane
+            const compareId = appendComparePlaceholder(modelA, modelB);
+            try {
+                const reqA = fetch(`${API}/api/agent_manager/chat`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({model: modelA, messages: chatHistory, agent_system: agentSystem})
+                }).then(r => r.json());
+
+                const reqB = fetch(`${API}/api/agent_manager/chat`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({model: modelB, messages: chatHistory, agent_system: agentSystem})
+                }).then(r => r.json());
+
+                const [resA, resB] = await Promise.all([reqA, reqB]);
+                
+                let repA = resA.message?.content || resA.error || "No response received from Model A.";
+                let repB = resB.message?.content || resB.error || "No response received from Model B.";
+                
+                updateCompareMessage(compareId, repA, repB, resA, resB, modelA, modelB);
+            } catch (err) {
+                updateCompareMessage(compareId, "Error querying Model A", "Error querying Model B");
+            }
+        } else {
+            // Standard single pane routing
+            try {
+                const res = await fetch(`${API}/api/agent_manager/chat`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({model: modelA, messages: chatHistory, agent_system: agentSystem})
+                });
+                const data = await res.json();
+                
+                if(data.message && data.message.content) {
+                    addAiMessage(data.message.content);
+                    chatHistory.push(data.message);
+                    
+                    // Save history
+                    if(currentAgent) {
+                        fetch(`${API}/api/agent_manager/chat/save_history`, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({agent_id: currentAgent.id, messages: chatHistory})
+                        });
+                    }
+                } else if (data.error) {
+                    addAiMessage("Error: " + data.error);
+                }
+            } catch(e) {
+                addAiMessage("Error connecting to Chat API.");
+            }
+        }
+        
+        document.getElementById('chatLoader').style.display = 'none';
+        document.getElementById('sendBtn').disabled = false;
+    }
+
+    function startInterview() {
+        clearChat();
+        addSystemNote("Launching Interview Wizard Persona...");
+        const systemPrompt = `You are Hermes, the senior AI Architect. Your task is to interview the user in order to gather information to draft a new Agent or Skill instructions file.
+Please conduct a step-by-step interview. Ask exactly one simple question at a time. Do not list all questions at once.
+Information to gather:
+1. Intent: What is the primary purpose or target outcome of this agent?
+2. Desired Outcomes: What specific actions, outputs, or tool calls should the agent perform?
+3. Formatting constraints: What formatting (e.g. Markdown, XML block tags) should it adhere to?
+Provide clear output formatting examples for each response and help refine the instructions.
+Start by asking the user what agent they want to design today.`;
+
+        // Prepopulate chat history with the interview prompt as system instructions
+        chatHistory = [{role: "system", content: systemPrompt}];
+        
+        // Simulate start of interview
+        document.getElementById('chatLoader').style.display = 'flex';
+        fetch(`${API}/api/agent_manager/chat`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({model: document.getElementById('modelSelect').value, messages: chatHistory, agent_system: document.getElementById('systemSelect').value})
+        })
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('chatLoader').style.display = 'none';
+            if (data.message && data.message.content) {
+                addAiMessage(data.message.content);
+                chatHistory.push(data.message);
+            }
+        })
+        .catch(e => {
+            document.getElementById('chatLoader').style.display = 'none';
+            addAiMessage("Failed to initiate interview wizard.");
+        });
+    }
+    
+    function wireInWizard() {
+        clearChat();
+        const agentName = currentAgent ? currentAgent.name : "this custom agent";
+        addSystemNote(`Launching Wiring Integration Wizard for ${agentName}...`);
+        
+        const systemPrompt = `You are Archon, the sovereign code integration wizard. Your task is to interview the user about how to wire the agent/skill "${agentName}" into their application.
+Please conduct a step-by-step interactive interview. Ask exactly one simple question at a time.
+Verify:
+1. Destination: Do they want to integrate it into AXiomEngine core, a standalone script/application, or both?
+2. Architecture: What runtime language (e.g. Python, PowerShell, Node.js) and interfaces do they want to use?
+3. Trigger method: How should the agent be invoked (via an API endpoint, CLI command, event handler)?
+Provide complete code templates and deployment files (e.g. JSON registrations or server hooks) based on their answers.
+Start by asking the user which application (AXiomEngine, Standalone, or both) they want to wire the agent into.`;
+
+        chatHistory = [{role: "system", content: systemPrompt}];
+        
+        document.getElementById('chatLoader').style.display = 'flex';
+        fetch(`${API}/api/agent_manager/chat`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({model: document.getElementById('modelSelect').value, messages: chatHistory, agent_system: document.getElementById('systemSelect').value})
+        })
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('chatLoader').style.display = 'none';
+            if (data.message && data.message.content) {
+                addAiMessage(data.message.content);
+                chatHistory.push(data.message);
+            }
+        })
+        .catch(e => {
+            document.getElementById('chatLoader').style.display = 'none';
+            addAiMessage("Failed to initiate wiring integration wizard.");
+        });
+    }
+
+    // Workbench Logic
+    async function loadWorkbench() {
+        try {
+            const resConfig = await fetch(`${API}/api/governance/reversa/config`);
+            const config = await resConfig.json();
+            
+            const setup = config.setup || {};
+            document.getElementById('setupProjectName').value = setup["project-name"] || "";
+            document.getElementById('setupPrefixFormat').value = setup["prefix-format"] || "sequential";
+            document.getElementById('setupLanguage').value = setup["language"] || "en";
+            document.getElementById('setupSddDir').value = setup.paths ? setup.paths["sdd-dir"] : "_reversa_sdd";
+            
+            document.getElementById('configTomlEditor').value = config.config_toml || "";
+            document.getElementById('configUserTomlEditor').value = config.config_user_toml || "";
+            document.getElementById('gitignoreToggle').checked = config.gitignore_status || false;
+            
+            const resAssets = await fetch(`${API}/api/governance/reversa/assets`);
+            const dataAssets = await resAssets.json();
+            const assetsList = dataAssets.assets || [];
+            
+            const assetSelect = document.getElementById('assetSelect');
+            assetSelect.innerHTML = '<option value="">Select an asset to edit...</option>';
+            assetsList.forEach(a => {
+                const opt = document.createElement('option');
+                opt.value = a.path;
+                opt.textContent = `${a.path} (${(a.size/1024).toFixed(1)} KB)`;
+                assetSelect.appendChild(opt);
+            });
+        } catch (e) {
+            console.error("Failed to load workbench:", e);
+        }
+    }
+
+    async function saveReversaConfig() {
+        const payload = {
+            setup: {
+                "schema-version": 1,
+                "reversa-version": "1.2.44",
+                "installed-at": new Date().toISOString(),
+                "project-name": document.getElementById('setupProjectName').value,
+                "prefix-format": document.getElementById('setupPrefixFormat').value,
+                "language": document.getElementById('setupLanguage').value,
+                "watch": {
+                    "archive-after": 3,
+                    "block-on-red": false
+                },
+                "paths": {
+                    "sdd-dir": document.getElementById('setupSddDir').value,
+                    "forward-dir": "_reversa_forward",
+                    "config-dir": ".reversa"
+                },
+                "principles": {
+                    "enabled": true,
+                    "auto-load-into-plan": true
+                },
+                "telemetry": {
+                    "enabled": false
+                }
+            },
+            config_toml: document.getElementById('configTomlEditor').value,
+            config_user_toml: document.getElementById('configUserTomlEditor').value
+        };
+        try {
+            const res = await fetch(`${API}/api/governance/reversa/config`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert("Configuration saved successfully!");
+            } else {
+                alert("Failed to save configuration: " + data.error);
+            }
+        } catch(e) {
+            console.error(e);
+            alert("Error saving configuration.");
+        }
+    }
+
+    async function toggleGitignore(cb) {
+        try {
+            const res = await fetch(`${API}/api/governance/reversa/gitignore`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ignored: cb.checked })
+            });
+            const data = await res.json();
+            if (data.success) {
+                cb.checked = data.gitignore_status;
+            } else {
+                alert("Failed to toggle gitignore: " + data.error);
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    let activeLoadedAssetPath = "";
+    async function loadAssetContent(path) {
+        if (!path) {
+            document.getElementById('assetRawEditor').value = '';
+            document.getElementById('assetPreviewBox').innerHTML = '<em style="color: var(--muted-color);">No asset loaded.</em>';
+            activeLoadedAssetPath = "";
+            return;
+        }
+        try {
+            const res = await fetch(`${API}/api/governance/reversa/asset?path=${encodeURIComponent(path)}`);
+            const data = await res.json();
+            if (data.error) {
+                alert("Failed to load asset: " + data.error);
+                return;
+            }
+            activeLoadedAssetPath = data.path;
+            document.getElementById('assetRawEditor').value = data.content || "";
+            updateAssetPreview();
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    function updateAssetPreview() {
+        const raw = document.getElementById('assetRawEditor').value || "";
+        const preview = document.getElementById('assetPreviewBox');
+        if (!raw) {
+            preview.innerHTML = '<em style="color: var(--muted-color);">Preview empty.</em>';
+            return;
+        }
+        let html = raw.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        html = html.replace(/```([\s\S]+?)```/g, '<pre style="background: rgba(0,0,0,0.5); padding: 8px; border-radius: 4px; font-family: monospace; overflow-x:auto;">$1</pre>');
+        html = html.replace(/`([^`]+)`/g, '<code style="background: rgba(0,0,0,0.3); padding: 2px 4px; border-radius: 3px; font-family: monospace;">$1</code>');
+        html = html.replace(/^### (.*$)/gim, '<h4 style="margin: 10px 0 5px 0; color: var(--accent-color); font-weight:600;">$1</h4>');
+        html = html.replace(/^## (.*$)/gim, '<h3 style="margin: 15px 0 8px 0; color: var(--accent-color); font-weight:600;">$1</h3>');
+        html = html.replace(/^# (.*$)/gim, '<h2 style="margin: 20px 0 10px 0; color: var(--accent-color); font-weight:600;">$1</h2>');
+        html = html.replace(/- \[(x|X)\] (.*)/g, '<div style="display:flex; align-items:center; gap: 6px;"><input type="checkbox" checked disabled> $2</div>');
+        html = html.replace(/- \[\s\] (.*)/g, '<div style="display:flex; align-items:center; gap: 6px;"><input type="checkbox" disabled> $2</div>');
+        html = html.replace(/^\s*-\s+(.*)/g, '<li>$1</li>');
+        preview.innerHTML = html;
+    }
+
+    async function saveAssetContent() {
+        if (!activeLoadedAssetPath) {
+            alert("No active asset is loaded.");
+            return;
+        }
+        const content = document.getElementById('assetRawEditor').value;
+        try {
+            const res = await fetch(`${API}/api/governance/reversa/asset`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ path: activeLoadedAssetPath, content: content })
+            });
+            const data = await res.json();
+            if (data.success) {
+                const label = document.getElementById('assetBackupLabel');
+                label.style.display = 'inline';
+                setTimeout(() => { label.style.display = 'none'; }, 4000);
+            } else {
+                alert("Failed to save asset: " + data.error);
+            }
+        } catch(e) {
+            console.error(e);
+            alert("Error saving asset.");
+        }
+    }
+
+    function updateScriptParamsForm(scriptPath) {
+        const container = document.getElementById('scriptParamsContainer');
+        const header = document.getElementById('scriptParamsHeader');
+        container.innerHTML = '';
+        if (!scriptPath) {
+            header.style.display = 'none';
+            return;
+        }
+        header.style.display = 'block';
+        let params = [];
+        if (scriptPath.includes("Folder_flattener")) {
+            params = [
+                { name: "SourceDir", label: "Source Directory", type: "text", default: "" },
+                { name: "DestDir", label: "Destination Directory", type: "text", default: "" }
+            ];
+        } else if (scriptPath.includes("New-ReversaFeatureFreshRun") || scriptPath.includes("ReversaManager")) {
+            params = [
+                { name: "FeatureName", label: "Feature Name", type: "text", default: "new_feature" },
+                { name: "Interactive", label: "Interactive Mode", type: "checkbox", default: false }
+            ];
+        } else if (scriptPath.includes("migrate_vscode")) {
+            params = [
+                { name: "WorkspacePath", label: "Workspace Folder Path", type: "text", default: "" }
+            ];
+        } else if (scriptPath.includes("search_reports")) {
+            params = [
+                { name: "Query", label: "Search Query", type: "text", default: "TODO" }
+            ];
+        } else {
+            params = [
+                { name: "Args", label: "General Arguments", type: "text", default: "" }
+            ];
+        }
+        params.forEach(p => {
+            const group = document.createElement('div');
+            group.className = 'select-group';
+            if (p.type === 'checkbox') {
+                group.innerHTML = `
+                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; text-transform: none; font-size: 0.75rem;">
+                        <input type="checkbox" id="param-${p.name}" ${p.default ? 'checked' : ''} style="accent-color: var(--accent-color);"> ${p.label}
+                    </label>
+                `;
+            } else {
+                group.innerHTML = `
+                    <label>${p.label}</label>
+                    <input type="text" id="param-${p.name}" class="input-control" value="${p.default}" style="padding: 5px 8px; font-size: 0.75rem;">
+                `;
+            }
+            container.appendChild(group);
+        });
+    }
+
+    let activeTaskInterval = null;
+    async function runSelectedScript() {
+        const select = document.getElementById('scriptSelect');
+        const scriptPath = select.value;
+        if (!scriptPath) {
+            alert("Please choose a script to execute.");
+            return;
+        }
+        const parameters = {};
+        document.querySelectorAll('#scriptParamsContainer input').forEach(input => {
+            const name = input.id.replace('param-', '');
+            if (input.type === 'checkbox') {
+                parameters[name] = input.checked;
+            } else {
+                parameters[name] = input.value;
+            }
+        });
+        const dryRun = document.getElementById('scriptDryRun').checked;
+        const term = document.getElementById('scriptTerminal');
+        const badge = document.getElementById('scriptStatusBadge');
+        term.textContent = `[System] Starting script: ${scriptPath}...\n`;
+        badge.textContent = "RUNNING";
+        badge.style.color = "var(--accent-color)";
+        try {
+            const res = await fetch(`${API}/api/governance/reversa/run-script`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    script_path: scriptPath,
+                    parameters: parameters,
+                    dry_run: dryRun
+                })
+            });
+            const data = await res.json();
+            if (data.error) {
+                term.textContent += `[System Error] ${data.error}\n`;
+                badge.textContent = "FAILED";
+                badge.style.color = "#ff7b72";
+                return;
+            }
+            const taskId = data.task_id;
+            if (activeTaskInterval) clearInterval(activeTaskInterval);
+            activeTaskInterval = setInterval(() => pollTaskStatus(taskId), 1000);
+        } catch(e) {
+            console.error(e);
+            term.textContent += `[System Error] Failed to submit task request.\n`;
+            badge.textContent = "ERROR";
+            badge.style.color = "#ff7b72";
+        }
+    }
+
+    async function pollTaskStatus(taskId) {
+        try {
+            const res = await fetch(`${API}/api/governance/reversa/task-status?task_id=${taskId}`);
+            const data = await res.json();
+            if (data.error) {
+                clearInterval(activeTaskInterval);
+                document.getElementById('scriptStatusBadge').textContent = "ERROR";
+                document.getElementById('scriptStatusBadge').style.color = "#ff7b72";
+                return;
+            }
+            const term = document.getElementById('scriptTerminal');
+            term.textContent = data.logs || "";
+            term.scrollTop = term.scrollHeight;
+            const badge = document.getElementById('scriptStatusBadge');
+            badge.textContent = data.status.toUpperCase();
+            if (data.status === 'completed') {
+                clearInterval(activeTaskInterval);
+                badge.style.color = "var(--success-color)";
+            } else if (data.status === 'failed') {
+                clearInterval(activeTaskInterval);
+                badge.style.color = "#ff7b72";
+            } else {
+                badge.style.color = "var(--accent-color)";
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    // --- AXIOM FRONTEND LOGIC ---
+    let axiomPollInterval = null;
+    let selectedAxiomPaths = [];
+
+    async function openAxiomModal() {
+        const checked = document.querySelectorAll('.agent-cb:checked');
+        selectedAxiomPaths = Array.from(checked).map(c => c.value);
+        if(!selectedAxiomPaths.length) {
+            alert("Select files in the sidebar to axe first.");
+            return;
+        }
+
+        // Show modal overlay
+        document.getElementById('axiomSetupModal').style.display = 'flex';
+        
+        // Populate modal select box with models
+        const select = document.getElementById('axiomModelSelect');
+        select.innerHTML = '';
+        
+        // Add Ollama models
+        ollamaModels.forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m;
+            opt.textContent = `Local: ${m}`;
+            select.appendChild(opt);
+        });
+        
+        // Add Cloud models
+        const cloudModels = ["gpt-4o", "claude-3-5-sonnet", "gemini-1.5-pro"];
+        cloudModels.forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m;
+            opt.textContent = `Cloud: ${m}`;
+            select.appendChild(opt);
+        });
+
+        // Fetch settings from API
+        try {
+            const res = await fetch(`${API}/api/axiom/settings`);
+            const settings = await res.json();
+            
+            if (settings.default_model) {
+                const optionExists = Array.from(select.options).some(opt => opt.value === settings.default_model);
+                if (optionExists) {
+                    select.value = settings.default_model;
+                }
+            }
+            if (settings.preserve_cores !== undefined) {
+                document.getElementById('axiomPreserveCores').value = settings.preserve_cores;
+            }
+            if (settings.preserve_ram_mb !== undefined) {
+                document.getElementById('axiomPreserveRam').value = settings.preserve_ram_mb;
+            }
+            if (settings.parallel_instances !== undefined) {
+                document.getElementById('axiomParallelInstances').value = settings.parallel_instances;
+            }
+        } catch(e) {
+            console.error("Error loading Axiom settings:", e);
+        }
+
+        // Run hardware check
+        evaluateAxiomHardware();
+    }
+
+    function closeAxiomModal() {
+        document.getElementById('axiomSetupModal').style.display = 'none';
+    }
+
+    async function evaluateAxiomHardware() {
+        const model = document.getElementById('axiomModelSelect').value;
+        const coresPreserved = parseInt(document.getElementById('axiomPreserveCores').value) || 1;
+        const ramPreserved = parseInt(document.getElementById('axiomPreserveRam').value) || 4096;
+
+        const summaryDiv = document.getElementById('axiomResourceSummary');
+        summaryDiv.innerHTML = '<span class="loader-dots"><span></span><span></span><span></span></span> Evaluating hardware resource availability...';
+
+        try {
+            const res = await fetch(`${API}/api/axiom/evaluate`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ model })
+            });
+            const data = await res.json();
+            
+            // Build summary text
+            let summaryText = `Total CPU Cores: ${data.total_cores} | Available Cores: ${data.available_cores} (after preserving ${coresPreserved})\n`;
+            summaryText += `Total System RAM: ${(data.total_ram_mb / 1024).toFixed(1)} GB | Available RAM: ${(data.available_ram_mb / 1024).toFixed(1)} GB\n`;
+            
+            if (data.gpu_available) {
+                summaryText += `GPU Acceleration: AVAILABLE (Using GPU swarm)\n`;
+                document.getElementById('axiomDeviceSelect').value = 'gpu';
+            } else {
+                summaryText += `GPU Acceleration: NOT DETECTED (Using CPU execution)\n`;
+                document.getElementById('axiomDeviceSelect').value = 'cpu';
+            }
+            summaryText += `Suggested Parallel Instances: ${data.max_suggested_instances}`;
+            
+            summaryDiv.textContent = summaryText;
+
+            // Set suggested instances if user hasn't modified it
+            const currentInst = parseInt(document.getElementById('axiomParallelInstances').value);
+            if (currentInst === 1 || currentInst > data.max_suggested_instances) {
+                document.getElementById('axiomParallelInstances').value = data.max_suggested_instances || 1;
+            }
+
+            // Warnings
+            const warningBanner = document.getElementById('axiomWarningBanner');
+            let warnings = [];
+            if (!data.gpu_available) {
+                warnings.push("⚠️ No GPU detected. Running models on CPU is slow and memory-intensive. Proceed with caution.");
+            }
+            if (data.cpu_ram_warning) {
+                warnings.push(`⚠️ RAM alert: ${data.cpu_ram_warning}`);
+            }
+            if (data.gpu_vram_warning && document.getElementById('axiomDeviceSelect').value === 'gpu') {
+                warnings.push(`⚠️ VRAM alert: ${data.gpu_vram_warning}`);
+            }
+
+            if (warnings.length > 0) {
+                warningBanner.innerHTML = warnings.join("<br>");
+                warningBanner.style.display = 'block';
+            } else {
+                warningBanner.style.display = 'none';
+            }
+        } catch(e) {
+            console.error(e);
+            summaryDiv.textContent = "Error evaluating hardware capacity.";
+        }
+    }
+
+    function updateAxiomModalWarning() {
+        evaluateAxiomHardware();
+    }
+
+    async function submitAxiomQueue() {
+        const model = document.getElementById('axiomModelSelect').value;
+        const device = document.getElementById('axiomDeviceSelect').value;
+        const parallelInstances = parseInt(document.getElementById('axiomParallelInstances').value) || 1;
+        const coresPreserved = parseInt(document.getElementById('axiomPreserveCores').value) || 1;
+        const ramPreserved = parseInt(document.getElementById('axiomPreserveRam').value) || 4096;
+
+        // Save settings first
+        try {
+            await fetch(`${API}/api/axiom/save_settings`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    preserve_cores: coresPreserved,
+                    preserve_ram_mb: ramPreserved,
+                    parallel_instances: parallelInstances,
+                    default_model: model
+                })
+            });
+        } catch (e) {
+            console.error("Failed to save settings:", e);
+        }
+
+        // Close setup modal and open progress modal
+        closeAxiomModal();
+        document.getElementById('axiomProgressModal').style.display = 'flex';
+        document.getElementById('axiomConsoleLogs').textContent = "Starting queue...";
+        document.getElementById('stopAxiomQueueBtn').disabled = false;
+        document.getElementById('closeAxiomProgressBtn').disabled = true;
+
+        // Start processing queue
+        try {
+            const res = await fetch(`${API}/api/axiom/axe_queue`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    paths: selectedAxiomPaths,
+                    model: model,
+                    use_gpu: (device === 'gpu'),
+                    parallel_instances: parallelInstances
+                })
+            });
+            const data = await res.json();
+            if (data.error) {
+                document.getElementById('axiomConsoleLogs').textContent += `\nError: ${data.error}`;
+                document.getElementById('closeAxiomProgressBtn').disabled = false;
+                return;
+            }
+
+            // Start polling progress status
+            startAxiomProgressPolling();
+        } catch(e) {
+            console.error(e);
+            document.getElementById('axiomConsoleLogs').textContent += `\nConnection Error: Failed to initiate Axioming process.`;
+            document.getElementById('closeAxiomProgressBtn').disabled = false;
+        }
+    }
+
+    function startAxiomProgressPolling() {
+        if (axiomPollInterval) clearInterval(axiomPollInterval);
+        axiomPollInterval = setInterval(pollAxiomProgress, 1000);
+    }
+
+    async function pollAxiomProgress() {
+        try {
+            const res = await fetch(`${API}/api/axiom/status`);
+            const data = await res.json();
+
+            document.getElementById('axiomProgressStatus').textContent = `Status: ${data.status.toUpperCase()}`;
+            document.getElementById('axiomProgressCount').textContent = `${data.processed} / ${data.total} Files`;
+            document.getElementById('axiomActiveWorkers').textContent = `Active Worker Threads: ${data.active_workers}`;
+
+            // Update logs
+            const logsText = data.logs || "";
+            const logsArea = document.getElementById('axiomConsoleLogs');
+            logsArea.textContent = logsText;
+            logsArea.scrollTop = logsArea.scrollHeight;
+
+            // Update progress bar
+            if (data.total > 0) {
+                const percent = (data.processed / data.total) * 100;
+                document.getElementById('axiomProgressBar').style.width = `${percent}%`;
+            } else {
+                document.getElementById('axiomProgressBar').style.width = '0%';
+            }
+
+            // Check if done
+            if (data.status === 'completed' || data.status === 'stopped' || data.status === 'failed') {
+                clearInterval(axiomPollInterval);
+                document.getElementById('stopAxiomQueueBtn').disabled = true;
+                document.getElementById('closeAxiomProgressBtn').disabled = false;
+                
+                // Clear checkboxes
+                document.getElementById('selectAllCheckbox').checked = false;
+                document.querySelectorAll('.agent-cb').forEach(c => c.checked = false);
+                
+                // Refresh list
+                fetchAgents();
+            }
+        } catch(e) {
+            console.error("Axiom progress poll error:", e);
+        }
+    }
+
+    async function stopAxiomQueue() {
+        if(!confirm("Are you sure you want to request a safe stop of the current Axiom queue? The active files will finish parsing, then the queue will pause.")) return;
+        
+        try {
+            await fetch(`${API}/api/axiom/reset`, { method: 'POST' });
+            document.getElementById('axiomConsoleLogs').textContent += "\n[System] Termination request sent. Waiting for threads to yield...\n";
+        } catch(e) {
+            console.error("Error stopping queue:", e);
+        }
+    }
+
+    function closeAxiomProgressModal() {
+        document.getElementById('axiomProgressModal').style.display = 'none';
+        if (axiomPollInterval) {
+            clearInterval(axiomPollInterval);
+            axiomPollInterval = null;
+        }
+    }
+
+    // --- Layout & Panel Resizing Logic ---
+    const leftPanel = document.getElementById('leftPanel');
+    const rightPanel = document.getElementById('rightPanel');
+    const centerPanel = document.getElementById('centerPanel');
+    const container = document.querySelector('.container');
+    const restoreLeftBtn = document.getElementById('restore-left-btn');
+    const restoreRightBtn = document.getElementById('restore-right-btn');
+    
+    // Left Panel Toggle
+    function toggleLeftPanel() {
+        if (leftPanel.classList.contains('collapsed')) {
+            leftPanel.classList.remove('collapsed');
+            restoreLeftBtn.style.display = 'none';
+        } else {
+            leftPanel.classList.add('collapsed');
+            restoreLeftBtn.style.display = 'block';
+        }
+    }
+    
+    // Right Panel Toggle
+    function toggleRightPanel() {
+        if (rightPanel.classList.contains('collapsed')) {
+            rightPanel.classList.remove('collapsed');
+            restoreRightBtn.style.display = 'none';
+        } else {
+            rightPanel.classList.add('collapsed');
+            restoreRightBtn.style.display = 'block';
+        }
+    }
+
+    // Resizer Logic
+    const leftResizer = document.getElementById('left-resizer');
+    const rightResizer = document.getElementById('right-resizer');
+    
+    let activeResizer = null;
+    let startX = 0;
+    let startWidthLeft = 0;
+    let startWidthRight = 0;
+
+    leftResizer.addEventListener('mousedown', (e) => {
+        if(leftPanel.classList.contains('collapsed')) return;
+        activeResizer = 'left';
+        startX = e.clientX;
+        startWidthLeft = leftPanel.offsetWidth;
+        container.classList.add('dragging');
+        leftResizer.classList.add('dragging');
+        document.body.style.cursor = 'col-resize';
+    });
+
+    rightResizer.addEventListener('mousedown', (e) => {
+        if(rightPanel.classList.contains('collapsed')) return;
+        activeResizer = 'right';
+        startX = e.clientX;
+        startWidthRight = rightPanel.offsetWidth;
+        container.classList.add('dragging');
+        rightResizer.classList.add('dragging');
+        document.body.style.cursor = 'col-resize';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!activeResizer) return;
+        
+        if (activeResizer === 'left') {
+            const dx = e.clientX - startX;
+            let newWidth = startWidthLeft + dx;
+            if (newWidth < 200) newWidth = 200;
+            if (newWidth > 600) newWidth = 600;
+            leftPanel.style.width = newWidth + 'px';
+        } 
+        else if (activeResizer === 'right') {
+            const dx = startX - e.clientX;
+            let newWidth = startWidthRight + dx;
+            if (newWidth < 250) newWidth = 250;
+            if (newWidth > 600) newWidth = 600;
+            rightPanel.style.width = newWidth + 'px';
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (activeResizer) {
+            container.classList.remove('dragging');
+            if(activeResizer === 'left') leftResizer.classList.remove('dragging');
+            if(activeResizer === 'right') rightResizer.classList.remove('dragging');
+            document.body.style.cursor = 'default';
+            activeResizer = null;
+        }
+    });
+
+    // Init
+    fetchAgents();
+    fetchModels();
+</script>
+
+</body>
+</html>

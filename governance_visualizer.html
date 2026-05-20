@@ -210,9 +210,7 @@
     <div id="tooltip"></div>
 
     <script>
-        // Data integration placeholder
-        // In a real environment, we'd fetch INTENT_INDEX.json and MDG.json
-        // For this demo, I'll inject a representative subset of the data
+        // Layer definitions for the visualization graph
         const layers = [
             { id: 13, name: "Process & Provenance", color: "#60a5fa" },
             { id: 10, name: "MDG (Dependency)", color: "#818cf8" },
@@ -248,45 +246,40 @@
                 .text(`Layer ${layer.id}: ${layer.name}`);
         });
 
-        // Mock data generator for visualization
-        const nodes = [];
-        const links = [];
-
-        // Generate Concepts (Layer 8)
-        const concepts = ["DC-GPU-THERMAL", "DC-AGENT-SESSION", "DC-MODEL-ROUTER", "DC-AUDIT-TRAIL"];
-        concepts.forEach((c, i) => {
-            nodes.push({ id: c, layer: 8, x: (i + 1) * (width / 5), y: 3 * 150 });
-        });
-
-        // Generate Decisions (Layer 6)
-        nodes.push({ id: "DEC-P40-LIMIT", layer: 6, x: width/2, y: 4 * 150 });
-        links.push({ source: "DEC-P40-LIMIT", target: "DC-GPU-THERMAL" });
-
-        // Generate Rules (Layer 3)
-        const rules = ["R-HW-GPU-001", "R-HW-GPU-002", "R-SEC-001"];
-        rules.forEach((r, i) => {
-            nodes.push({ id: r, layer: 3, x: (i + 1) * (width / 4), y: 5 * 150 });
-            if (i < 2) links.push({ source: r, target: "DC-GPU-THERMAL" });
-        });
-
-        // Generate Code (Layer 1)
-        const code = ["gpu_thermal_optimizer.py", "gpu-manager.sh", "intent_builder.py", "drift_detector.py"];
-        code.forEach((f, i) => {
-            nodes.push({ id: f, layer: 1, x: (i + 1) * (width / 5), y: 6 * 150 });
-            if (i < 2) links.push({ source: f, target: "DC-GPU-THERMAL" });
-        });
-
-        // Draw Links
-        const linkElements = svg.selectAll(".edge")
-            .data(links)
-            .enter()
-            .append("path")
-            .attr("class", "edge")
-            .attr("d", d => {
-                const s = nodes.find(n => n.id === d.source);
-                const t = nodes.find(n => n.id === d.target);
-                return `M ${s.x} ${s.y} C ${s.x} ${(s.y + t.y)/2}, ${t.x} ${(s.y + t.y)/2}, ${t.x} ${t.y}`;
-            });
+        // Fetch real data from the API
+        let nodes = [];
+        let links = [];
+        
+        async function loadData() {
+            try {
+                const response = await fetch('/api/governance/layers');
+                const data = await response.json();
+                
+                if (data.nodes && data.links) {
+                    nodes = data.nodes;
+                    links = data.links;
+                } else {
+                    console.warn("API returned empty data, using fallback visualization.");
+                }
+            } catch (e) {
+                console.error("Failed to load layers API:", e);
+            }
+            renderGraph();
+        }
+        
+        function renderGraph() {
+            // Draw Links
+            const linkElements = svg.selectAll(".edge")
+                .data(links)
+                .enter()
+                .append("path")
+                .attr("class", "edge")
+                .attr("d", d => {
+                    const s = nodes.find(n => n.id === d.source);
+                    const t = nodes.find(n => n.id === d.target);
+                    if (!s || !t) return "";
+                    return `M ${s.x} ${s.y} C ${s.x} ${(s.y + t.y)/2}, ${t.x} ${(s.y + t.y)/2}, ${t.x} ${t.y}`;
+                });
 
         // Draw Nodes
         const nodeElements = svg.selectAll(".node")
@@ -345,12 +338,15 @@
                 </div>
             `);
         }
+        } // Close renderGraph
 
         // Initial View
         d3.select("svg").transition().duration(750).call(
             zoom.transform,
             d3.zoomIdentity.translate(50, 50).scale(0.8)
         );
+        
+        loadData();
     </script>
 </body>
 </html>

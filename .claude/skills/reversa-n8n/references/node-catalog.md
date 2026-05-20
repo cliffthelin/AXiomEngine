@@ -1,0 +1,247 @@
+```markdown
+# N8N Node Catalog and Python Mapping
+
+A quick reference used by `reversa-n8n` to interpret node types and suggest equivalent Python libraries. It is not exhaustive: it covers the most common nodes. When the node type is not listed, deduce it from the name (`type` follows the pattern `n8n-nodes-base.<service>` or `@n8n/n8n-nodes-langchain.<service>`) and the `parameters`.
+
+## Conventions
+
+- **Node Type in JSON**: `type` field of the node
+- **Semantic Meaning**: What the node represents in business terms
+- **Python**: Recommended library and usage pattern
+
+---
+
+## 1. Triggers (Workflow Input)
+
+| Node Type in JSON | Meaning | Python |
+|---|---|---|
+| `n8n-nodes-base.webhook` | HTTP endpoint that triggers the flow | FastAPI or Flask. POST/GET route with `parameters.path` |
+| `n8n-nodes-base.scheduleTrigger` | Periodic trigger (cron) | APScheduler (`BlockingScheduler`) or systemd timer |
+| `n8n-nodes-base.cron` | Classic cron (older versions) | APScheduler or crontab |
+| `n8n-nodes-base.intervalTrigger` | Fixed time loop | `while True: ... time.sleep(N)` or APScheduler |
+| `n8n-nodes-base.manualTrigger` | Manual execution | CLI script (Typer, argparse) |
+| `n8n-nodes-base.emailReadImap` | Read IMAP inbox | `imapclient` + `email` |
+| `n8n-nodes-base.executeWorkflowTrigger` | Sub-workflow called by another | Callable Python function |
+| `n8n-nodes-base.errorTrigger` | Trigger on error of another workflow | Exception hook, error decorator |
+
+Service triggers (pattern `<service>Trigger`): map to webhooks or polling in the service's SDK (e.g., `slackTrigger` becomes a Slack webhook or polling via `slack-sdk`).
+
+---
+
+## 2. HTTP and APIs
+
+| Node Type in JSON | Meaning | Python |
+|---|---|---|
+| `n8n-nodes-base.httpRequest` | Generic HTTP request | `httpx` (recommended, supports sync and async) or `requests` |
+| `n8n-nodes-base.respondToWebhook` | Response to received webhook | Return from the FastAPI/Flask route |
+| `n8n-nodes-base.graphql` | GraphQL query | `gql` or direct `httpx` |
+| `n8n-nodes-base.webhook` (output) | Confirmation of webhook | Response of the route |
+
+---
+
+## 3. Logic and Flow
+
+| Node Type in JSON | Meaning | Python |
+|---|---|---|
+| `n8n-nodes-base.if` | Binary conditional | `if/else` |
+| `n8n-nodes-base.switch` | Multi-branch based on value | `match/case` (Python 3.10+) or `if/elif` |
+| `n8n-nodes-base.merge` | Merge parallel branches | Combining lists, `dict.update`, `pandas.concat` |
+| `n8n-nodes-base.splitInBatches` | Batch processing | `itertools.batched` (3.12+) or manual loop |
+| `n8n-nodes-base.itemLists` | List operations (split, aggregation) | List comprehension, `itertools` |
+| `n8n-nodes-base.wait` | Wait between steps | `time.sleep(s)` or `await asyncio.sleep(s)` |
+| `n8n-nodes-base.noOp` | Direct pass-through | `pass` or identity function |
+| `n8n-nodes-base.stopAndError` | Interrupt with error | `raise Exception(...)` |
+| `n8n-nodes-base.executeWorkflow` | Call another workflow | Call Python function/module |
+
+---
+
+## 4. Data Manipulation
+
+| Node Type in JSON | Meaning | Python |
+|---|---|---|
+| `n8n-nodes-base.set` | Define values in fields | Assignment in dict |
+| `n8n-nodes-base.editFields` | Edit item structure | `dict.update`, list comprehension, dataclasses |
+| `n8n-nodes-base.removeDuplicates` | Remove duplicates | `set()`, `dict.fromkeys()`, `pandas.drop_duplicates` |
+| `n8n-nodes-base.aggregate` | Grouping and aggregation | `itertools.groupby` or `pandas.groupby` |
+| `n8n-nodes-base.dateTime` | Date manipulation | `datetime`, `dateutil`, `arrow`, `pendulum` |
+| `n8n-nodes-base.crypto` | Hash, encryption | `hashlib`, `hmac`, `cryptography` |
+| `n8n-nodes-base.compression` | Zip, gzip | `zipfile`, `gzip`, `tarfile` |
+| `n8n-nodes-base.xml` | Parse/build XML | `xml.etree.ElementTree`, `lxml` |
+| `n8n-nodes-base.html` | Parse HTML | `beautifulsoup4`, `lxml` |
+| `n8n-nodes-base.markdown` | Markdown conversion | `markdown`, `mistune` |
+| `n8n-nodes-base.spreadsheetFile` | Read/write XLSX/CSV | `openpyxl`, `pandas`, `csv` |
+
+---
+
+## 5. Code Execution
+
+| Node Type in JSON | Meaning | Python |
+|---|---|---|
+| `n8n-nodes-base.function` | Arbitrary JavaScript code (legacy) | Pure Python function. Read `parameters.functionCode` and describe the logic |
+| `n8n-nodes-base.functionItem` | JavaScript applied per item | List comprehension or `map()` |
+| `n8n-nodes-base.code` | JavaScript or Python code (new version) | Pure Python function. Check `parameters.language` |
+
+When translating Function/Code nodes for the `design.md`: describe the logic in pseudocode, do not copy the literal JavaScript. The Python equivalent should be idiomatic.
+
+---
+
+## 6. Databases
+
+| Node Type in JSON | Meaning | Python |
+|---|---|---|
+| `n8n-nodes-base.postgres` | Postgres | `psycopg[binary]` (v3) or `asyncpg` |
+| `n8n-nodes-base.mysql` | MySQL/MariaDB | `pymysql` or `mysql-connector-python`, `aiomysql` |
+| `n8n-nodes-base.mongoDb` | MongoDB | `pymongo` or `motor` (async) |
+| `n8n-nodes-base.redis` | Redis | `redis-py` (supports sync and async) |
+| `n8n-nodes-base.supabase` | Supabase | `supabase-py` |
+| `n8n-nodes-base.microsoftSql` | SQL Server | `pyodbc` or `pymssql` |
+| `n8n-nodes-base.snowflake` | Snowflake | `snowflake-connector-python` |
+| `n8n-nodes-base.questDb` | QuestDB | `psycopg` (compatible with PG wire) |
+
+ORMs are suggested when the workflow has many relational operations: `SQLAlchemy 2.x` or `SQLModel`.
+
+---
+
+## 7. Communication
+
+| Node Type in JSON | Meaning | Python |
+|---|---|---|
+| `n8n-nodes-base. emailSend` | Send SMTP email | `smtplib` + `email`, `yagmail`, `aiosmtplib` |
+| `n8n-nodes-base.gmail` | Gmail (API) | `google-api-python-client` |
+| `n8n-nodes-base.slack` | Slack (messages, channels) | `slack-sdk` |
+| `n8n-nodes-base.discord` | Discord | `discord.py` or direct webhook via `httpx` |
+| `n8n-nodes-base.telegram` | Telegram Bot | `python-telegram-bot` or `aiogram` |
+| `n8n-nodes-base.whatsApp` | WhatsApp Business API | Direct `httpx` (no mature official Python SDK) |
+| `n8n-nodes-base.twilio` | SMS/voice Twilio | `twilio` SDK |
+| `n8n-nodes-base.sendGrid` | SendGrid | `sendgrid` SDK |
+| `n8n-nodes-base.mailchimp` | Mailchimp | `mailchimp-marketing` |
+
+---
+
+## 8. AI and LLM
+
+| Node Type in JSON | Meaning | Python |
+|---|---|---|
+| `n8n-nodes-base.openAi` or `@n8n/n8n-nodes-langchain.openAi` | OpenAI (chat, embeddings, images) | `openai` SDK |
+| `@n8n/n8n-nodes-langchain.lmChatAnthropic` | Anthropic Claude | `anthropic` SDK |
+| `@n8n/n8n-nodes-langchain.lmChatGoogleGemini` | Google Gemini | `google-generativeai` |
+| `@n8n/n8n-nodes-langchain.embeddingsOpenAi` | Embeddings | `openai` SDK |
+| `@n8n/n8n-nodes-langchain.vectorStorePinecone` | Pinecone | `pinecone-client` |
+| `@n8n/n8n-nodes-langchain.vectorStoreSupabase` | Supabase pgvector | `supabase-py` + `pgvector` |
+| `@n8n/n8n-nodes-langchain.vectorStoreQdrant` | Qdrant | `qdrant-client` |
+| `@n8n/n8n-nodes-langchain.agent` | LangChain agent | `langchain` or `langgraph` |
+| `@n8n/n8n-nodes-langchain.chainLlm` | Basic chain | Direct call to the LLM SDK |
+| `n8n-nodes-base.huggingFace` | Hugging Face | `transformers`, `huggingface_hub` |
+
+For new projects, consider whether LangChain/LangGraph is necessary or if a direct call to the LLM SDK is simpler.
+
+---
+
+## 9. Files and Cloud Storage
+
+| Node Type in JSON | Meaning | Python |
+|---|---|---|
+| `n8n-nodes-base.readBinaryFile` | Read local file | `open(path, 'rb')` |
+| `n8n-nodes-base.writeBinaryFile` | Write local file | `open(path, 'wb')` |
+| `n8n-nodes-base.s3` | AWS S3 | `boto3` |
+| `n8n-nodes-base.googleDrive` | Google Drive | `google-api-python-client` + `google-auth` |
+| `n8n-nodes-base.googleCloudStorage` | GCS | `google-cloud-storage` |
+| `n8n-nodes-base.dropbox` | Dropbox | `dropbox` SDK |
+| `n8n-nodes-base.ftp` | FTP/SFTP | `ftplib` or `paramiko` |
+| `n8n-nodes-base.ssh` | SSH | `paramiko` or `fabric` |
+| `n8n-nodes-base.box` | Box | `boxsdk` |
+
+---
+
+## 10. Productivity and SaaS
+
+| Node Type in JSON | Meaning | Python |
+|---|---|---|
+| `n8n-nodes-base.googleSheets` | Google Sheets | `gspread` or `google-api-python-client` |
+| `n8n-nodes-base.googleCalendar` | Google Calendar | `google-api-python-client` |
+| `n8n-nodes-base.googleDocs` | Google Docs | `google-api-python-client` |
+| `n8n-nodes-base.airtable` | Airtable | `pyairtable` |
+| `n8n-nodes-base.notion` | Notion | `notion-client` |
+| `n8n-nodes-base.trello` | Trello | `py-trello` or direct `httpx` |
+| `n8n-nodes-base.asana` | Asana | `asana` SDK |
+| `n8n-nodes-base.jira` | Jira | `jira` SDK or `atlassian-python-api` |
+| `n8n-nodes-base.gitHub` | GitHub | `PyGithub` or direct `httpx` |
+| `n8n-nodes-base.gitLab` | GitLab | `python-gitlab` |
+| `n8n-nodes-base.hubspot` | HubSpot | `hubspot-api-client` |
+| `n8n-nodes-base.salesforce` | Salesforce | `simple-salesforce` |
+| `n8n-nodes-base.shopify` | Shopify | `ShopifyAPI` |
+| `n8n-nodes-base.stripe` | Stripe | `stripe` SDK |
+
+---
+
+## 11. Credentials and Authentication
+
+Mapping of N8N credential types to Python patterns:
+
+| N8N Credential Type | Meaning | Python Pattern |
+|---|---|---|
+| `httpHeaderAuth` | Custom header (usually API key) | Environment variable, header in all calls |
+| `httpBasicAuth` | Basic Auth | Tuple `(user, pass)` in `httpx`, from env vars |
+| `httpQueryAuth` | API key in the query string | Fixed parameter in all calls |
+| `oAuth2Api` | OAuth2 (with refresh) | `authlib` or `requests-oauthlib`, persist refresh token |
+| `oAuth1Api` | OAuth1 | `requests-oauthlib` |
+| `<service>Api` (e.g., `slackApi`, `googleApi`) | Service-specific credential | Follow the official service SDK |
+
+General recommendation: never hardcode. Use `pydantic-settings` or `python-dotenv` to read from `.env`. For production, use a secret manager (AWS Secrets Manager, HashiCorp Vault, etc.).
+
+---
+
+## 12. Suggested Architectural Patterns
+
+Based on the main trigger:
+
+| Trigger | Recommended Python Architecture |
+|---|---|
+| Webhook | FastAPI (asynchronous, validation with Pydantic) |
+| Schedule/Cron | Standalone script with APScheduler or systemd timer |
+| Manual | CLI with Typer or argparse |
+| Email IMAP | Worker daemon with polling loop |
+| SaaS Trigger (polling) | Asynchronous worker with asyncio |
+| Multi-trigger | FastAPI with endpoints + embedded APScheduler |
+
+Additional considerations:
+
+- Workflow with many parallel HTTP calls: use `asyncio` + `httpx.AsyncClient`
+- Workflow with long batches: use Celery, RQ, or Dramatiq
+- Workflow with state between executions: persist to Postgres/Redis (not in memory)
+- Critical workflow: add observability from the beginning (`structlog`, OpenTelemetry)
+
+---
+
+## 13. Error Handling and Retries
+
+Common behaviors in N8N and equivalent Python:
+
+| N8N Behavior | Python |
+|---|---|
+| `continueOnFail` in node | `try/except` that logs and continues |
+| `retryOnFail` with attempts | `tenacity` (decorator `@retry`) |
+| `errorTrigger` (error workflow) | Global exception handler, alert via Slack/email |
+| Timeout in HTTP request | Explicit `httpx.Timeout(...)` |
+| Wait between retries | Exponential backoff via `tenacity` |
+
+---
+
+## 14. Observability
+
+When the workflow has many steps or is critical, suggest in the `design.md`:
+
+- Structured logs (`structlog` or `loguru`)
+- Distributed tracing (`opentelemetry-api` + exporter)
+- Metrics (`prometheus_client`)
+- Health check endpoint (FastAPI)
+- Sentry for error capture
+
+---
+
+## Final Notes
+
+- This catalog covers the most common nodes. If an unknown type appears, log it as 🟡 INFERRED in the spec and ask the user for clarification.
+- Node versions (`typeVersion`) can change internal parameters. Verify that the structure of `parameters` matches the version.
+- Community nodes (that start with `n8n-nodes-<community>`) may not have a direct Python equivalent. Handle each case individually.
+```

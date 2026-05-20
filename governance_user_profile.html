@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AXiomEngine | Cognitive Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #010409; --panel: #0d1117; --card: #161b22;
+            --accent: #79c0ff; --text: #c9d1d9; --muted: #8b949e;
+            --border: #30363d; --success: #3fb950; --danger: #f85149; --warn: #d29922;
+        }
+        * { box-sizing: border-box; margin: 0; }
+        body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+        .topbar {
+            padding: 12px 25px; background: var(--panel); border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+        }
+        .topbar h1 { font-size: 1rem; color: var(--accent); }
+        .topbar a { color: var(--muted); text-decoration: none; font-size: 0.85rem; }
+        .topbar a:hover { color: var(--accent); }
+
+        .workspace { flex: 1; display: flex; justify-content: center; padding: 40px; overflow-y: auto; }
+        .container { width: 100%; max-width: 800px; display: flex; flex-direction: column; }
+
+        .header { margin-bottom: 30px; text-align: center; }
+        .header h2 { font-size: 1.8rem; margin-bottom: 8px; color: var(--text); }
+        .header p { color: var(--muted); font-size: 0.9rem; }
+
+        /* Chat Area */
+        .chat-container {
+            display: flex; flex-direction: column; flex: 1;
+            background: rgba(22, 27, 34, 0.6); border: 1px solid rgba(48, 54, 61, 0.8); border-radius: 12px;
+            backdrop-filter: blur(10px); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            overflow: hidden; max-height: 600px;
+        }
+        .chat-messages {
+            flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;
+        }
+        .chat-message {
+            max-width: 80%; padding: 12px 16px; border-radius: 12px; font-size: 0.95rem; line-height: 1.5;
+            animation: fadeIn 0.3s ease-in-out; white-space: pre-wrap;
+        }
+        .chat-message.user {
+            align-self: flex-end; background: rgba(121, 192, 255, 0.15); color: #e6edf3;
+            border-bottom-right-radius: 4px; border: 1px solid rgba(121, 192, 255, 0.3);
+        }
+        .chat-message.agent {
+            align-self: flex-start; background: rgba(33, 38, 45, 0.8); color: #c9d1d9;
+            border-bottom-left-radius: 4px; border: 1px solid rgba(48, 54, 61, 0.8);
+        }
+        .chat-input-area {
+            display: flex; padding: 15px; background: rgba(13, 17, 23, 0.8); border-top: 1px solid var(--border);
+        }
+        .chat-input-area input {
+            flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+            padding: 12px 15px; color: var(--text); font-family: inherit; font-size: 0.95rem;
+            outline: none; transition: border-color 0.2s;
+        }
+        .chat-input-area input:focus { border-color: var(--accent); }
+        .chat-input-area button {
+            background: var(--accent); color: #010409; border: none; border-radius: 8px;
+            padding: 0 20px; margin-left: 10px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;
+        }
+        .chat-input-area button:hover { opacity: 0.85; }
+        .chat-input-area button:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .typing-indicator { display: none; align-self: flex-start; padding: 8px 16px; background: rgba(33, 38, 45, 0.5); border-radius: 12px; border-bottom-left-radius: 4px; }
+        .typing-dot { display: inline-block; width: 6px; height: 6px; background: var(--muted); border-radius: 50%; margin-right: 4px; animation: bounce 1.4s infinite ease-in-out both; }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <h1>AXiomEngine — Cognitive Profile Interview</h1>
+    <div>
+        <a href="/" style="margin-right:15px">← Dashboard</a>
+    </div>
+</div>
+
+<div class="workspace">
+    <div class="container">
+        <div class="header">
+            <h2>Cognitive Initialization</h2>
+            <p>Phase 1: Aligning the Swarm to your operational context and specific lingo.</p>
+        </div>
+
+        <div class="chat-container">
+            <div class="chat-messages" id="chat-messages">
+                <div class="typing-indicator" id="typing-indicator">
+                    <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input-text" placeholder="Type your response..." onkeypress="handleKey(event)">
+                <button id="chat-send-btn" onclick="submitAnswer()">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const MODEL = "cmdmbox/skill-expert";
+    const OLLAMA_URL = "http://localhost:11434/api/generate";
+    
+    let state = 0;
+    // 0 = Q1: Role
+    // 1 = Q2: Goals
+    // 2 = Q3: Lingo
+    // 3 = Waiting for Analysis
+    // 4 = Q4: Custom 1
+    // 5 = Q5: Custom 2
+    // 6 = Done
+    
+    let transcript = [];
+    let customQuestions = [];
+    
+    const ui = {
+        messages: document.getElementById('chat-messages'),
+        input: document.getElementById('chat-input-text'),
+        btn: document.getElementById('chat-send-btn'),
+        indicator: document.getElementById('typing-indicator')
+    };
+
+    function addMessage(text, sender) {
+        const div = document.createElement('div');
+        div.className = `chat-message ${sender}`;
+        div.textContent = text;
+        ui.messages.insertBefore(div, ui.indicator);
+        ui.messages.scrollTop = ui.messages.scrollHeight;
+    }
+
+    function setTyping(isTyping) {
+        ui.indicator.style.display = isTyping ? 'block' : 'none';
+        ui.input.disabled = isTyping;
+        ui.btn.disabled = isTyping;
+        if (!isTyping) ui.input.focus();
+        ui.messages.scrollTop = ui.messages.scrollHeight;
+    }
+
+    async function aiInference(prompt, systemMsg="You are an expert cognitive analyst.") {
+        try {
+            const r = await fetch(OLLAMA_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: MODEL,
+                    prompt: prompt,
+                    system: systemMsg,
+                    stream: false,
+                    options: { temperature: 0.4, num_ctx: 4096 }
+                })
+            });
+            const data = await r.json();
+            return data.response || "";
+        } catch(e) {
+            console.error(e);
+            return null;
+        }
+    }
+
+    function handleKey(e) {
+        if (e.key === 'Enter') submitAnswer();
+    }
+
+    async function submitAnswer() {
+        const text = ui.input.value.trim();
+        if (!text) return;
+
+        addMessage(text, 'user');
+        ui.input.value = '';
+
+        if (state === 0) {
+            transcript.push({ q: "What is your current primary job title or role?", a: text });
+            state++;
+            setTimeout(() => addMessage("Got it. What are the primary goals of the projects you are currently focused on?", 'agent'), 500);
+        } 
+        else if (state === 1) {
+            transcript.push({ q: "What are the primary goals of the projects you are currently focused on?", a: text });
+            state++;
+            setTimeout(() => addMessage("Excellent. What are some acronyms, tool names, or specific lingo you use every day in your workflow?", 'agent'), 500);
+        }
+        else if (state === 2) {
+            transcript.push({ q: "What are some acronyms, tool names, or specific lingo you use every day in your workflow?", a: text });
+            state++;
+            
+            // Generate Custom Follow-ups
+            setTyping(true);
+            const context = `User Role: ${transcript[0].a}\nProject Goals: ${transcript[1].a}\nLingo: ${transcript[2].a}`;
+            const analysisPrompt = `Based on the following user context, formulate exactly 2 deep, insightful follow-up questions to better understand their workflow, the challenges they face, and how their specific lingo integrates into their daily tasks.\n\nContext:\n${context}\n\nReturn the two questions separated by a newline, and nothing else. Do not number them.`;
+            
+            const raw = await aiInference(analysisPrompt);
+            if (raw) {
+                customQuestions = raw.split('\n').map(q => q.trim()).filter(q => q.length > 5);
+            }
+            if (customQuestions.length < 2) {
+                customQuestions = ["Could you elaborate more on your daily challenges?", "How do you measure success in your role?"];
+            }
+            
+            state++;
+            setTyping(false);
+            addMessage(`Thanks for that context. Let's dive deeper. ${customQuestions[0]}`, 'agent');
+        }
+        else if (state === 4) {
+            transcript.push({ q: customQuestions[0], a: text });
+            state++;
+            setTimeout(() => addMessage(`Great. One last question: ${customQuestions[1]}`, 'agent'), 500);
+        }
+        else if (state === 5) {
+            transcript.push({ q: customQuestions[1], a: text });
+            state++;
+            
+            // Final Synthesis
+            setTyping(true);
+            addMessage("Thank you! I am now synthesizing your cognitive profile to be injected into the AXiomEngine...", 'agent');
+            
+            const fullTranscript = transcript.map(t => `Q: ${t.q}\nA: ${t.a}`).join('\n\n');
+            const synthPrompt = `Analyze the following interview transcript and extract a structured cognitive profile of the user.\nOutput ONLY raw valid JSON. Do not use markdown blocks like \`\`\`json.\n\nSchema required:\n{\n  "role": "string",\n  "core_expectations": ["string"],\n  "lingo_dictionary": {"term": "definition based on context"},\n  "workflow_insights": ["string"]\n}\n\nTranscript:\n${fullTranscript}`;
+            
+            const profileRaw = await aiInference(synthPrompt, "You are an expert JSON generator. Output only raw JSON.");
+            
+            let profileData = {};
+            try {
+                let cleaned = profileRaw.replace(/```json/g, '').replace(/```/g, '').trim();
+                profileData = JSON.parse(cleaned);
+            } catch(e) {
+                console.error("JSON parse failed", e);
+                profileData = { raw_output: profileRaw };
+            }
+            
+            // Save to Backend
+            try {
+                await fetch('/api/governance/save_cognitive_profile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(profileData)
+                });
+                addMessage("✅ Your profile has been successfully saved to the Knowledge Graph! You may return to the dashboard.", 'agent');
+            } catch(err) {
+                addMessage("❌ Failed to save profile to the backend server.", 'agent');
+            }
+            
+            setTyping(false);
+            ui.input.disabled = true;
+            ui.btn.disabled = true;
+        }
+    }
+
+    // Start
+    setTimeout(() => {
+        addMessage("Hello! Let's build your Cognitive Profile. To start: What is your current primary job title or role?", 'agent');
+    }, 500);
+
+</script>
+</body>
+</html>

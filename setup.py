@@ -8,7 +8,10 @@ setup(
     # find_packages will now find 'scripts' because of __init__.py
     packages=find_packages(),
     install_requires=[
-        # Core is stdlib-first
+        "httpx>=0.24",
+        "pydantic>=2",
+        "jsonschema>=4",
+        "psutil>=5",
     ],
     entry_points={
         "console_scripts": [
