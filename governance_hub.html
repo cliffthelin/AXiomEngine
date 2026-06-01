@@ -13,7 +13,110 @@
             --text-color: #c9d1d9;
             --border-color: #30363d;
             --hover-bg: rgba(121, 192, 255, 0.1);
+            --pi-color: #ab7df8;
+            --user-color: #2f81f7;
+            --tool-color: #d29922;
+            --ok-color: #3fb950;
+            --err-color: #f85149;
         }
+
+        /* ===== Modern agentic chat transcript ===== */
+        #log-content.chat-view {
+            padding: 24px 28px;
+            background:
+                radial-gradient(1200px 400px at 50% -10%, rgba(171,125,248,0.06), transparent 60%),
+                #0a0e16;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            white-space: normal;
+            font-family: 'Outfit', system-ui, sans-serif;
+        }
+        .chat-msg { display: flex; gap: 12px; align-items: flex-start; max-width: 900px; animation: msgIn 0.25s ease; }
+        @keyframes msgIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+        .chat-msg .avatar {
+            width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem; font-weight: 700; font-family: 'JetBrains Mono', monospace;
+        }
+        .chat-msg .bubble {
+            flex: 1; border-radius: 12px; padding: 12px 16px;
+            font-size: 0.9rem; line-height: 1.6; color: var(--text-color);
+            border: 1px solid var(--border-color); background: #11161f;
+            overflow-wrap: anywhere;
+        }
+        .chat-msg .bubble .who {
+            font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.6px; margin-bottom: 4px; opacity: 0.8;
+        }
+        .chat-msg .bubble .body { white-space: pre-wrap; }
+        /* user */
+        .chat-msg.user { flex-direction: row-reverse; margin-left: auto; }
+        .chat-msg.user .avatar { background: rgba(47,129,247,0.15); color: var(--user-color); border: 1px solid rgba(47,129,247,0.4); }
+        .chat-msg.user .bubble { background: rgba(47,129,247,0.08); border-color: rgba(47,129,247,0.35); }
+        .chat-msg.user .who { color: var(--user-color); }
+        /* assistant */
+        .chat-msg.assistant .avatar { background: rgba(171,125,248,0.15); color: var(--pi-color); border: 1px solid rgba(171,125,248,0.4); }
+        .chat-msg.assistant .who { color: var(--pi-color); }
+        /* system */
+        .chat-msg.system .avatar { background: rgba(121,192,255,0.12); color: var(--accent-color); border: 1px solid rgba(121,192,255,0.35); }
+        .chat-msg.system .bubble { background: rgba(121,192,255,0.05); border-style: dashed; }
+        .chat-msg.system .who { color: var(--accent-color); }
+        /* thinking */
+        .chat-thinking {
+            max-width: 900px; margin-left: 42px;
+            border-left: 2px solid rgba(171,125,248,0.4);
+            padding: 6px 12px; border-radius: 0 8px 8px 0;
+            background: rgba(171,125,248,0.04);
+            color: #9a8cc0; font-size: 0.8rem; font-style: italic;
+            white-space: pre-wrap; line-height: 1.5;
+        }
+        .chat-thinking summary {
+            cursor: pointer; color: var(--pi-color); font-style: normal;
+            font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 0.5px; outline: none; user-select: none;
+        }
+        .chat-thinking[open] summary { margin-bottom: 6px; }
+        /* tool card */
+        .chat-tool {
+            max-width: 900px; margin-left: 42px;
+            border: 1px solid rgba(210,153,34,0.35); border-radius: 10px;
+            background: rgba(210,153,34,0.06); overflow: hidden;
+        }
+        .chat-tool .tool-head {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 12px; font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem; font-weight: 600; color: var(--tool-color);
+            border-bottom: 1px solid rgba(210,153,34,0.2);
+        }
+        .chat-tool .tool-head .spin {
+            width: 10px; height: 10px; border-radius: 50%;
+            border: 2px solid rgba(210,153,34,0.3); border-top-color: var(--tool-color);
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .chat-tool .tool-body {
+            padding: 10px 12px; font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem; color: #c9d1d9; white-space: pre-wrap;
+            max-height: 280px; overflow-y: auto; line-height: 1.45;
+        }
+        .chat-error {
+            max-width: 900px; margin-left: 42px;
+            border: 1px solid rgba(248,81,73,0.4); border-radius: 10px;
+            background: rgba(248,81,73,0.08); color: #ffb4ae;
+            padding: 10px 14px; font-size: 0.85rem; white-space: pre-wrap;
+        }
+        .typing-dots { display: inline-flex; gap: 3px; margin-left: 4px; vertical-align: middle; }
+        .typing-dots span {
+            width: 5px; height: 5px; border-radius: 50%; background: var(--pi-color);
+            animation: blink 1.2s infinite both;
+        }
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes blink { 0%,80%,100% { opacity: 0.2; } 40% { opacity: 1; } }
+        #log-content.chat-view::-webkit-scrollbar { width: 10px; }
+        #log-content.chat-view::-webkit-scrollbar-thumb { background: #2a3142; border-radius: 5px; }
+
 
         * { box-sizing: border-box; }
         body { 
@@ -131,8 +234,8 @@
         }
 
         iframe {
+            flex: 1;
             width: 100%;
-            height: 100%;
             border: none;
             background: var(--bg-color);
         }
@@ -187,6 +290,7 @@
         nav.minimized .brand-text,
         nav.minimized .project-selector-container,
         nav.minimized .section-label,
+        nav.minimized .launcher-group,
         nav.minimized .nav-item span:not(.nav-icon) {
             display: none !important;
         }
@@ -228,6 +332,150 @@
         }
         nav:not(.dragging) {
             transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Modal styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+        }
+        .modal-container {
+            width: 600px;
+            max-width: 95%;
+            background: #161b22;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(-20px);
+            transition: transform 0.2s ease-in-out;
+        }
+        .modal-overlay.active .modal-container {
+            transform: translateY(0);
+        }
+        .modal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+        .modal-body::-webkit-scrollbar-track {
+            background: #0d1117;
+        }
+        .modal-body::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background: #8b949e;
+        }
+
+        /* Integrated Terminal Layout Positions */
+        #log-drawer {
+            background: #090d13;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 20;
+            position: absolute;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #log-drawer.layout-hidden {
+            display: none !important;
+            opacity: 0;
+            pointer-events: none;
+        }
+        #log-drawer.layout-full {
+            top: 60px; /* Start right below the main header (60px height) */
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100% !important;
+            height: calc(100% - 60px) !important;
+            border: none;
+        }
+        #log-drawer.layout-bottom {
+            bottom: 0;
+            left: 0;
+            right: 0;
+            top: auto;
+            width: 100% !important;
+            height: 400px !important;
+            border-top: 1px solid var(--border-color);
+        }
+        #log-drawer.layout-right {
+            top: 60px;
+            bottom: 0;
+            right: 0;
+            left: auto;
+            width: 500px !important;
+            height: calc(100% - 60px) !important;
+            border-left: 1px solid var(--border-color);
+        }
+        #log-drawer.layout-left {
+            top: 60px;
+            bottom: 0;
+            left: 0;
+            right: auto;
+            width: 500px !important;
+            height: calc(100% - 60px) !important;
+            border-right: 1px solid var(--border-color);
+        }
+        #log-drawer.layout-top {
+            top: 60px;
+            left: 0;
+            right: 0;
+            bottom: auto;
+            width: 100% !important;
+            height: 400px !important;
+            border-bottom: 1px solid var(--border-color);
+        }
+        #log-drawer.layout-top-middle {
+            top: 70px;
+            left: 50% !important;
+            transform: translateX(-50%);
+            width: 800px !important;
+            max-width: 90% !important;
+            height: 450px !important;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            bottom: auto !important;
+            right: auto !important;
+        }
+        
+        .layout-btn {
+            background: none;
+            border: none;
+            color: #8b949e;
+            cursor: pointer;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .layout-btn:hover {
+            background: var(--hover-bg);
+            color: var(--accent-color) !important;
+        }
+        .layout-btn.active {
+            color: var(--accent-color) !important;
+            background: rgba(121, 192, 255, 0.15);
         }
     </style>
 </head>
@@ -282,15 +530,360 @@
                 <span class="nav-icon">👤</span>
                 <span>User Profile & Lingo</span>
             </div>
+
+            <div class="section-label">Agent Consoles</div>
+            
+            <div class="nav-item" onclick="openLauncherModal('pi', this)" title="Configure PI launch options">
+                <span class="nav-icon">🤖</span>
+                <span>PI Intelligence</span>
+            </div>
+            <div class="launcher-group" style="display: flex; gap: 6px; padding: 0 15px 8px 54px;">
+                <button onclick="quickLaunchAgent(event, 'pi', 'integrated')" title="Run PI hosted inside AXiomEngine" style="flex: 1; padding: 5px 4px; background: rgba(121, 192, 255, 0.12); border: 1px solid var(--border-color); border-radius: 4px; color: var(--accent-color); font-family: inherit; font-size: 0.7rem; font-weight: 600; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Hosted</button>
+                <button onclick="quickLaunchAgent(event, 'pi', 'standalone')" title="Open PI as a standalone terminal TUI" style="flex: 1; padding: 5px 4px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 4px; color: #8b949e; font-family: inherit; font-size: 0.7rem; font-weight: 600; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">TUI</button>
+                <button onclick="quickLaunchAgent(event, 'pi', 'gui')" title="Open PI Desktop GUI" style="flex: 1; padding: 5px 4px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 4px; color: #8b949e; font-family: inherit; font-size: 0.7rem; font-weight: 600; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">GUI</button>
+            </div>
+            
+            <div class="nav-item" onclick="openLauncherModal('archon', this)">
+                <span class="nav-icon">🧠</span>
+                <span>Archon Architect</span>
+            </div>
+            
+            <div class="nav-item" onclick="openLauncherModal('reversa', this)">
+                <span class="nav-icon">🔄</span>
+                <span>Reversa Orchestrator</span>
+            </div>
+
+            <!-- GPU / RAM Tracking Panel -->
+            <div class="section-label" style="margin-top: 12px;">GPU / Memory</div>
+            <div id="gpu-panel" style="padding: 4px 15px 10px 15px; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; line-height: 1.6;">
+                <div id="gpu-status" style="color: #8b949e;">Checking…</div>
+                <div style="margin-top: 6px;">
+                    <label style="font-size: 0.7rem; color: #8b949e; font-weight: 600;">Context Tokens</label>
+                    <div style="display: flex; align-items: center; gap: 6px; margin-top: 3px;">
+                        <input type="number" id="ctx-tokens-input" value="32768" min="2048" max="131072" step="2048" style="width: 80px; padding: 4px 6px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color); font-family: inherit; font-size: 0.75rem; outline: none;">
+                        <button onclick="applyContextTokens()" style="padding: 4px 8px; background: rgba(121,192,255,0.12); border: 1px solid var(--border-color); border-radius: 4px; color: var(--accent-color); font-size: 0.7rem; font-weight: 600; cursor: pointer;">Apply</button>
+                    </div>
+                </div>
+                <div id="gpu-bars" style="margin-top: 8px;"></div>
+                <div id="ram-spill-indicator" style="margin-top: 4px; display: none; padding: 4px 8px; background: rgba(248,81,73,0.12); border: 1px solid rgba(248,81,73,0.3); border-radius: 4px; color: #ff7b72; font-size: 0.7rem; font-weight: 600;">⚠ RAM SPILL</div>
+            </div>
         </div>
     </nav>
     <div id="sidebar-resizer" class="resizer"></div>
     <main>
+        <header class="top-nav-bar" style="height: 60px; border-bottom: 1px solid var(--border-color); background: var(--panel-bg); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 10; flex-shrink: 0; backdrop-filter: blur(10px);">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span id="active-panel-title" style="font-size: 1.1rem; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 8px;">
+                    🖥️ C2 Dashboard
+                </span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <!-- VSCode-style layout controls in main top nav bar -->
+                <div class="layout-controls" id="top-layout-controls" style="display: flex; align-items: center; gap: 4px; border-right: 1px solid var(--border-color); padding-right: 12px; margin-right: 5px;">
+                    <!-- Panels: Sidebar, Workspace, Terminal Toggles -->
+                    <button class="layout-btn" onclick="toggleSidebar(event)" title="Toggle Sidebar Panel" id="header-toggle-sidebar" style="margin-right: 8px;">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="1.5" y="1.5" width="13" height="13" rx="1"/>
+                            <line x1="4.5" y1="1.5" x2="4.5" y2="14.5"/>
+                        </svg>
+                    </button>
+                    <button class="layout-btn" onclick="toggleWorkspace()" title="Toggle Workspace Panel" id="header-toggle-workspace" style="margin-right: 8px;">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="1.5" y="1.5" width="13" height="13" rx="1"/>
+                            <line x1="1.5" y1="1.5" x2="14.5" y2="14.5"/>
+                            <circle cx="8" cy="8" r="2.5" fill="currentColor" fill-opacity="0.2"/>
+                        </svg>
+                    </button>
+                    <button class="layout-btn" onclick="toggleTerminalLayout('bottom')" title="Toggle Terminal Panel" id="header-toggle-terminal" style="margin-right: 16px; padding-right: 12px; border-right: 1px solid var(--border-color); border-radius: 0;">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="1.5" y="1.5" width="13" height="13" rx="1"/>
+                            <line x1="1.5" y1="11.5" x2="14.5" y2="11.5"/>
+                        </svg>
+                    </button>
+                    
+                    <!-- Layout Positions -->
+                    <button class="layout-btn" onclick="toggleTerminalLayout('left')" title="Toggle Dock Left">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="1.5" y="1.5" width="13" height="13" rx="1"/>
+                            <line x1="5.5" y1="1.5" x2="5.5" y2="14.5"/>
+                        </svg>
+                    </button>
+                    <button class="layout-btn" onclick="toggleTerminalLayout('top')" title="Toggle Dock Top">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="1.5" y="1.5" width="13" height="13" rx="1"/>
+                            <line x1="1.5" y1="5.5" x2="14.5" y2="5.5"/>
+                        </svg>
+                    </button>
+                    <button class="layout-btn" onclick="toggleTerminalLayout('top-middle')" title="Toggle Dock Top-Middle">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="1.5" y="1.5" width="13" height="13" rx="1"/>
+                            <rect x="5.5" y="4.5" width="5" height="5" rx="0.5"/>
+                        </svg>
+                    </button>
+                    <button class="layout-btn" onclick="toggleTerminalLayout('bottom')" title="Toggle Dock Bottom">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="1.5" y="1.5" width="13" height="13" rx="1"/>
+                            <line x1="1.5" y1="10.5" x2="14.5" y2="10.5"/>
+                        </svg>
+                    </button>
+                    <button class="layout-btn" onclick="toggleTerminalLayout('right')" title="Toggle Dock Right">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="1.5" y="1.5" width="13" height="13" rx="1"/>
+                            <line x1="10.5" y1="1.5" x2="10.5" y2="14.5"/>
+                        </svg>
+                    </button>
+                    <button class="layout-btn" onclick="toggleTerminalLayout('full')" title="Toggle Full Body">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="1.5" y="1.5" width="13" height="13" rx="1" fill="currentColor" fill-opacity="0.15"/>
+                        </svg>
+                    </button>
+                </div>
+                <span style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px; color: #8b949e; font-weight: 600;">Active Project Workspace</span>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <select id="project-dropdown-top" onchange="onProjectSelect(this.value)" style="background: var(--bg-color); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 6px; padding: 6px 12px; font-family: inherit; font-size: 0.85rem; outline: none; cursor: pointer; transition: border-color 0.2s;">
+                        <option value="">-- Select Project --</option>
+                    </select>
+                    <button onclick="loadApp('/project/new')" title="Create Project" style="background: var(--accent-color); color: var(--bg-color); border: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; height: 31px;">+ New</button>
+                </div>
+            </div>
+        </header>
+
         <div id="loader">
             <div class="spinner"></div>
             <div style="color: #8b949e; font-family: 'JetBrains Mono'; font-size: 0.8rem;">Initializing Module...</div>
         </div>
         <iframe id="viewport" src="/c2" onload="hideLoader()"></iframe>
+
+        <!-- Live Terminal Log Drawer -->
+        <div id="log-drawer" class="layout-hidden">
+            <div class="log-header" style="height: 40px; background: #161b22; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; border-bottom: 1px solid var(--border-color);">
+                <div style="display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono'; font-size: 0.8rem; font-weight: 600; color: var(--accent-color);">
+                    <span class="pulse-indicator" style="width: 8px; height: 8px; border-radius: 50%; background: #2ea44f; display: inline-block;"></span>
+                    <span id="log-drawer-title">Integrated Terminal</span>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <!-- Visual layout buttons copy in terminal header too for ease of use -->
+                    <div class="layout-controls" style="display: flex; align-items: center; gap: 4px; border-right: 1px solid var(--border-color); padding-right: 12px; margin-right: 5px;">
+                        <button class="layout-btn" onclick="toggleTerminalLayout('left')" title="Toggle Dock Left">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="1.5" y="1.5" width="13" height="13" rx="1"/>
+                                <line x1="5.5" y1="1.5" x2="5.5" y2="14.5"/>
+                            </svg>
+                        </button>
+                        <button class="layout-btn" onclick="toggleTerminalLayout('top')" title="Toggle Dock Top">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="1.5" y="1.5" width="13" height="13" rx="1"/>
+                                <line x1="1.5" y1="5.5" x2="14.5" y2="5.5"/>
+                            </svg>
+                        </button>
+                        <button class="layout-btn" onclick="toggleTerminalLayout('top-middle')" title="Toggle Dock Top-Middle">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="1.5" y="1.5" width="13" height="13" rx="1"/>
+                                <rect x="5.5" y="4.5" width="5" height="5" rx="0.5"/>
+                            </svg>
+                        </button>
+                        <button class="layout-btn" onclick="toggleTerminalLayout('bottom')" title="Toggle Dock Bottom">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="1.5" y="1.5" width="13" height="13" rx="1"/>
+                                <line x1="1.5" y1="10.5" x2="14.5" y2="10.5"/>
+                            </svg>
+                        </button>
+                        <button class="layout-btn" onclick="toggleTerminalLayout('right')" title="Toggle Dock Right">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="1.5" y="1.5" width="13" height="13" rx="1"/>
+                                <line x1="10.5" y1="1.5" x2="10.5" y2="14.5"/>
+                            </svg>
+                        </button>
+                        <button class="layout-btn" onclick="toggleTerminalLayout('full')" title="Toggle Full Body">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="1.5" y="1.5" width="13" height="13" rx="1" fill="currentColor" fill-opacity="0.15"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <button id="log-stop-btn" onclick="stopActiveTask()" style="background: #da3637; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-family: inherit; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s;">Stop Process</button>
+                    <button onclick="closeLogDrawer()" style="background: none; border: none; color: #8b949e; cursor: pointer; font-size: 1.1rem; padding: 0 5px;">&times;</button>
+                </div>
+            </div>
+            <div id="log-content" style="flex: 1; padding: 15px; overflow-y: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.5; color: #c9d1d9; background: #0d1117; white-space: pre-wrap;"></div>
+            <!-- Chat Toolbar: filter, search, copy, stats -->
+            <div id="chat-toolbar" style="height: 36px; background: #0f1520; display: flex; align-items: center; padding: 0 12px; border-top: 1px solid var(--border-color); gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; flex-shrink: 0;">
+                <!-- Filter -->
+                <select id="chat-filter" onchange="applyChatFilter()" style="padding: 3px 6px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color); font-size: 0.7rem; outline: none; cursor: pointer;">
+                    <option value="all">All</option>
+                    <option value="user">Requests only</option>
+                    <option value="assistant">Responses only</option>
+                    <option value="tool">Tools only</option>
+                </select>
+                <!-- Search -->
+                <div style="display: flex; align-items: center; gap: 4px; flex: 1; max-width: 260px;">
+                    <input type="text" id="chat-search" placeholder="Search…" onkeydown="chatSearchKey(event)" style="flex: 1; padding: 3px 6px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color); font-size: 0.7rem; outline: none;">
+                    <button onclick="chatSearchNav(-1)" title="Previous (↑)" style="padding: 2px 5px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 3px; color: #8b949e; cursor: pointer; font-size: 0.7rem;">▲</button>
+                    <button onclick="chatSearchNav(1)" title="Next (↓)" style="padding: 2px 5px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 3px; color: #8b949e; cursor: pointer; font-size: 0.7rem;">▼</button>
+                    <span id="chat-search-count" style="color: #8b949e; min-width: 30px;">0/0</span>
+                </div>
+                <!-- Copy selected -->
+                <button onclick="copySelectedMessage()" title="Copy selected message to clipboard" style="padding: 3px 8px; background: rgba(121,192,255,0.08); border: 1px solid var(--border-color); border-radius: 4px; color: var(--accent-color); font-size: 0.7rem; font-weight: 600; cursor: pointer;">📋 Copy</button>
+                <!-- Stats -->
+                <div id="chat-stats" style="margin-left: auto; color: #8b949e; display: flex; gap: 10px; align-items: center;">
+                    <span id="stat-time">—</span>
+                    <span id="stat-tps">—</span>
+                    <span id="stat-ctx" title="Token window usage" style="padding: 2px 6px; background: rgba(63,185,80,0.1); border: 1px solid rgba(63,185,80,0.3); border-radius: 4px; font-size: 0.68rem;">ctx: 0%</span>
+                    <button onclick="requestCompaction()" title="Compact session: summarize, persist full log, generate keyword index" style="padding: 3px 8px; background: rgba(171,125,248,0.12); border: 1px solid rgba(171,125,248,0.3); border-radius: 4px; color: #ab7df8; font-size: 0.7rem; font-weight: 600; cursor: pointer;">⚡ Compact</button>
+                </div>
+            </div>
+            <!-- Live Terminal Interactive Input -->
+            <div id="log-input-container" style="height: 50px; background: #161b22; display: flex; align-items: center; padding: 0 15px; border-top: 1px solid var(--border-color); gap: 10px;">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--accent-color); font-weight: bold;">&gt;&gt;</span>
+                <input type="text" id="terminal-input" placeholder="Send input / execute command..." style="flex: 1; background: transparent; border: none; color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; outline: none;" onkeydown="handleTerminalInput(event)" autocomplete="off">
+                <button onclick="sendTerminalInput()" style="background: var(--accent-color); color: var(--bg-color); border: none; padding: 6px 14px; border-radius: 4px; font-family: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s;">Send</button>
+            </div>
+        </div>
+
+        <!-- Launch Configuration Modal -->
+        <div id="launcher-modal" class="modal-overlay" onclick="onModalOverlayClick(event)">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <span id="modal-title">🚀 Launch Agent</span>
+                    <button onclick="closeLauncherModal()" style="background: none; border: none; color: #8b949e; cursor: pointer; font-size: 1.4rem; padding: 0 5px; line-height: 1;">&times;</button>
+                </div>
+                
+                <div class="modal-body" style="padding: 20px; max-height: 60vh; overflow-y: auto; display: flex; flex-direction: column; gap: 15px;">
+                    <!-- Agent Selection Option -->
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <label style="font-size: 0.8rem; font-weight: bold; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px;">Select System Daemon</label>
+                        <select id="modal-agent-select" onchange="switchModalAgent(this.value)" style="width: 100%; padding: 8px 12px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-color); font-family: inherit; font-size: 0.9rem; outline: none; cursor: pointer; transition: border-color 0.2s;">
+                            <option value="pi">🤖 PI (Personal Intelligence Agent)</option>
+                            <option value="archon">🧠 Archon (Architect Planner & PDD Compliance)</option>
+                            <option value="reversa">🔄 Reversa (Reverse Engineering Framework)</option>
+                        </select>
+                    </div>
+
+                    <!-- Target Compute Hardware Selector -->
+                    <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 5px;">
+                        <label style="font-size: 0.8rem; font-weight: bold; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px;">Target Compute Hardware</label>
+                        <select id="modal-device-select" style="width: 100%; padding: 8px 12px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-color); font-family: inherit; font-size: 0.9rem; outline: none; cursor: pointer; transition: border-color 0.2s;">
+                            <option value="default" selected>Default GPU/CPU Instance (Port 11434)</option>
+                            <option value="rtx3070">RTX 3070 GPU (Port 11436)</option>
+                            <option value="p40">Tesla P40 GPU (Port 11437)</option>
+                            <option value="cpu">CPU Only (Port 11434)</option>
+                        </select>
+                    </div>
+                    
+                    <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 5px 0;">
+
+                    <!-- Forms container -->
+                    
+                    <!-- PI form -->
+                    <div id="form-pi" class="agent-form" style="display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <label style="font-size: 0.8rem; font-weight: bold; color: #8b949e;">Initial Prompt / Goal</label>
+                            <textarea id="pi-prompt" rows="3" placeholder="e.g. Audit security middleware in backend/auth.py" style="width: 100%; padding: 8px 12px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-color); font-family: inherit; font-size: 0.85rem; resize: vertical; outline: none; line-height: 1.4; border-color: var(--border-color);"></textarea>
+                        </div>
+                        
+                        <div style="display: flex; gap: 15px;">
+                            <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                                <label style="font-size: 0.8rem; font-weight: bold; color: #8b949e;">TUI/Execution Mode</label>
+                                <select id="pi-mode" style="width: 100%; padding: 8px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-color); font-family: inherit; font-size: 0.85rem; outline: none;">
+                                    <option value="interactive">interactive (Standard Interactive TUI)</option>
+                                    <option value="print" selected>print (Executes prompt and returns response)</option>
+                                    <option value="json">json (JSON response schema)</option>
+                                    <option value="rpc">rpc (Daemon listener mode)</option>
+                                </select>
+                            </div>
+                            
+                            <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                                <label style="font-size: 0.8rem; font-weight: bold; color: #8b949e;">Model Override</label>
+                                <select id="pi-model" style="width: 100%; padding: 8px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-color); font-family: inherit; font-size: 0.85rem; outline: none;">
+                                    <option value="default" selected>Default (qwen3.6:27b)</option>
+                                    <option value="ollama/qwen3.6:27b">ollama/qwen3.6:27b</option>
+                                    <option value="ollama/gemma4:e2b">ollama/gemma4:e2b (Research)</option>
+                                    <option value="ollama/cmdmbox/skill-expert">ollama/cmdmbox/skill-expert</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 8px; margin-top: 5px;">
+                            <input type="checkbox" id="pi-plan" style="cursor: pointer; width: 16px; height: 16px;">
+                            <label for="pi-plan" style="font-size: 0.85rem; color: var(--text-color); cursor: pointer; user-select: none;">
+                                <strong>Enable Plan Mode</strong> (`--plan`)
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Archon form -->
+                    <div id="form-archon" class="agent-form" style="display: none; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <label style="font-size: 0.8rem; font-weight: bold; color: #8b949e;">Task to Plan / Analyze <span style="color: #ff7b72;">*</span></label>
+                            <textarea id="archon-task" rows="4" placeholder="e.g. Design a migration pathway from SQLite to PostgreSQL with CDC support" style="width: 100%; padding: 8px 12px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-color); font-family: inherit; font-size: 0.85rem; resize: vertical; outline: none; line-height: 1.4;"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Reversa form -->
+                    <div id="form-reversa" class="agent-form" style="display: none; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; gap: 15px;">
+                            <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                                <label style="font-size: 0.8rem; font-weight: bold; color: #8b949e;">Analysis Skill Workflow</label>
+                                <select id="reversa-skill" style="width: 100%; padding: 8px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-color); font-family: inherit; font-size: 0.85rem; outline: none; cursor: pointer;">
+                                    <option value="reversa" selected>reversa (General reverse engineering)</option>
+                                    <option value="reversa-scout">reversa-scout (Map system surface API/paths)</option>
+                                    <option value="reversa-writer">reversa-writer (Compile design specification)</option>
+                                    <option value="reversa-detective">reversa-detective (Trace rules & permissions)</option>
+                                    <option value="reversa-visor">reversa-visor (Visual layout documenter)</option>
+                                    <option value="reversa-data-master">reversa-data-master (Database schema & relations)</option>
+                                    <option value="reversa-requirements">reversa-requirements (Extract user stories)</option>
+                                    <option value="reversa-audit">reversa-audit (Code quality/compliance audit)</option>
+                                    <option value="reversa-agents-help">reversa-agents-help (List framework sub-agents)</option>
+                                    <option value="reversa-to-do">reversa-to-do (Actionable tasks catalog)</option>
+                                </select>
+                            </div>
+                            
+                            <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                                <label style="font-size: 0.8rem; font-weight: bold; color: #8b949e;">Model Override</label>
+                                <select id="reversa-model" style="width: 100%; padding: 8px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-color); font-family: inherit; font-size: 0.85rem; outline: none;">
+                                    <option value="default" selected>Default (qwen3.6:27b)</option>
+                                    <option value="nemotron">nemotron (Architecture special lane)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <label style="font-size: 0.8rem; font-weight: bold; color: #8b949e;">Task Context</label>
+                            <textarea id="reversa-context" rows="3" placeholder="e.g. Map out the controller functions in controller/app.go" style="width: 100%; padding: 8px 12px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-color); font-family: inherit; font-size: 0.85rem; resize: vertical; outline: none; line-height: 1.4;"></textarea>
+                        </div>
+
+                        <div style="display: flex; gap: 15px;">
+                            <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                                <label style="font-size: 0.8rem; font-weight: bold; color: #8b949e;">Prompt File Input (Optional)</label>
+                                <div style="display: flex; position: relative; align-items: center;">
+                                    <input type="text" id="reversa-prompt-file" placeholder="e.g. docs/legacy_ddl.sql" style="width: 100%; padding: 8px 30px 8px 8px; font-size: 0.8rem; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-color); outline: none; border-color: var(--border-color);">
+                                    <span title="Point to workspace document file" style="position: absolute; right: 8px; color: #8b949e; cursor: pointer; user-select: none;">📄</span>
+                                </div>
+                            </div>
+                            
+                            <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                                <label style="font-size: 0.8rem; font-weight: bold; color: #8b949e;">Output Path (Optional)</label>
+                                <input type="text" id="reversa-output-file" placeholder="e.g. _reversa_sdd/ddl_analysis.md" style="width: 100%; padding: 8px; font-size: 0.8rem; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-color); outline: none; border-color: var(--border-color);">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Command preview panel -->
+                    <div style="background: #0d1117; border: 1px dashed var(--border-color); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 4px; margin-top: 10px;">
+                        <span style="font-size: 0.7rem; font-weight: bold; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px;">Executable Command Preview</span>
+                        <code id="command-preview" style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent-color); word-break: break-all; white-space: pre-wrap;">bash open_pi.sh</code>
+                    </div>
+                </div>
+                
+                <div class="modal-footer" style="padding: 15px 20px; background: #0d1117; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px;">
+                    <button onclick="closeLauncherModal()" style="padding: 8px 16px; background: none; border: 1px solid var(--border-color); border-radius: 6px; color: #c9d1d9; font-family: inherit; font-size: 0.85rem; cursor: pointer; transition: background 0.2s;">Cancel</button>
+                    <button onclick="submitLauncher('standalone')" style="padding: 8px 16px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 6px; color: #8b949e; font-family: inherit; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border-color: var(--border-color);">Standalone Terminal</button>
+                    <button id="modal-submit-integrated" onclick="submitLauncher('integrated')" style="padding: 8px 16px; background: var(--accent-color); border: none; border-radius: 6px; color: var(--bg-color); font-family: inherit; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s;">Run in AXiomEngine</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Container -->
+        <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 9999;"></div>
     </main>
 
     <script>
@@ -304,49 +897,74 @@
                 const data = await r.json();
                 projectsList = data.projects || [];
                 const dropdown = document.getElementById('project-dropdown');
+                const dropdownTop = document.getElementById('project-dropdown-top');
                 
-                // Clear existing except placeholder
-                dropdown.innerHTML = '<option value="">-- Select Project --</option>';
+                const optionsHtml = ['<option value="">-- Select Project --</option>', ...projectsList.map(p => 
+                    `<option value="${p.id}">${p.name}</option>`
+                )].join('');
                 
-                projectsList.forEach(p => {
-                    const opt = document.createElement('option');
-                    opt.value = p.id;
-                    opt.textContent = p.name;
-                    dropdown.appendChild(opt);
-                });
+                if (dropdown) dropdown.innerHTML = optionsHtml;
+                if (dropdownTop) dropdownTop.innerHTML = optionsHtml;
 
-                // Retrieve active project from iframe source if already on one
+                // Sync selections
                 syncDropdownFromIframe();
             } catch (e) {
                 console.error("Failed to load projects:", e);
             }
         }
 
-        function onProjectSelect(projectId) {
-            if (!projectId) return;
-            loadApp(`/project/${projectId}`);
+        async function onProjectSelect(projectId) {
+            try {
+                const res = await fetch('/api/governance/project/switch', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ project_id: projectId })
+                });
+                const result = await res.json();
+                if (!res.ok) throw new Error(result.error || 'Failed to switch project');
+                
+                // Get current iframe path
+                let currentUrl = new URL(viewport.src, window.location.origin).pathname;
+                
+                if (currentUrl.startsWith('/project/')) {
+                    if (projectId) {
+                        loadApp(`/project/${projectId}`);
+                    } else {
+                        loadApp('/c2');
+                    }
+                } else {
+                    // Reload current app tab to refresh the data under the new project context!
+                    loader.style.opacity = '1';
+                    viewport.contentWindow.location.reload();
+                }
+            } catch(e) {
+                alert('Failed to switch project context: ' + e.message);
+            }
         }
 
         function syncDropdownFromIframe() {
             const dropdown = document.getElementById('project-dropdown');
+            const dropdownTop = document.getElementById('project-dropdown-top');
             const src = viewport.src;
             const match = src.match(/\/project\/([^\/]+)/);
+            let val = "";
             if (match && match[1] && match[1] !== 'new') {
-                dropdown.value = match[1];
-            } else {
-                dropdown.value = "";
+                val = match[1];
             }
+            if (dropdown) dropdown.value = val;
+            if (dropdownTop) dropdownTop.value = val;
         }
 
         // Expose a helper to let child iframes request dropdown sync
         window.syncActiveProject = function(projectId) {
             const dropdown = document.getElementById('project-dropdown');
-            if (dropdown) {
-                // Refresh list first to ensure the new project is loaded
-                fetchProjects().then(() => {
-                    dropdown.value = projectId;
-                });
-            }
+            const dropdownTop = document.getElementById('project-dropdown-top');
+            
+            // Refresh list first to ensure the new project is loaded
+            fetchProjects().then(() => {
+                if (dropdown) dropdown.value = projectId || "";
+                if (dropdownTop) dropdownTop.value = projectId || "";
+            });
         };
 
         // When the iframe finishes loading, automatically sync dropdown selection
@@ -358,7 +976,24 @@
         function loadApp(url, el) {
             // Update active state
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            if (el) el.classList.add('active');
+            if (el) {
+                el.classList.add('active');
+                // Update header title based on active item
+                const titleText = el.querySelector('span:not(.nav-icon)').textContent;
+                const iconText = el.querySelector('.nav-icon').textContent;
+                document.getElementById('active-panel-title').innerHTML = `${iconText} ${titleText}`;
+            } else {
+                // Infer active item from URL
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    const onclickStr = item.getAttribute('onclick') || '';
+                    if (onclickStr.includes(url)) {
+                        item.classList.add('active');
+                        const titleText = item.querySelector('span:not(.nav-icon)').textContent;
+                        const iconText = item.querySelector('.nav-icon').textContent;
+                        document.getElementById('active-panel-title').innerHTML = `${iconText} ${titleText}`;
+                    }
+                });
+            }
 
             // Show loader and navigate
             loader.style.opacity = '1';
@@ -409,15 +1044,18 @@
                 event.preventDefault();
             }
             const isMinimized = nav.classList.contains('minimized');
+            const headerToggleBtn = document.getElementById('header-toggle-sidebar');
             if (isMinimized) {
                 nav.classList.remove('minimized');
                 toggleBtn.textContent = '◀';
+                if (headerToggleBtn) headerToggleBtn.classList.remove('active');
                 const savedWidth = localStorage.getItem('sidebar-width') || '280';
                 nav.style.width = savedWidth + 'px';
                 localStorage.setItem('sidebar-minimized', 'false');
             } else {
                 nav.classList.add('minimized');
                 toggleBtn.textContent = '▶';
+                if (headerToggleBtn) headerToggleBtn.classList.add('active');
                 nav.style.width = '60px';
                 localStorage.setItem('sidebar-minimized', 'true');
             }
@@ -426,17 +1064,1044 @@
         // Initialize state from local storage
         const isSavedMinimized = localStorage.getItem('sidebar-minimized') === 'true';
         const savedWidth = localStorage.getItem('sidebar-width');
+        const headerToggleBtn = document.getElementById('header-toggle-sidebar');
 
         if (isSavedMinimized) {
             nav.classList.add('minimized');
             toggleBtn.textContent = '▶';
             nav.style.width = '60px';
+            if (headerToggleBtn) headerToggleBtn.classList.add('active');
         } else if (savedWidth) {
             nav.style.width = savedWidth + 'px';
+            if (headerToggleBtn) headerToggleBtn.classList.remove('active');
+        }
+
+        // Pulse keyframes injection
+        const styleSheet = document.createElement("style");
+        styleSheet.innerText = `
+            @keyframes pulse {
+                0% { transform: scale(1); opacity: 1; }
+                50% { transform: scale(1.3); opacity: 0.5; }
+                100% { transform: scale(1); opacity: 1; }
+            }
+            .pulse-indicator {
+                animation: pulse 1.5s infinite;
+            }
+        `;
+        document.head.appendChild(styleSheet);
+
+        // Tool Launch Javascript Logic
+        let activeTaskId = null;
+        let logPollInterval = null;
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.style.padding = '12px 20px';
+            toast.style.borderRadius = '6px';
+            toast.style.background = type === 'success' ? '#238636' : '#da3637';
+            toast.style.color = '#fff';
+            toast.style.fontSize = '0.85rem';
+            toast.style.fontWeight = '600';
+            toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.25)';
+            toast.style.transition = 'opacity 0.3s, transform 0.3s';
+            toast.style.transform = 'translateY(20px)';
+            toast.style.opacity = '0';
+            toast.innerText = message;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.transform = 'translateY(0)';
+                toast.style.opacity = '1';
+            }, 50);
+            
+            setTimeout(() => {
+                toast.style.transform = 'translateY(-20px)';
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        async function quickLaunchAgent(event, tool, mode) {
+            if (event) event.stopPropagation();
+
+            const launcherGroup = event ? event.target.closest('.launcher-group') : null;
+            const navItem = launcherGroup ? launcherGroup.previousElementSibling : null;
+
+            if (tool === 'pi' && mode === 'gui') {
+                loadApp('/pi-gui', navItem);
+                return;
+            }
+
+            document.querySelectorAll('nav .nav-item').forEach(item => item.classList.remove('active'));
+            if (navItem && navItem.classList.contains('nav-item')) navItem.classList.add('active');
+
+            try {
+                const response = await fetch('/api/agent/launch', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        tool: tool,
+                        mode: mode,
+                        args: [],
+                        device: document.getElementById('modal-device-select')?.value || 'default',
+                        model: document.getElementById('pi-model')?.value || 'qwen3.6:27b'
+                    })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Failed to launch tool');
+
+                if (mode === 'standalone') {
+                    showToast(`Launched ${tool.toUpperCase()} in Standalone terminal TUI mode.`);
+                } else if (mode === 'gui') {
+                    showToast(`Launched ${tool.toUpperCase()} Desktop GUI.`);
+                } else {
+                    showToast(`Launched ${tool.toUpperCase()} hosted in AXiomEngine.`);
+                    openLogDrawer(tool, data.task_id);
+                }
+            } catch(e) {
+                showToast(`Launch Error: ${e.message}`, 'error');
+            }
+        }
+
+        // Modal & Launcher Management
+        let modalActiveAgent = 'pi';
+
+        function openLauncherModal(agent, el) {
+            // Set active class visually
+            document.querySelectorAll('nav .nav-item').forEach(item => item.classList.remove('active'));
+            if (el) el.classList.add('active');
+
+            modalActiveAgent = agent;
+            document.getElementById('modal-agent-select').value = agent;
+            
+            const modal = document.getElementById('launcher-modal');
+            modal.style.display = 'flex';
+            // Force redraw/browser layout before adding opacity transition
+            modal.offsetHeight;
+            modal.classList.add('active');
+            
+            switchModalAgent(agent);
+            attachModalEventListeners();
+        }
+
+        function closeLauncherModal() {
+            const modal = document.getElementById('launcher-modal');
+            modal.classList.remove('active');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 200);
+
+            // Re-highlight active link based on current iframe source
+            document.querySelectorAll('nav .nav-item').forEach(item => item.classList.remove('active'));
+            try {
+                const currentUrl = new URL(viewport.src, window.location.origin).pathname;
+                document.querySelectorAll('nav .nav-item').forEach(item => {
+                    const onclickStr = item.getAttribute('onclick');
+                    if (onclickStr && onclickStr.includes(currentUrl)) {
+                        item.classList.add('active');
+                    }
+                });
+            } catch (e) {}
+        }
+
+        function onModalOverlayClick(e) {
+            if (e.target === document.getElementById('launcher-modal')) {
+                closeLauncherModal();
+            }
+        }
+
+        function switchModalAgent(agent) {
+            modalActiveAgent = agent;
+            
+            const titles = {
+                pi: '🤖 Configure PI Launcher',
+                archon: '🧠 Configure Archon Planner',
+                reversa: '🔄 Configure Reversa Orchestrator'
+            };
+            document.getElementById('modal-title').innerHTML = titles[agent] || '🚀 Launch Agent';
+
+            // Hide other forms, show selected
+            document.querySelectorAll('.agent-form').forEach(form => form.style.display = 'none');
+            document.getElementById(`form-${agent}`).style.display = 'flex';
+
+            updateCommandPreview();
+        }
+
+        function attachModalEventListeners() {
+            const fields = [
+                'pi-prompt', 'pi-mode', 'pi-plan', 'pi-model',
+                'archon-task',
+                'reversa-skill', 'reversa-model', 'reversa-context', 'reversa-prompt-file', 'reversa-output-file'
+            ];
+            fields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && !el.dataset.listenerAttached) {
+                    el.addEventListener('input', updateCommandPreview);
+                    el.addEventListener('change', updateCommandPreview);
+                    el.dataset.listenerAttached = 'true';
+                }
+            });
+        }
+
+        function updateCommandPreview() {
+            let cmd = '';
+            const integrateBtn = document.getElementById('modal-submit-integrated');
+            integrateBtn.disabled = false;
+            integrateBtn.style.opacity = '1';
+            integrateBtn.style.cursor = 'pointer';
+
+            if (modalActiveAgent === 'pi') {
+                const prompt = document.getElementById('pi-prompt').value.trim();
+                const mode = document.getElementById('pi-mode').value;
+                const model = document.getElementById('pi-model').value;
+                const plan = document.getElementById('pi-plan').checked;
+
+                cmd = 'Integrated: (PI RPC via node cli.js)\nStandalone: pi --mode interactive';
+                if (plan) cmd += ' --plan';
+                if (mode !== 'interactive') cmd += ` --mode ${mode}`;
+                if (model !== 'default') cmd += ` --model ${model}`;
+                if (prompt) cmd += ` "${prompt.replace(/"/g, '\\"')}"`;
+
+                integrateBtn.title = "Integrated mode uses the hosted PI launcher; Standalone opens the PI terminal UI.";
+            } else if (modalActiveAgent === 'archon') {
+                const task = document.getElementById('archon-task').value.trim() || 'Create an architecture plan';
+                cmd = `bash start_archon.sh "${task.replace(/"/g, '\\"')}"`;
+            } else if (modalActiveAgent === 'reversa') {
+                const skill = document.getElementById('reversa-skill').value;
+                const context = document.getElementById('reversa-context').value.trim();
+                const promptFile = document.getElementById('reversa-prompt-file').value.trim();
+                const outputFile = document.getElementById('reversa-output-file').value.trim();
+                const model = document.getElementById('reversa-model').value;
+
+                cmd = `bash run_reversa.sh ${skill}`;
+                if (promptFile) cmd += ` --prompt-file ${promptFile}`;
+                else if (context) cmd += ` "${context.replace(/"/g, '\\"')}"`;
+                if (outputFile) cmd += ` --output ${outputFile}`;
+                if (model !== 'default') cmd += ` --model ${model}`;
+            }
+
+            document.getElementById('command-preview').innerText = cmd;
+        }
+        async function submitLauncher(mode) {
+            let args = [];
+            let tool = modalActiveAgent;
+            let initialPrompt = '';
+            let modelOverride = '';
+
+            if (modalActiveAgent === 'pi') {
+                const prompt = document.getElementById('pi-prompt').value.trim();
+                const piMode = document.getElementById('pi-mode').value;
+                const model = document.getElementById('pi-model').value;
+                const plan = document.getElementById('pi-plan').checked;
+
+                if (plan) args.push('--plan');
+
+                if (mode === 'integrated') {
+                    // Integrated mode ALWAYS uses RPC (persistent stdin).
+                    // Modal mode selection is ignored; initial prompt sent via stdin.
+                    if (model !== 'default') {
+                        args.push('--model');
+                        args.push(model);
+                        modelOverride = model;
+                    }
+                    if (prompt) initialPrompt = prompt;
+                } else {
+                    // Standalone: respect the user's mode choice
+                    if (piMode !== 'interactive') {
+                        args.push('--mode');
+                        args.push(piMode);
+                    }
+                    if (model !== 'default') {
+                        args.push('--model');
+                        args.push(model);
+                    }
+                    if (prompt) args.push(prompt);
+                }
+            } else if (modalActiveAgent === 'archon') {
+                const task = document.getElementById('archon-task').value.trim();
+                if (!task) {
+                    showToast("Please enter a task objective to start planning.", "error");
+                    return;
+                }
+                args.push(task);
+            } else if (modalActiveAgent === 'reversa') {
+                const skill = document.getElementById('reversa-skill').value;
+                const context = document.getElementById('reversa-context').value.trim();
+                const promptFile = document.getElementById('reversa-prompt-file').value.trim();
+                const outputFile = document.getElementById('reversa-output-file').value.trim();
+                const model = document.getElementById('reversa-model').value;
+
+                args.push(skill);
+                if (promptFile) {
+                    args.push('--prompt-file');
+                    args.push(promptFile);
+                } else if (context) {
+                    args.push(context);
+                } else {
+                    showToast("Please provide context description or input file path.", "error");
+                    return;
+                }
+                if (outputFile) {
+                    args.push('--output');
+                    args.push(outputFile);
+                }
+                if (model !== 'default') {
+                    args.push('--model');
+                    args.push(model);
+                }
+            }
+
+            closeLauncherModal();
+
+            try {
+                const body = {
+                    tool: tool,
+                    mode: mode,
+                    args: args,
+                    device: document.getElementById('modal-device-select').value,
+                    ctx_tokens: currentCtxTokens,
+                };
+                if (modelOverride) body.model = modelOverride;
+
+                const response = await fetch('/api/agent/launch', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Failed to launch tool');
+
+                if (mode === 'standalone') {
+                    showToast(`Launched ${tool.toUpperCase()} in Standalone terminal mode.`);
+                } else {
+                    showToast(`Launched ${tool.toUpperCase()} in Integrated AXiomEngine mode.`);
+                    openLogDrawer(tool, data.task_id);
+
+                    // Send initial prompt from modal after agent initializes
+                    if (initialPrompt && data.task_id) {
+                        setTimeout(async () => {
+                            try {
+                                await fetch('/api/agent/launch/stdin', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ task_id: data.task_id, text: initialPrompt })
+                                });
+                            } catch (e) {
+                                console.error('Failed to send initial prompt:', e);
+                            }
+                        }, 5000);
+                    }
+                }
+            } catch(e) {
+                showToast(`Launch Error: ${e.message}`, 'error');
+            }
+        }
+
+
+        let currentTerminalLayout = 'hidden';
+        let isTaskRunning = false;
+        let isWorkspaceCollapsed = false;
+
+        function toggleWorkspace() {
+            isWorkspaceCollapsed = !isWorkspaceCollapsed;
+            const iframe = document.getElementById('viewport');
+            const toggleBtn = document.getElementById('header-toggle-workspace');
+            if (isWorkspaceCollapsed) {
+                iframe.style.display = 'none';
+                if (toggleBtn) toggleBtn.classList.add('active');
+                // Force terminal to full layout
+                setTerminalLayout('full');
+            } else {
+                iframe.style.display = 'block';
+                if (toggleBtn) toggleBtn.classList.remove('active');
+                // Restore terminal layout to bottom
+                setTerminalLayout('bottom');
+            }
+        }
+
+        function setTerminalLayout(layout) {
+            const drawer = document.getElementById('log-drawer');
+            if (!drawer) return;
+            
+            drawer.className = '';
+            drawer.classList.add(`layout-${layout}`);
+            currentTerminalLayout = layout;
+            
+            // Update terminal panel toggle button active state
+            const terminalToggleBtn = document.getElementById('header-toggle-terminal');
+            if (terminalToggleBtn) {
+                if (layout === 'hidden') {
+                    terminalToggleBtn.classList.remove('active');
+                } else {
+                    terminalToggleBtn.classList.add('active');
+                }
+            }
+
+            document.querySelectorAll('.layout-btn').forEach(btn => {
+                if (btn.id === 'header-toggle-sidebar' || btn.id === 'header-toggle-workspace' || btn.id === 'header-toggle-terminal') return;
+                btn.classList.remove('active');
+                const title = btn.getAttribute('title') || '';
+                const layoutKey = layout === 'full' ? 'full body' : (layout === 'top-middle' ? 'top-middle' : layout);
+                if (title.toLowerCase().includes(layoutKey)) {
+                    btn.classList.add('active');
+                }
+            });
+
+            if (layout !== 'hidden') {
+                setTimeout(() => {
+                    const inputField = document.getElementById('terminal-input');
+                    if (inputField) inputField.focus();
+                }, 100);
+            }
+        }
+
+        function toggleTerminalLayout(layout) {
+            if (currentTerminalLayout === layout) {
+                setTerminalLayout('hidden');
+            } else {
+                setTerminalLayout(layout);
+                if (!activeTaskId || !isTaskRunning) {
+                    document.getElementById('log-drawer-title').innerText = `Integrated Terminal`;
+                    document.getElementById('log-content').innerHTML = `No active agent process. Launch an agent console from the sidebar to begin.\n`;
+                    document.getElementById('log-stop-btn').style.display = 'none';
+                    document.querySelector('.pulse-indicator').style.background = '#8b949e';
+                    
+                    const inputField = document.getElementById('terminal-input');
+                    if (inputField) {
+                        inputField.disabled = true;
+                        inputField.placeholder = "No active session.";
+                    }
+                }
+            }
+        }
+
+        function openLogDrawer(tool, taskId) {
+            activeTaskId = taskId;
+            isTaskRunning = true;
+
+            const inputField = document.getElementById('terminal-input');
+            if (inputField) {
+                inputField.disabled = false;
+                inputField.placeholder = "Send input / execute command...";
+            }
+
+            setTerminalLayout('full'); // Default to full body of the page on launch
+            document.getElementById('log-drawer-title').innerText = `Integrated Terminal: ${tool.toUpperCase()}`;
+            const logEl = document.getElementById('log-content');
+            logEl.classList.add('chat-view');
+            logEl.innerHTML = `<div class="chat-msg system"><div class="avatar">AX</div><div class="bubble"><div class="who">System</div><div class="body">Initializing ${tool.toUpperCase()} session…</div></div></div>`;
+            logEl.dataset.lastLen = '0';
+            _lastRenderedLen = 0;
+            _lastRenderedBlocks = 0;
+            document.getElementById('log-stop-btn').style.display = 'inline-block';
+            document.querySelector('.pulse-indicator').style.background = '#2ea44f';
+            
+            if (logPollInterval) clearInterval(logPollInterval);
+            
+            logPollInterval = setInterval(async () => {
+                if (!activeTaskId) return;
+                try {
+                    const res = await fetch(`/api/governance/reversa/task-status?task_id=${activeTaskId}`);
+                    const data = await res.json();
+                    if (res.ok) {
+                        const logDiv = document.getElementById('log-content');
+                        const newLogs = data.logs || '';
+                        // Only re-render if content actually changed (prevents flashing)
+                        if (logDiv.dataset.lastLen !== String(newLogs.length)) {
+                            logDiv.dataset.lastLen = String(newLogs.length);
+                            const isAtBottom = logDiv.scrollHeight - logDiv.clientHeight <= logDiv.scrollTop + 60;
+                            renderTranscriptIncremental(logDiv, newLogs, data.status);
+                            if (isAtBottom) {
+                                logDiv.scrollTop = logDiv.scrollHeight;
+                            }
+                            // Update response stats
+                            updateResponseStats(newLogs);
+                            // Persist chat log
+                            persistChatLog(activeTaskId, newLogs);
+                            // Re-apply filter if active
+                            if (chatFilter !== 'all') applyChatFilter();
+                        }
+                        
+                        if (data.status !== 'running') {
+                            clearInterval(logPollInterval);
+                            logPollInterval = null;
+                            isTaskRunning = false;
+
+                            const inputField = document.getElementById('terminal-input');
+                            if (inputField) {
+                                inputField.disabled = true;
+                                inputField.placeholder = "Process exited. Start a new agent session to interact.";
+                            }
+
+                            document.getElementById('log-stop-btn').style.display = 'none';
+                            document.querySelector('.pulse-indicator').style.background = data.status === 'completed' ? '#2ea44f' : '#f85149';
+                        }
+                    }
+                } catch(e) {
+                    console.error("Error polling logs:", e);
+                }
+            }, 600);
+        }
+
+        // Escape HTML for safe insertion
+        function escHtml(s) {
+            return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+
+        // Parse the sentinel-tagged log stream into a modern chat transcript.
+        // Sentinels: \x01ROLE:<role>\x02  \x01TOOL:<name>\x02  \x01RESULT\x02
+        //            \x01ERROR\x02  \x01SYSTEM\x02  \x01END\x02
+        function renderTranscript(container, raw, status) {
+            // Legacy/raw (non-PI) output: just show as plain monospace.
+            if (raw.indexOf('\x01') === -1) {
+                container.classList.remove('chat-view');
+                container.style.whiteSpace = 'pre-wrap';
+                container.style.fontFamily = "'JetBrains Mono', monospace";
+                container.textContent = raw;
+                return;
+            }
+            container.classList.add('chat-view');
+
+            // Tokenize on the START sentinel \x01 ... \x02 = block header.
+            const blocks = [];
+            let i = 0;
+            while (i < raw.length) {
+                const start = raw.indexOf('\x01', i);
+                if (start === -1) {
+                    // trailing text with no header — attach to previous or system
+                    const txt = raw.slice(i);
+                    if (txt.trim()) blocks.push({ kind: 'raw', text: txt });
+                    break;
+                }
+                if (start > i) {
+                    const txt = raw.slice(i, start);
+                    if (txt.trim()) blocks.push({ kind: 'raw', text: txt });
+                }
+                const hdrEnd = raw.indexOf('\x02', start);
+                if (hdrEnd === -1) break;
+                const header = raw.slice(start + 1, hdrEnd);
+                // body runs until the next \x01
+                let next = raw.indexOf('\x01', hdrEnd + 1);
+                if (next === -1) next = raw.length;
+                const body = raw.slice(hdrEnd + 1, next);
+                blocks.push({ header, body });
+                i = next;
+            }
+
+            // Merge consecutive ROLE blocks of same role into one streamed bubble.
+            let html = '';
+            const running = (status === 'running');
+            for (let b = 0; b < blocks.length; b++) {
+                const blk = blocks[b];
+                if (blk.kind === 'raw') {
+                    if (blk.text.trim())
+                        html += sysBlock(blk.text.trim());
+                    continue;
+                }
+                const h = blk.header;
+                const body = blk.body || '';
+                if (h === 'END') continue;
+                if (h === 'SYSTEM') { html += sysBlock(body); continue; }
+                if (h === 'ERROR') { html += `<div class="chat-error">⚠ ${escHtml(body)}</div>`; continue; }
+                if (h === 'RESULT') {
+                    html += `<div class="chat-tool"><div class="tool-head">↳ result</div><div class="tool-body">${escHtml(body)}</div></div>`;
+                    continue;
+                }
+                if (h.startsWith('TOOL:')) {
+                    const name = h.slice(5);
+                    html += `<div class="chat-tool"><div class="tool-head"><span class="spin"></span>${escHtml(name)}</div></div>`;
+                    continue;
+                }
+                if (h.startsWith('ROLE:')) {
+                    const role = h.slice(5);
+                    if (role === 'thinking') {
+                        html += `<details class="chat-thinking"><summary>Reasoning</summary>${escHtml(body)}</details>`;
+                    } else if (role === 'user') {
+                        html += msgBlock('user', 'You', body, false);
+                    } else { // assistant
+                        const isLast = (b === blocks.length - 1) || blocks.slice(b+1).every(x => x.header === 'END');
+                        html += msgBlock('assistant', 'PI', body, running && isLast);
+                    }
+                    continue;
+                }
+            }
+            container.innerHTML = html || sysBlock('Waiting for response…');
+        }
+
+        function msgBlock(role, who, body, streaming) {
+            const avatar = role === 'user' ? 'You'.slice(0,2).toUpperCase() : (role === 'assistant' ? 'PI' : 'AX');
+            const dots = streaming ? '<span class="typing-dots"><span></span><span></span><span></span></span>' : '';
+            return `<div class="chat-msg ${role}"><div class="avatar">${avatar}</div>`
+                 + `<div class="bubble"><div class="who">${escHtml(who)}</div>`
+                 + `<div class="body">${escHtml(body)}${dots}</div></div></div>`;
+        }
+        function sysBlock(body) {
+            return `<div class="chat-msg system"><div class="avatar">AX</div>`
+                 + `<div class="bubble"><div class="who">System</div>`
+                 + `<div class="body">${escHtml(body)}</div></div></div>`;
+        }
+
+        // Incremental renderer: only updates the last active block to prevent
+        // the entire transcript from flashing on every poll cycle.
+        // It keeps a "rendered up to" cursor and only appends/updates new content.
+        let _lastRenderedLen = 0;
+        let _lastRenderedBlocks = 0;
+
+        function renderTranscriptIncremental(container, raw, status) {
+            // Legacy/raw (non-PI) output: just show as plain monospace.
+            if (raw.indexOf('\x01') === -1) {
+                container.classList.remove('chat-view');
+                container.style.whiteSpace = 'pre-wrap';
+                container.style.fontFamily = "'JetBrains Mono', monospace";
+                container.textContent = raw;
+                _lastRenderedLen = raw.length;
+                return;
+            }
+            container.classList.add('chat-view');
+
+            // Parse all blocks from the raw log
+            const blocks = parseBlocks(raw);
+            const running = (status === 'running');
+
+            // If this is the first render or blocks decreased (reset), do a full render
+            if (_lastRenderedBlocks === 0 || blocks.length < _lastRenderedBlocks || _lastRenderedLen === 0) {
+                container.innerHTML = '';
+                for (let b = 0; b < blocks.length; b++) {
+                    container.appendChild(renderBlock(blocks[b], running && b === blocks.length - 1));
+                }
+                _lastRenderedBlocks = blocks.length;
+                _lastRenderedLen = raw.length;
+                return;
+            }
+
+            // Incremental: only handle new/changed blocks
+            // Remove the last rendered element (it may have been streaming/partial)
+            if (container.lastElementChild && _lastRenderedBlocks <= blocks.length) {
+                container.removeChild(container.lastElementChild);
+            }
+
+            // Append from the last-known block onward
+            const startFrom = Math.max(0, _lastRenderedBlocks - 1);
+            for (let b = startFrom; b < blocks.length; b++) {
+                container.appendChild(renderBlock(blocks[b], running && b === blocks.length - 1));
+            }
+            _lastRenderedBlocks = blocks.length;
+            _lastRenderedLen = raw.length;
+        }
+
+        function parseBlocks(raw) {
+            const blocks = [];
+            let i = 0;
+            while (i < raw.length) {
+                const start = raw.indexOf('\x01', i);
+                if (start === -1) {
+                    const txt = raw.slice(i);
+                    if (txt.trim()) blocks.push({ header: 'RAW', body: txt });
+                    break;
+                }
+                if (start > i) {
+                    const txt = raw.slice(i, start);
+                    if (txt.trim()) blocks.push({ header: 'RAW', body: txt });
+                }
+                const hdrEnd = raw.indexOf('\x02', start);
+                if (hdrEnd === -1) break;
+                const header = raw.slice(start + 1, hdrEnd);
+                let next = raw.indexOf('\x01', hdrEnd + 1);
+                if (next === -1) next = raw.length;
+                const body = raw.slice(hdrEnd + 1, next);
+                blocks.push({ header, body });
+                i = next;
+            }
+            return blocks;
+        }
+
+        function renderBlock(blk, isLast) {
+            const el = document.createElement('div');
+            const h = blk.header;
+            const body = blk.body || '';
+            if (h === 'END') { el.style.display = 'none'; return el; }
+            if (h === 'RAW') { el.className = 'chat-msg system'; el.innerHTML = `<div class="avatar">AX</div><div class="bubble"><div class="who">System</div><div class="body">${escHtml(body)}</div></div>`; return el; }
+            if (h === 'SYSTEM') { el.className = 'chat-msg system'; el.innerHTML = `<div class="avatar">AX</div><div class="bubble"><div class="who">System</div><div class="body">${escHtml(body)}</div></div>`; return el; }
+            if (h === 'ERROR') { el.className = 'chat-error'; el.textContent = '⚠ ' + body; return el; }
+            if (h === 'RESULT') { el.className = 'chat-tool'; el.innerHTML = `<div class="tool-head">↳ result</div><div class="tool-body">${escHtml(body)}</div>`; return el; }
+            if (h.startsWith('TOOL:')) { el.className = 'chat-tool'; el.innerHTML = `<div class="tool-head"><span class="spin"></span>${escHtml(h.slice(5))}</div>`; return el; }
+            if (h.startsWith('ROLE:')) {
+                const role = h.slice(5);
+                if (role === 'thinking') {
+                    el.innerHTML = `<details class="chat-thinking"><summary>Reasoning</summary>${escHtml(body)}</details>`;
+                    return el;
+                }
+                if (role === 'user') {
+                    el.className = 'chat-msg user';
+                    el.innerHTML = `<div class="avatar">You</div><div class="bubble"><div class="who">You</div><div class="body">${escHtml(body)}</div></div>`;
+                    return el;
+                }
+                // assistant
+                const dots = isLast ? '<span class="typing-dots"><span></span><span></span><span></span></span>' : '';
+                el.className = 'chat-msg assistant';
+                el.innerHTML = `<div class="avatar">PI</div><div class="bubble"><div class="who">PI</div><div class="body">${escHtml(body)}${dots}</div></div>`;
+                return el;
+            }
+            el.style.display = 'none';
+            return el;
+        }
+
+        function closeLogDrawer() {
+            setTerminalLayout('hidden');
+            if (logPollInterval) {
+                clearInterval(logPollInterval);
+                logPollInterval = null;
+            }
+            activeTaskId = null;
+            isTaskRunning = false;
+        }
+
+        async function stopActiveTask() {
+            if (!activeTaskId) return;
+            try {
+                const response = await fetch('/api/agent/launch/cancel', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ task_id: activeTaskId })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showToast('Stop signal sent to process.');
+                } else {
+                    showToast(`Failed to stop: ${data.error}`, 'error');
+                }
+            } catch(e) {
+                showToast(`Stop Error: ${e.message}`, 'error');
+            }
+        }
+
+        function handleTerminalInput(e) {
+            if (e.key === 'Enter') {
+                sendTerminalInput();
+            }
+        }
+
+        async function sendTerminalInput() {
+            if (!activeTaskId) return;
+            if (!isTaskRunning) {
+                showToast("Cannot send input: process is not running.", "error");
+                return;
+            }
+            const inputField = document.getElementById('terminal-input');
+            const text = inputField.value.trim();
+            if (!text) return;
+            
+            inputField.value = '';
+            trackPromptSent();
+            
+            try {
+                const response = await fetch('/api/agent/launch/stdin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ task_id: activeTaskId, text: text })
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    showToast(`Failed to send input: ${data.error}`, 'error');
+                } else {
+                    const logDiv = document.getElementById('log-content');
+                    logDiv.scrollTop = logDiv.scrollHeight;
+                }
+            } catch(e) {
+                showToast(`Stdin Error: ${e.message}`, 'error');
+            }
         }
 
         // Initialize projects list
         fetchProjects();
+
+        // --- Chat Toolbar: Filter, Search, Copy, Stats, Persistence ---
+        let chatFilter = 'all';
+        let chatSearchMatches = [];
+        let chatSearchIdx = -1;
+        let selectedMsgEl = null;
+        let promptSentAt = 0;
+        let responseTokenCount = 0;
+        let responseStartedAt = 0;
+
+        function applyChatFilter() {
+            chatFilter = document.getElementById('chat-filter').value;
+            const container = document.getElementById('log-content');
+            container.querySelectorAll('.chat-msg, .chat-thinking, .chat-tool, .chat-error').forEach(el => {
+                if (chatFilter === 'all') { el.style.display = ''; return; }
+                if (chatFilter === 'user') { el.style.display = el.classList.contains('user') ? '' : 'none'; }
+                else if (chatFilter === 'assistant') { el.style.display = (el.classList.contains('assistant') || el.classList.contains('chat-thinking')) ? '' : 'none'; }
+                else if (chatFilter === 'tool') { el.style.display = el.classList.contains('chat-tool') ? '' : 'none'; }
+            });
+        }
+
+        function chatSearchKey(e) {
+            if (e.key === 'Enter') {
+                if (e.shiftKey) chatSearchNav(-1);
+                else chatSearchNav(1);
+                e.preventDefault();
+            } else {
+                // Debounce search
+                clearTimeout(chatSearchKey._t);
+                chatSearchKey._t = setTimeout(runChatSearch, 300);
+            }
+        }
+
+        function runChatSearch() {
+            const q = document.getElementById('chat-search').value.trim().toLowerCase();
+            const container = document.getElementById('log-content');
+            // Clear previous highlights
+            container.querySelectorAll('.search-hl').forEach(el => {
+                el.outerHTML = el.textContent;
+            });
+            chatSearchMatches = [];
+            chatSearchIdx = -1;
+            if (!q) { document.getElementById('chat-search-count').textContent = '0/0'; return; }
+
+            // Walk text nodes and highlight matches
+            const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+            const nodes = [];
+            while (walker.nextNode()) nodes.push(walker.currentNode);
+            for (const node of nodes) {
+                const text = node.textContent;
+                const lower = text.toLowerCase();
+                if (!lower.includes(q)) continue;
+                const frag = document.createDocumentFragment();
+                let lastIdx = 0;
+                let idx;
+                while ((idx = lower.indexOf(q, lastIdx)) !== -1) {
+                    if (idx > lastIdx) frag.appendChild(document.createTextNode(text.slice(lastIdx, idx)));
+                    const mark = document.createElement('mark');
+                    mark.className = 'search-hl';
+                    mark.style.cssText = 'background: rgba(245,158,11,0.35); color: #fff; border-radius: 2px; padding: 0 1px;';
+                    mark.textContent = text.slice(idx, idx + q.length);
+                    frag.appendChild(mark);
+                    lastIdx = idx + q.length;
+                }
+                if (lastIdx < text.length) frag.appendChild(document.createTextNode(text.slice(lastIdx)));
+                node.parentNode.replaceChild(frag, node);
+            }
+            chatSearchMatches = Array.from(container.querySelectorAll('.search-hl'));
+            document.getElementById('chat-search-count').textContent = chatSearchMatches.length > 0 ? `0/${chatSearchMatches.length}` : '0/0';
+            if (chatSearchMatches.length > 0) chatSearchNav(1);
+        }
+
+        function chatSearchNav(dir) {
+            if (chatSearchMatches.length === 0) return;
+            // Remove current highlight
+            if (chatSearchIdx >= 0 && chatSearchMatches[chatSearchIdx]) {
+                chatSearchMatches[chatSearchIdx].style.background = 'rgba(245,158,11,0.35)';
+            }
+            chatSearchIdx += dir;
+            if (chatSearchIdx >= chatSearchMatches.length) chatSearchIdx = 0;
+            if (chatSearchIdx < 0) chatSearchIdx = chatSearchMatches.length - 1;
+            const el = chatSearchMatches[chatSearchIdx];
+            el.style.background = 'rgba(56,189,248,0.6)';
+            el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            document.getElementById('chat-search-count').textContent = `${chatSearchIdx + 1}/${chatSearchMatches.length}`;
+        }
+
+        function copySelectedMessage() {
+            // Find the currently selected/focused message bubble
+            const container = document.getElementById('log-content');
+            let target = selectedMsgEl;
+            if (!target) {
+                // Fallback: copy the last assistant message
+                const msgs = container.querySelectorAll('.chat-msg.assistant .body');
+                target = msgs.length > 0 ? msgs[msgs.length - 1] : null;
+            }
+            if (!target) {
+                showToast('No message selected. Click a message first.', 'error');
+                return;
+            }
+            const text = target.textContent || target.innerText;
+            navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard.')).catch(() => showToast('Copy failed.', 'error'));
+        }
+
+        // Make messages selectable by click
+        document.getElementById('log-content').addEventListener('click', (e) => {
+            const msg = e.target.closest('.chat-msg');
+            if (!msg) return;
+            // Deselect previous
+            if (selectedMsgEl) selectedMsgEl.style.outline = '';
+            const body = msg.querySelector('.body') || msg;
+            body.style.outline = '1px solid var(--accent-color)';
+            body.style.outlineOffset = '2px';
+            body.style.borderRadius = '6px';
+            selectedMsgEl = body;
+        });
+
+        // Track response timing
+        function trackPromptSent() {
+            promptSentAt = Date.now();
+            responseTokenCount = 0;
+            responseStartedAt = 0;
+            document.getElementById('stat-time').textContent = '⏱ …';
+            document.getElementById('stat-tps').textContent = '';
+        }
+
+        function updateResponseStats(logText) {
+            if (!promptSentAt) return;
+            // Count assistant tokens (rough: chars in ROLE:assistant blocks)
+            const marker = '\x01ROLE:assistant\x02';
+            const idx = logText.lastIndexOf(marker);
+            if (idx < 0) return;
+            if (!responseStartedAt) responseStartedAt = Date.now();
+            const seg = logText.slice(idx + marker.length).split('\x01')[0] || '';
+            responseTokenCount = seg.length; // rough char count as proxy
+            const elapsed = (Date.now() - promptSentAt) / 1000;
+            const tps = responseStartedAt ? (responseTokenCount / ((Date.now() - responseStartedAt) / 1000)) : 0;
+            document.getElementById('stat-time').textContent = `⏱ ${elapsed.toFixed(1)}s`;
+            document.getElementById('stat-tps').textContent = tps > 0 ? `${tps.toFixed(0)} ch/s` : '';
+
+            // Token window usage % (rough estimate: ~4 chars per token)
+            const totalChars = logText.length;
+            const estTokens = Math.round(totalChars / 4);
+            const pct = Math.min(100, Math.round((estTokens / currentCtxTokens) * 100));
+            const ctxEl = document.getElementById('stat-ctx');
+            ctxEl.textContent = `ctx: ${pct}%`;
+            if (pct > 85) {
+                ctxEl.style.background = 'rgba(248,81,73,0.15)';
+                ctxEl.style.borderColor = 'rgba(248,81,73,0.5)';
+                ctxEl.style.color = '#ff7b72';
+            } else if (pct > 60) {
+                ctxEl.style.background = 'rgba(245,158,11,0.12)';
+                ctxEl.style.borderColor = 'rgba(245,158,11,0.4)';
+                ctxEl.style.color = '#f59e0b';
+            } else {
+                ctxEl.style.background = 'rgba(63,185,80,0.1)';
+                ctxEl.style.borderColor = 'rgba(63,185,80,0.3)';
+                ctxEl.style.color = '#3fb950';
+            }
+        }
+
+        // --- Compaction ---
+        async function requestCompaction() {
+            if (!activeTaskId) {
+                showToast('No active session to compact.', 'error');
+                return;
+            }
+            showToast('Compacting session…');
+            try {
+                const res = await fetch('/api/agent/compact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ task_id: activeTaskId, ctx_tokens: currentCtxTokens })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    showToast(`Compacted! Index: ${data.index_file}`);
+                } else {
+                    showToast(`Compaction failed: ${data.error || 'unknown'}`, 'error');
+                }
+            } catch(e) {
+                showToast(`Compaction error: ${e.message}`, 'error');
+            }
+        }
+
+        // --- Chat Log Persistence (localStorage) ---
+        function persistChatLog(taskId, logs) {
+            if (!taskId || !logs) return;
+            try {
+                const history = JSON.parse(localStorage.getItem('axiom-chat-history') || '[]');
+                const existing = history.findIndex(h => h.taskId === taskId);
+                const entry = { taskId, logs, timestamp: Date.now() };
+                if (existing >= 0) history[existing] = entry;
+                else history.push(entry);
+                // Keep last 50 sessions
+                while (history.length > 50) history.shift();
+                localStorage.setItem('axiom-chat-history', JSON.stringify(history));
+            } catch(e) { /* storage full or unavailable */ }
+        }
+
+        function getChatHistory() {
+            try { return JSON.parse(localStorage.getItem('axiom-chat-history') || '[]'); }
+            catch(e) { return []; }
+        }
+
+        // --- GPU / Memory Tracking ---
+        let currentCtxTokens = 32768;
+
+        async function pollGpuStatus() {
+            try {
+                const res = await fetch('/api/gpu/status');
+                const data = await res.json();
+                const panel = document.getElementById('gpu-status');
+                const bars = document.getElementById('gpu-bars');
+                const spillEl = document.getElementById('ram-spill-indicator');
+
+                if (data.error) {
+                    panel.textContent = '⚠ ' + data.error;
+                    panel.style.color = '#f85149';
+                    bars.innerHTML = '';
+                    spillEl.style.display = 'none';
+                    return;
+                }
+
+                if (data.models.length === 0) {
+                    panel.innerHTML = '<span style="color:#8b949e;">No models loaded</span>';
+                    bars.innerHTML = '';
+                    spillEl.style.display = 'none';
+                    return;
+                }
+
+                let hasSpill = false;
+                let html = '';
+                for (const m of data.models) {
+                    const gpuColor = m.spill ? '#f59e0b' : '#3fb950';
+                    const cpuColor = '#f85149';
+                    html += `<div style="margin-bottom: 6px;">`;
+                    html += `<div style="display:flex; justify-content:space-between; margin-bottom:2px;">`;
+                    html += `<span style="color:var(--text-color);">${m.name}</span>`;
+                    html += `<span style="color:#8b949e;">${m.size} ctx:${m.context || '?'}</span>`;
+                    html += `</div>`;
+                    html += `<div style="display:flex; height:8px; border-radius:4px; overflow:hidden; background:#1e2533;">`;
+                    html += `<div style="width:${m.gpu_pct}%; background:${gpuColor};"></div>`;
+                    if (m.cpu_pct > 0) {
+                        html += `<div style="width:${m.cpu_pct}%; background:${cpuColor};"></div>`;
+                    }
+                    html += `</div>`;
+                    html += `<div style="display:flex; justify-content:space-between; margin-top:1px; font-size:0.65rem; color:#8b949e;">`;
+                    html += `<span>GPU ${m.gpu_pct}%</span>`;
+                    if (m.cpu_pct > 0) html += `<span style="color:#ff7b72;">RAM ${m.cpu_pct}%</span>`;
+                    html += `</div>`;
+                    html += `</div>`;
+                    if (m.spill) hasSpill = true;
+                }
+                panel.innerHTML = `<span style="color:#3fb950;">● ${data.models.length} model${data.models.length>1?'s':''} loaded</span>`;
+                bars.innerHTML = html;
+                spillEl.style.display = hasSpill ? 'block' : 'none';
+                if (hasSpill) {
+                    const spillModel = data.models.find(m => m.spill);
+                    spillEl.textContent = `⚠ RAM SPILL: ${spillModel.name} — ${spillModel.cpu_pct}% in system RAM`;
+                }
+            } catch(e) {
+                document.getElementById('gpu-status').textContent = 'Offline';
+                document.getElementById('gpu-status').style.color = '#8b949e';
+            }
+        }
+
+        function applyContextTokens() {
+            const val = parseInt(document.getElementById('ctx-tokens-input').value) || 32768;
+            currentCtxTokens = Math.max(2048, Math.min(131072, val));
+            document.getElementById('ctx-tokens-input').value = currentCtxTokens;
+            showToast(`Context window set to ${currentCtxTokens.toLocaleString()} tokens. Will apply on next PI launch.`);
+            // Store for use in launch requests
+            localStorage.setItem('axiom-ctx-tokens', currentCtxTokens);
+        }
+
+        // Load saved context tokens
+        const savedCtx = localStorage.getItem('axiom-ctx-tokens');
+        if (savedCtx) {
+            currentCtxTokens = parseInt(savedCtx) || 32768;
+            document.getElementById('ctx-tokens-input').value = currentCtxTokens;
+        }
+
+        // Poll GPU status every 8 seconds
+        pollGpuStatus();
+        setInterval(pollGpuStatus, 8000);
     </script>
 </body>
 </html>

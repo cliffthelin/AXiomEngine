@@ -1,4 +1,9 @@
+.venv
 .venv/
+.agentos_venv
+.agentos_venv/
+.axiomengine_venv
+.axiomengine_venv/
 .venv_linux/
 __pycache__/
 *.pyc
@@ -8,6 +13,7 @@ __pycache__/
 dist/
 build/
 *.egg-info/
+browser-results/
 docs/audit/*.zip
 docs/audit/audit_inventory_*.json
 verifier_output.json
@@ -42,3 +48,6 @@ axiomengine_settings.json
 # Reversa
 .reversa/config.user.toml
 _reversa_output/
+# Local Pi runtime state
+.atl/
+*.bak*

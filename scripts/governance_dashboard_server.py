@@ -8,6 +8,7 @@ Provides a secure API for frozen v1.3.1 artifacts and mission logs.
 import json
 import argparse
 import os
+import shlex
 import sys
 import re
 from datetime import datetime
@@ -21,6 +22,23 @@ from scripts.governance_manifest_verifier import build_manifest_verification_res
 from scripts.gpu_provider_registry import GPUProviderRegistry
 
 VERSION = "1.4.0"
+
+# --- Portable path roots ----------------------------------------------------
+# Everything is derived from this file's location or the user's home so the
+# project runs from any directory without hardcoded mount paths. Overridable
+# via environment variables for non-standard layouts.
+PROJECT_ROOT_DIR = Path(__file__).resolve().parent.parent
+PI_WORKSPACE = Path(os.environ.get(
+    "AXIOMENGINE_PI_WORKSPACE",
+    str(Path.home() / "AxiomEngine_Frame_Workspace"),
+))
+PI_CODING_AGENT_DIR = Path(os.environ.get(
+    "PI_CODING_AGENT_DIR", str(Path.home() / ".pi" / "agent")
+))
+PI_CODING_AGENT_SESSION_DIR = Path(os.environ.get(
+    "PI_CODING_AGENT_SESSION_DIR",
+    str(PI_CODING_AGENT_DIR / "sessions" / "axiomengine"),
+))
 
 # --- SHARED HELPERS (Module Level) ---
 
@@ -171,6 +189,7 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
             "/dashboard": self.handle_dashboard,
             "/project/new": self.handle_project_setup_page,
             "/health": self.handle_health,
+            "/api/gpu/status": self.handle_gpu_status,
             "/api/index": self.handle_index,
             "/api/governance/manifest": self.handle_manifest,
             "/api/governance/baseline/status": self.handle_baseline_status,
@@ -207,18 +226,35 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
             "/api/governance/reversa/config": self.handle_reversa_get_config,
             "/api/governance/reversa/assets": self.handle_reversa_get_assets,
             "/api/governance/reversa/asset": self.handle_reversa_get_asset,
+            "/api/governance/reversa/asset/diff": self.handle_reversa_asset_diff,
+            "/api/governance/reversa/asset/history": self.handle_reversa_asset_history,
             "/api/governance/reversa/task-status": self.handle_reversa_task_status,
+            "/api/governance/reversa/validate": self.handle_reversa_validate_asset,
             "/api/axiom/status": self.handle_axiom_status,
             "/api/axiom/settings": self.handle_axiom_get_settings,
-            "/api/visualizer/graph": self.handle_visualizer_graph
+            "/api/visualizer/graph": self.handle_visualizer_graph,
+            "/api/visualizer/c4": self.handle_visualizer_c4,
+            "/api/dispatch/hitm/gates": self.handle_approval_gates_list,
+            "/api/schemas": self.handle_schema_list,
+            "/api/registry/assets": self.handle_registry_assets,
         }
 
         # Route matching
         handler = routes.get(path)
         if handler:
             handler()
+        elif path == "/pi-gui":
+            self.send_response(301)
+            self.send_header("Location", "/pi-gui/")
+            self.end_headers()
+        elif path.startswith("/pi-gui/"):
+            self.handle_pi_gui()
         elif path.startswith("/project/") and path != "/project/new":
             self.handle_project_detail_page()
+        elif path.endswith(".html"):
+            # Serve static HTML files from system_root
+            filename = path[1:]  # Remove leading slash
+            self.serve_html_file(filename)
         else:
             self.send_error(404, f"Route Not Found: {path}")
 
@@ -235,37 +271,241 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
         self.serve_html_file("governance_visualizer.html")
 
     def handle_visualizer_graph(self):
+        """GET /api/visualizer/graph — returns a D3-compatible force graph of context assets."""
+        import os, hashlib, datetime as dt
+
         nodes = []
         links = []
-        
-        # Root node
-        nodes.append({"id": "Project Root", "group": "root", "radius": 18})
-        
-        # Discover directories
-        dirs_to_scan = ["_reversa_sdd", "skills", ".agents", "data/catalog/PDD"]
-        for d in dirs_to_scan:
-            p = self.server.project_root / d
-            if p.exists() and p.is_dir():
-                nodes.append({"id": d, "group": "category", "radius": 12})
-                links.append({"source": "Project Root", "target": d, "value": 2})
-                
-                # Scan immediate children
-                for child in p.iterdir():
-                    if child.is_file() and child.suffix in [".md", ".json", ".yml"]:
-                        nodes.append({"id": child.name, "group": "leaf", "radius": 6})
-                        links.append({"source": d, "target": child.name, "value": 1})
+        node_ids = set()
 
-        self.send_json({"nodes": nodes, "links": links})
+        def add_node(node_id, group, label=None, path=None, asset_type=None, status=None, size_bytes=0):
+            if node_id not in node_ids:
+                node_ids.add(node_id)
+                node = {
+                    "id": node_id,
+                    "label": label or node_id,
+                    "group": group,
+                    "radius": 18 if group == "root" else (12 if group == "category" else 6),
+                    "path": path or "",
+                    "asset_type": asset_type or "",
+                    "status": status or "unknown",
+                    "size_bytes": size_bytes,
+                }
+                nodes.append(node)
+
+        # Root node
+        add_node("Project Root", "root", label="Project Root")
+
+        # Category directories to scan
+        category_dirs = {
+            "_reversa_sdd": {"group": "context", "asset_type": "requirements"},
+            "skills": {"group": "skills", "asset_type": "skill"},
+            ".agents/skills": {"group": "skills", "asset_type": "skill"},
+            "data/catalog/PDD": {"group": "policy", "asset_type": "pdd-rule"},
+            "docs/pdd": {"group": "policy", "asset_type": "pdd-rule"},
+            "docs/audit": {"group": "evidence", "asset_type": "evidence-artifact"},
+            "_reversa_forward": {"group": "context", "asset_type": "roadmap"},
+            "data/schemas": {"group": "schema", "asset_type": "schema"},
+        }
+
+        for dir_path, meta in category_dirs.items():
+            full_dir = self.server.project_root / dir_path
+            if not full_dir.exists() or not full_dir.is_dir():
+                continue
+
+            # Add category node
+            dir_id = dir_path.replace("/", "/")
+            add_node(dir_id, "category", label=dir_path, asset_type=meta["asset_type"])
+            links.append({"source": "Project Root", "target": dir_id, "value": 2, "type": "contains"})
+
+            # Scan files (limit to avoid huge graphs)
+            file_count = 0
+            for root_dir, dirs, files in os.walk(full_dir):
+                dirs[:] = [d for d in dirs if d not in ["__pycache__", "node_modules", ".git", "backups", "agent_versions"]]
+                for file in files:
+                    if file_count > 80:
+                        break
+                    if not file.endswith((".md", ".json", ".yml", ".yaml", ".toml")):
+                        continue
+                    full_path = os.path.join(root_dir, file)
+                    try:
+                        rel = os.path.relpath(full_path, self.server.project_root)
+                        stat = os.stat(full_path)
+                        node_id = rel.replace("\\", "/")
+                        add_node(
+                            node_id,
+                            "leaf",
+                            label=file,
+                            path=rel,
+                            asset_type=meta["asset_type"],
+                            status="active",
+                            size_bytes=stat.st_size
+                        )
+                        links.append({"source": dir_id, "target": node_id, "value": 1, "type": "contains"})
+                        file_count += 1
+                    except Exception:
+                        pass
+
+        self.send_json({"nodes": nodes, "links": links, "node_count": len(nodes), "link_count": len(links)})
+
+    def handle_visualizer_c4(self):
+        """GET /api/visualizer/c4 — returns a Mermaid C4 diagram configuration."""
+        config_path = self.server.project_root / ".reversa" / "templates" / "visualizer_config.json"
+        c4_code = ""
+        if config_path.exists():
+            try:
+                with open(config_path, "r", encoding="utf-8") as f:
+                    config = json.load(f)
+                    c4_code = config.get("c4_diagram", "")
+            except Exception:
+                pass
+        if not c4_code:
+            c4_code = """
+C4Context
+  title AXiomEngine & Reversa Governance Swarm Context
+  
+  Person(operator, "System Operator / Auditor", "Reviews specs, approves executions, and controls migration progress.")
+  
+  System_Boundary(axiom_swarm, "AXiomEngine Ecosystem") {
+    System(hub, "AXiom Governance Hub", "Unified web interface (Port 8766) hosting management consoles.")
+    System(reversa, "Reversa CLI Core", "Scouts repositories, extracts schemas, and builds SDD specs.")
+    System(archon, "Archon Swarm Executor", "Monitors background tasks and drives sequential workflows.")
+    System(hermes, "Hermes reasoning model", "Local Ollama agent executing interactive logic tasks.")
+    SystemDb(store, "Governance State Store", "Stores changelogs, manifests, and .reversa state JSONs.")
+  }
+  
+  Rel(operator, hub, "Interacts with dashboard, edits specs, approves tasks", "HTTP/UI")
+  Rel(hub, store, "Reads and updates manifests and audit trails", "File API")
+  Rel(hub, reversa, "Launches pipeline tasks & scans output", "Subprocess")
+  Rel(hub, archon, "Coordinates script dispatches & reads logs", "HTTP API")
+  Rel(hub, hermes, "Routes chat console and skill interview loops", "Ollama API")
+  Rel(reversa, store, "Outputs generated spec artifacts & templates", "FS Write")
+"""
+        self.send_json({"c4_code": c4_code.strip()})
+
+    def handle_reversa_validate_asset(self):
+        """GET /api/governance/reversa/validate?path=<rel_path>
+        Runs JSON schema validation on the specified asset file.
+        """
+        import urllib.parse
+        query = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+        rel_path = query.get("path", [""])[0]
+
+        if not rel_path:
+            self.send_json({"error": "Missing path parameter"}, status=400)
+            return
+
+        if ".." in rel_path or rel_path.startswith("/") or rel_path.startswith("\\"):
+            self.send_json({"error": "Access denied"}, status=403)
+            return
+
+        target_path = self.server.project_root / rel_path
+        if not target_path.exists() or not target_path.is_file():
+            self.send_json({"error": "File not found"}, status=404)
+            return
+
+        if not rel_path.endswith(".json"):
+            self.send_json({
+                "valid": True,
+                "message": "Validation skipped: Schema validation is only enforced on JSON artifacts.",
+                "errors": []
+            })
+            return
+
+        try:
+            content = target_path.read_text(encoding="utf-8")
+            parsed_json = json.loads(content)
+            
+            scripts_dir = str(self.server.project_root / "scripts")
+            import sys
+            if scripts_dir not in sys.path:
+                sys.path.append(scripts_dir)
+            
+            import schema_validator
+            schema_type = None
+            for stype, paths in schema_validator.SCHEMA_SCAN_PATHS.items():
+                for p in paths:
+                    if p in rel_path:
+                        schema_type = stype
+                        break
+                if schema_type:
+                    break
+            
+            if not schema_type:
+                self.send_json({
+                    "valid": True,
+                    "message": f"No registered schema found matching the path structure of '{rel_path}'.",
+                    "errors": []
+                })
+                return
+                
+            objects = []
+            if isinstance(parsed_json, list):
+                objects = parsed_json
+            elif isinstance(parsed_json, dict):
+                for wrapper_key in ["projects", "workflows", "runs", "assets", "gates", "instances", "skills", "items"]:
+                    if wrapper_key in parsed_json and isinstance(parsed_json[wrapper_key], list):
+                        objects = parsed_json[wrapper_key]
+                        break
+                else:
+                    objects = [parsed_json]
+                    
+            validation_errors = []
+            for i, obj in enumerate(objects):
+                errs = schema_validator.validate_object(schema_type, obj, source=f"{rel_path}[{i}]")
+                if errs:
+                    validation_errors.extend(errs)
+                    
+            if validation_errors:
+                self.send_json({
+                    "valid": False,
+                    "message": f"Schema validation failed for schema type '{schema_type}'.",
+                    "errors": validation_errors
+                })
+            else:
+                self.send_json({
+                    "valid": True,
+                    "message": f"Artifact fully conforms to JSON schema: '{schema_type}'.",
+                    "errors": []
+                })
+        except json.JSONDecodeError as jde:
+            self.send_json({
+                "valid": False,
+                "message": f"Invalid JSON format: {jde}",
+                "errors": [{"field": "json", "severity": "error", "message": str(jde), "source": "proposed"}]
+            })
+        except Exception as e:
+            self.send_json({"error": str(e)}, status=500)
+
+    def handle_schema_list(self):
+        """GET /api/schemas — list all registered canonical schemas."""
+        schema_dir = self.server.project_root / "data" / "schemas"
+        schemas = []
+        if schema_dir.exists():
+            for f in sorted(schema_dir.glob("*.schema.json")):
+                try:
+                    with open(f, "r", encoding="utf-8") as sf:
+                        data = json.load(sf)
+                    schemas.append({
+                        "id": f.stem.replace(".schema", ""),
+                        "title": data.get("title", f.stem),
+                        "description": data.get("description", ""),
+                        "path": str(f.relative_to(self.server.project_root)),
+                        "schema_id": data.get("$id", ""),
+                    })
+                except Exception:
+                    pass
+        self.send_json({"schemas": schemas})
 
     def handle_agent_manager_view(self):
         self.serve_html_file("governance_agent_manager.html")
 
     def handle_dashboard(self):
-        path = self.server.project_root / "governance_hub.html"
+        path = self.server.system_root / "governance_hub.html"
         if not path.exists():
-            path = self.server.project_root / "governance_layer_orchestrator.html"
+            path = self.server.system_root / "governance_layer_orchestrator.html"
         if not path.exists():
-            path = self.server.project_root / "governance_c2_dashboard.html"
+            path = self.server.system_root / "governance_c2_dashboard.html"
 
         self.send_response(200)
         self.send_header('Content-Type', 'text/html')
@@ -273,7 +513,7 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
         self.wfile.write(path.read_bytes())
 
     def serve_html_file(self, filename):
-        path = self.server.project_root / filename
+        path = self.server.system_root / filename
         if not path.exists():
             self.send_error(404, f"{filename} not found.")
             return
@@ -287,6 +527,202 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
 
     def handle_project_detail_page(self):
         self.serve_html_file("governance_project_detail.html")
+
+    def handle_pi_gui(self):
+        """Serve the PI GUI client and inject window.piApp bridge interface."""
+        import mimetypes
+        path_parts = self.path.split("?")[0].split("/")
+        # Path looks like /pi-gui or /pi-gui/ or /pi-gui/assets/main.js
+        if len(path_parts) <= 2 or (len(path_parts) == 3 and path_parts[2] == ""):
+            # Serve index.html
+            rel_file_path = "index.html"
+        else:
+            # Serve specific file: strip '/pi-gui/' prefix
+            rel_file_path = "/".join(path_parts[2:])
+
+        renderer_dir = self.server.system_root / "pi/pi-gui/apps/desktop/out/renderer"
+        file_path = (renderer_dir / rel_file_path).resolve()
+
+        # Path jailing check
+        try:
+            file_path.relative_to(renderer_dir)
+        except ValueError:
+            self.send_error(403, "Access Denied: Path outside GUI viewport")
+            return
+
+        if not file_path.exists() or not file_path.is_file():
+            self.send_error(404, f"File Not Found: {rel_file_path}")
+            return
+
+        # Serve the file
+        mime_type, _ = mimetypes.guess_type(str(file_path))
+        if rel_file_path.endswith(".js"):
+            mime_type = "application/javascript"
+        elif rel_file_path.endswith(".css"):
+            mime_type = "text/css"
+        elif not mime_type:
+            mime_type = "application/octet-stream"
+
+        self.send_response(200)
+        self.send_header("Content-Type", mime_type)
+        self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+        
+        if rel_file_path == "index.html":
+            # Read index.html and inject window.piApp bridge
+            try:
+                html_content = file_path.read_text(encoding="utf-8")
+                # Define window.piApp proxy script
+                bridge_js = """
+<script>
+(function() {
+    const listeners = new Map();
+    
+    // Connect to SSE stream directly on port 8766
+    const eventSource = new EventSource('http://localhost:8766/events');
+    eventSource.onmessage = (event) => {
+        try {
+            const msg = JSON.parse(event.data);
+            const { channel, payload } = msg;
+            const channelListeners = listeners.get(channel);
+            if (channelListeners) {
+                for (const cb of channelListeners) {
+                    cb(payload);
+                }
+            }
+        } catch (e) {
+            console.error("Error handling SSE event:", e);
+        }
+    };
+    
+    function registerListener(channel, cb) {
+        if (!listeners.has(channel)) {
+            listeners.set(channel, new Set());
+        }
+        listeners.get(channel).add(cb);
+        return () => {
+            listeners.get(channel).delete(cb);
+        };
+    }
+    
+    async function sendRequest(method, args) {
+        const response = await fetch('http://localhost:8766/api', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ method, args })
+        });
+        if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(errText || `HTTP ${response.status}`);
+        }
+        const result = await response.json();
+        if (result.error) {
+            throw new Error(result.error);
+        }
+        return result.result;
+    }
+    
+    window.piApp = {
+        platform: 'linux',
+        versions: { node: '22', electron: '34' },
+        
+        ping: () => sendRequest('ping', []),
+        getState: () => sendRequest('getState', []),
+        onStateChanged: (listener) => registerListener('pi-gui:state-changed', listener),
+        getSelectedTranscript: () => sendRequest('getSelectedTranscript', []),
+        onSelectedTranscriptChanged: (listener) => registerListener('pi-gui:selected-transcript-changed', listener),
+        onCommand: (listener) => registerListener('pi-gui:app-command', listener),
+        onWorkspacePicked: (listener) => registerListener('pi-gui:workspace-picked', listener),
+        onClipboardImagePasted: (listener) => registerListener('pi-gui:clipboard-image-pasted', listener),
+        getPathForFile: (file) => (process.env.AXIOMENGINE_PI_WORKSPACE || (require('os').homedir() + '/AxiomEngine_Frame_Workspace')) + '/' + file.name,
+        addWorkspacePath: (workspacePath) => sendRequest('addWorkspacePath', [workspacePath]),
+        pickWorkspace: () => sendRequest('pickWorkspace', []),
+        selectWorkspace: (workspaceId) => sendRequest('selectWorkspace', [workspaceId]),
+        renameWorkspace: (workspaceId, displayName) => sendRequest('renameWorkspace', [workspaceId, displayName]),
+        removeWorkspace: (workspaceId) => sendRequest('removeWorkspace', [workspaceId]),
+        reorderWorkspaces: (workspaceOrder) => sendRequest('reorderWorkspaces', [workspaceOrder]),
+        openWorkspaceInFinder: (workspaceId) => sendRequest('openWorkspaceInFinder', [workspaceId]),
+        createWorktree: (input) => sendRequest('createWorktree', [input]),
+        removeWorktree: (input) => sendRequest('removeWorktree', [input]),
+        openSkillInFinder: (workspaceId, filePath) => sendRequest('openSkillInFinder', [workspaceId, filePath]),
+        openExtensionInFinder: (workspaceId, filePath) => sendRequest('openExtensionInFinder', [workspaceId, filePath]),
+        syncCurrentWorkspace: () => sendRequest('syncCurrentWorkspace', []),
+        selectSession: (target) => sendRequest('selectSession', [target]),
+        archiveSession: (target) => sendRequest('archiveSession', [target]),
+        unarchiveSession: (target) => sendRequest('unarchiveSession', [target]),
+        createSession: (input) => sendRequest('createSession', [input]),
+        startThread: (input) => sendRequest('startThread', [input]),
+        cancelCurrentRun: () => sendRequest('cancelCurrentRun', []),
+        setActiveView: (view) => sendRequest('setActiveView', [view]),
+        setSidebarCollapsed: (collapsed) => sendRequest('setSidebarCollapsed', [collapsed]),
+        refreshRuntime: (workspaceId) => sendRequest('refreshRuntime', [workspaceId]),
+        setModelSettingsScopeMode: (mode) => sendRequest('setModelSettingsScopeMode', [mode]),
+        setDefaultModel: (workspaceId, provider, modelId) => sendRequest('setDefaultModel', [workspaceId, provider, modelId]),
+        setDefaultThinkingLevel: (workspaceId, thinkingLevel) => sendRequest('setDefaultThinkingLevel', [workspaceId, thinkingLevel]),
+        setSessionModel: (workspaceId, sessionId, provider, modelId) => sendRequest('setSessionModel', [workspaceId, sessionId, provider, modelId]),
+        setSessionThinkingLevel: (workspaceId, sessionId, thinkingLevel) => sendRequest('setSessionThinkingLevel', [workspaceId, sessionId, thinkingLevel]),
+        loginProvider: (workspaceId, providerId) => sendRequest('loginProvider', [workspaceId, providerId]),
+        logoutProvider: (workspaceId, providerId) => sendRequest('logoutProvider', [workspaceId, providerId]),
+        setProviderApiKey: (workspaceId, providerId, apiKey) => sendRequest('setProviderApiKey', [workspaceId, providerId, apiKey]),
+        setEnableSkillCommands: (workspaceId, enabled) => sendRequest('setEnableSkillCommands', [workspaceId, enabled]),
+        setScopedModelPatterns: (workspaceId, patterns) => sendRequest('setScopedModelPatterns', [workspaceId, patterns]),
+        setSkillEnabled: (workspaceId, filePath, enabled) => sendRequest('setSkillEnabled', [workspaceId, filePath, enabled]),
+        setExtensionEnabled: (workspaceId, filePath, enabled) => sendRequest('setExtensionEnabled', [workspaceId, filePath, enabled]),
+        respondToHostUiRequest: (workspaceId, sessionId, response) => sendRequest('respondToHostUiRequest', [workspaceId, sessionId, response]),
+        setNotificationPreferences: (preferences) => sendRequest('setNotificationPreferences', [preferences]),
+        setIntegratedTerminalShell: (shellPath) => sendRequest('setIntegratedTerminalShell', [shellPath]),
+        ensureTerminalPanel: (workspaceId, terminalScopeId, size) => sendRequest('ensureTerminalPanel', [workspaceId, terminalScopeId, size]),
+        createTerminalSession: (workspaceId, terminalScopeId, size) => sendRequest('createTerminalSession', [workspaceId, terminalScopeId, size]),
+        setActiveTerminalSession: (workspaceId, terminalScopeId, terminalId) => sendRequest('setActiveTerminalSession', [workspaceId, terminalScopeId, terminalId]),
+        writeTerminal: (terminalId, data) => sendRequest('writeTerminal', [terminalId, data]),
+        resizeTerminal: (terminalId, size) => sendRequest('resizeTerminal', [terminalId, size]),
+        restartTerminalSession: (terminalId, size) => sendRequest('restartTerminalSession', [terminalId, size]),
+        closeTerminalSession: (terminalId) => sendRequest('closeTerminalSession', [terminalId]),
+        setTerminalTitle: (terminalId, title) => sendRequest('setTerminalTitle', [terminalId, title]),
+        setTerminalFocused: (focused) => sendRequest('setTerminalFocused', [focused]),
+        onTerminalData: (listener) => registerListener('pi-gui:terminal-data', listener),
+        onTerminalExit: (listener) => registerListener('pi-gui:terminal-exit', listener),
+        onTerminalError: (listener) => registerListener('pi-gui:terminal-error', listener),
+        getNotificationPermissionStatus: () => sendRequest('getNotificationPermissionStatus', []),
+        requestNotificationPermission: () => sendRequest('requestNotificationPermission', []),
+        openSystemNotificationSettings: () => sendRequest('openSystemNotificationSettings', []),
+        onNotificationPermissionStatusChanged: (callback) => registerListener('pi-gui:notification-permission-status-changed', callback),
+        pickComposerAttachments: () => sendRequest('pickComposerAttachments', []),
+        readClipboardImage: () => null,
+        addComposerAttachments: (attachments) => sendRequest('addComposerAttachments', [attachments]),
+        removeComposerAttachment: (attachmentId) => sendRequest('removeComposerAttachment', [attachmentId]),
+        editQueuedComposerMessage: (messageId, currentDraft) => sendRequest('editQueuedComposerMessage', [messageId, currentDraft]),
+        cancelQueuedComposerEdit: () => sendRequest('cancelQueuedComposerEdit', []),
+        removeQueuedComposerMessage: (messageId) => sendRequest('removeQueuedComposerMessage', [messageId]),
+        steerQueuedComposerMessage: (messageId) => sendRequest('steerQueuedComposerMessage', [messageId]),
+        updateComposerDraft: (composerDraft) => sendRequest('updateComposerDraft', [composerDraft]),
+        submitComposer: (text, options) => sendRequest('submitComposer', [text, options]),
+        getSessionTree: (target) => sendRequest('getSessionTree', [target]),
+        navigateSessionTree: (target, targetId, options) => sendRequest('navigateSessionTree', [target, targetId, options]),
+        listWorkspaceFiles: (workspaceId) => sendRequest('listWorkspaceFiles', [workspaceId]),
+        getChangedFiles: (workspaceId) => sendRequest('getChangedFiles', [workspaceId]),
+        getFileDiff: (workspaceId, filePath) => sendRequest('getFileDiff', [workspaceId, filePath]),
+        stageFile: (workspaceId, filePath) => sendRequest('stageFile', [workspaceId, filePath]),
+        toggleWindowMaximize: () => sendRequest('toggleWindowMaximize', []),
+        openExternal: (url) => sendRequest('openExternal', [url]),
+        getThemeMode: () => sendRequest('getThemeMode', []),
+        getResolvedTheme: () => sendRequest('getResolvedTheme', []),
+        setThemeMode: (mode) => sendRequest('setThemeMode', [mode]),
+        onThemeChanged: (callback) => registerListener('pi-gui:theme-changed', callback)
+    };
+})();
+</script>
+            """
+                if "<head>" in html_content:
+                    html_content = html_content.replace("<head>", f"<head>{bridge_js}", 1)
+                else:
+                    html_content = bridge_js + html_content
+                self.end_headers()
+                self.wfile.write(html_content.encode("utf-8"))
+            except Exception as e:
+                self.send_error(500, f"Error injecting bridge script: {e}")
+        else:
+            self.end_headers()
+            self.wfile.write(file_path.read_bytes())
 
     def handle_validate_source(self):
         content_length = int(self.headers['Content-Length'])
@@ -388,16 +824,6 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
             self.handle_dispatch()
         elif path == "/api/governance/dispatch/cancel":
             self.handle_dispatch_cancel()
-            
-    # --- HITM Handlers ---
-    def handle_hitm_approve(self):
-        # State would normally be stored in memory or a file; mock implementation
-        self.send_json({"status": "success", "message": "Execution approved and resumed"})
-        
-    def handle_hitm_reject(self):
-        self.send_json({"status": "success", "message": "Execution rejected and cancelled"})
-        
-    def handle_dispatch(self):
         elif path == "/api/governance/projects":
             self.handle_create_project()
         elif path == "/api/governance/project/update":
@@ -434,6 +860,14 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
             self.handle_pi_skills_install()
         elif path == "/api/governance/pi/open-script":
             self.handle_pi_open_script()
+        elif path == "/api/agent/launch":
+            self.handle_launch_tool()
+        elif path == "/api/agent/launch/cancel":
+            self.handle_launch_cancel()
+        elif path == "/api/agent/compact":
+            self.handle_compact()
+        elif path == "/api/agent/launch/stdin":
+            self.handle_launch_stdin()
         elif path == "/api/governance/pi/exec":
             self.handle_pi_exec()
         elif path == "/api/governance/pi/fuzzy-search":
@@ -454,6 +888,10 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
             self.handle_reversa_toggle_gitignore()
         elif path == "/api/governance/reversa/asset":
             self.handle_reversa_save_asset()
+        elif path == "/api/governance/reversa/asset/diff":
+            self.handle_reversa_asset_diff_post()
+        elif path == "/api/governance/reversa/asset/restore":
+            self.handle_reversa_asset_restore()
         elif path == "/api/governance/reversa/run-script":
             self.handle_reversa_run_script()
         elif path == "/api/axiom/settings":
@@ -468,6 +906,8 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
             self.handle_hitm_approve()
         elif path == "/api/dispatch/hitm/reject":
             self.handle_hitm_reject()
+        elif path == "/api/governance/project/switch":
+            self.handle_project_switch()
         elif path == "/api/chat/promote":
             self.handle_chat_promote()
         else:
@@ -479,10 +919,234 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(json.dumps(data, indent=2).encode('utf-8'))
 
+    def handle_project_switch(self):
+        content_length = int(self.headers['Content-Length'])
+        post_data = json.loads(self.rfile.read(content_length))
+        project_id = post_data.get("project_id", "")
+        
+        if not project_id:
+            # Switch back to system root
+            self.server.project_root = self.server.system_root
+            self.server.active_project_id = ""
+            self.send_json({"status": "SUCCESS", "active_project_id": ""})
+            return
+            
+        projects_path = self.server.system_root / "data/projects.json"
+        data = safe_read_json(projects_path)
+        if "projects" not in data:
+            self.send_json({"error": "No projects registered"}, status=404)
+            return
+            
+        project = None
+        for p in data["projects"]:
+            if p.get("id") == project_id:
+                project = p
+                break
+                
+        if not project:
+            self.send_json({"error": f"Project {project_id} not found"}, status=404)
+            return
+            
+        target_dir = project.get("reversa_target")
+        if not target_dir:
+            # Fall back to first local folder source
+            for s in project.get("sources", []):
+                if s.get("type") == "local_folder":
+                    target_dir = s.get("target")
+                    break
+                    
+        if not target_dir:
+            self.send_json({"error": "No valid target directory found for project"}, status=400)
+            return
+            
+        target_path = Path(target_dir).absolute()
+        if not target_path.exists() or not target_path.is_dir():
+            self.send_json({"error": f"Target directory does not exist: {target_dir}"}, status=400)
+            return
+            
+        # Dynamically switch project root context!
+        self.server.project_root = target_path
+        self.server.active_project_id = project_id
+        self.send_json({"status": "SUCCESS", "active_project_id": project_id})
+
+    # --- HITM Handlers (persisted approval decisions) ---
+
+    def _load_approval_gates(self) -> list:
+        gate_path = self.server.system_root / "data" / "approval_gates.json"
+        if gate_path.exists():
+            try:
+                with open(gate_path, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except Exception:
+                pass
+        return []
+
+    def _save_approval_gates(self, gates: list):
+        gate_path = self.server.system_root / "data" / "approval_gates.json"
+        gate_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(gate_path, "w", encoding="utf-8") as f:
+            json.dump(gates, f, indent=2)
+
+    def handle_approval_gates_list(self):
+        """GET /api/dispatch/hitm/gates — list all approval gate decisions."""
+        gates = self._load_approval_gates()
+        self.send_json({"gates": gates})
+
+    def handle_hitm_approve(self):
+        import time as _time
+        try:
+            length = int(self.headers.get("Content-Length", 0))
+            body = json.loads(self.rfile.read(length).decode("utf-8")) if length else {}
+        except Exception:
+            body = {}
+
+        gate_id = body.get("gate_id", f"gate_{int(_time.time())}")
+        decided_by = body.get("decided_by", "operator")
+        rationale = body.get("rationale", "Approved via HITM dashboard.")
+        workflow_run_id = body.get("workflow_run_id", "")
+        step_id = body.get("step_id", "")
+        classification = body.get("classification", "custom")
+
+        decision = {
+            "id": gate_id,
+            "status": "approved",
+            "decided_by": decided_by,
+            "rationale": rationale,
+            "decided_at": datetime.utcnow().isoformat() + "Z",
+            "workflow_run_id": workflow_run_id,
+            "step_id": step_id,
+            "classification": classification,
+            "name": body.get("name", "HITM Gate"),
+            "description": body.get("description", ""),
+            "requested_at": body.get("requested_at", datetime.utcnow().isoformat() + "Z"),
+        }
+
+        # Update in-memory registry
+        self.server.hitm_gates[gate_id] = decision
+
+        # Persist to disk
+        gates = self._load_approval_gates()
+        gates = [g for g in gates if g.get("id") != gate_id]  # deduplicate
+        gates.append(decision)
+        self._save_approval_gates(gates)
+
+        self.send_json({"status": "success", "message": "Execution approved and resumed", "gate": decision})
+
+    def handle_hitm_reject(self):
+        import time as _time
+        try:
+            length = int(self.headers.get("Content-Length", 0))
+            body = json.loads(self.rfile.read(length).decode("utf-8")) if length else {}
+        except Exception:
+            body = {}
+
+        gate_id = body.get("gate_id", f"gate_{int(_time.time())}")
+        decided_by = body.get("decided_by", "operator")
+        rationale = body.get("rationale", "Rejected via HITM dashboard.")
+        workflow_run_id = body.get("workflow_run_id", "")
+        step_id = body.get("step_id", "")
+        classification = body.get("classification", "custom")
+
+        decision = {
+            "id": gate_id,
+            "status": "rejected",
+            "decided_by": decided_by,
+            "rationale": rationale,
+            "decided_at": datetime.utcnow().isoformat() + "Z",
+            "workflow_run_id": workflow_run_id,
+            "step_id": step_id,
+            "classification": classification,
+            "name": body.get("name", "HITM Gate"),
+            "description": body.get("description", ""),
+            "requested_at": body.get("requested_at", datetime.utcnow().isoformat() + "Z"),
+        }
+
+        self.server.hitm_gates[gate_id] = decision
+
+        gates = self._load_approval_gates()
+        gates = [g for g in gates if g.get("id") != gate_id]
+        gates.append(decision)
+        self._save_approval_gates(gates)
+
+        self.send_json({"status": "success", "message": "Execution rejected and cancelled", "gate": decision})
+
     # --- ROUTE HANDLERS ---
 
     def handle_health(self):
         self.send_json({"status": "ok", "version": VERSION, "project_root": str(self.server.project_root)})
+
+    def handle_gpu_status(self):
+        """Return parsed `ollama ps` output showing loaded models, VRAM usage, and RAM spill."""
+        import subprocess as _sp
+        result = {"models": [], "error": None}
+        try:
+            proc = _sp.run(["ollama", "ps"], capture_output=True, text=True, timeout=5)
+            lines = proc.stdout.strip().split("\n")
+            if len(lines) > 1:
+                # Header: NAME  ID  SIZE  PROCESSOR  CONTEXT  UNTIL
+                for line in lines[1:]:
+                    parts = line.split()
+                    if len(parts) >= 4:
+                        name = parts[0]
+                        model_id = parts[1]
+                        # SIZE can be "10 GB" (two tokens) or "10GB"
+                        # PROCESSOR tells us GPU vs CPU split e.g. "100% GPU" or "78%/22% GPU/CPU"
+                        # Find the processor field by looking for GPU/CPU keywords
+                        raw = line
+                        processor = ""
+                        context = ""
+                        size_str = ""
+                        # Parse by column positions (ollama ps uses fixed-width-ish output)
+                        # Simpler: rejoin and regex
+                        import re
+                        m = re.match(
+                            r'(\S+)\s+(\S+)\s+([\d.]+ \w+)\s+(.+?)\s+(\d+)\s+(.+)',
+                            line
+                        )
+                        if m:
+                            name = m.group(1)
+                            model_id = m.group(2)
+                            size_str = m.group(3)
+                            processor = m.group(4).strip()
+                            context = m.group(5)
+                            until = m.group(6).strip()
+                        else:
+                            # Fallback: just grab what we can
+                            size_str = " ".join(parts[2:4]) if len(parts) > 3 else ""
+                            processor = " ".join(parts[4:]) if len(parts) > 4 else ""
+
+                        # Detect RAM spill: if processor contains "CPU" with a percentage
+                        gpu_pct = 100
+                        cpu_pct = 0
+                        spill = False
+                        pct_match = re.findall(r'(\d+)%', processor)
+                        if 'CPU' in processor.upper() and pct_match:
+                            if 'GPU' in processor.upper() and len(pct_match) >= 2:
+                                gpu_pct = int(pct_match[0])
+                                cpu_pct = int(pct_match[1])
+                                spill = cpu_pct > 0
+                            elif 'CPU' in processor.upper():
+                                cpu_pct = int(pct_match[0]) if pct_match else 100
+                                gpu_pct = 100 - cpu_pct
+                                spill = True
+
+                        result["models"].append({
+                            "name": name,
+                            "id": model_id,
+                            "size": size_str,
+                            "processor": processor,
+                            "context": context,
+                            "gpu_pct": gpu_pct,
+                            "cpu_pct": cpu_pct,
+                            "spill": spill,
+                        })
+        except FileNotFoundError:
+            result["error"] = "ollama not found in PATH"
+        except _sp.TimeoutExpired:
+            result["error"] = "ollama ps timed out"
+        except Exception as e:
+            result["error"] = str(e)
+        self.send_json(result)
 
     def handle_manifest(self):
         path = self.server.project_root / "docs/audit/baseline_manifest_v1_3_1.json"
@@ -551,7 +1215,7 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
         files = []
         for root, _, filenames in os.walk(self.server.project_root):
             rel_root = os.path.relpath(root, self.server.project_root)
-            if ".git" in rel_root or ".agentos_venv" in rel_root or "__pycache__" in rel_root:
+            if ".git" in rel_root or ".venv" in rel_root or ".agentos_venv" in rel_root or "__pycache__" in rel_root:
                 continue
             for f in filenames:
                 if f.endswith(".py"):
@@ -593,8 +1257,11 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
             self.send_json({"error": str(e)}, status=500)
 
     def handle_projects(self):
-        projects_path = self.server.project_root / "data/projects.json"
+        projects_path = self.server.system_root / "data/projects.json"
         data = safe_read_json(projects_path)
+        if "projects" not in data:
+            data["projects"] = []
+        data["active_project_id"] = getattr(self.server, "active_project_id", "")
         self.send_json(data)
 
     def handle_processing_status(self):
@@ -634,7 +1301,7 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
             self.send_json({"error": "Name and Sources are required"}, status=400)
             return
             
-        projects_path = self.server.project_root / "data/projects.json"
+        projects_path = self.server.system_root / "data/projects.json"
         data = safe_read_json(projects_path)
         if "projects" not in data: data["projects"] = []
         
@@ -685,7 +1352,7 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
                 "--source-type", source["type"],
                 "--target", source["target"]
             ]
-            subprocess.Popen(ingest_cmd, cwd=self.server.project_root)
+            subprocess.Popen(ingest_cmd, cwd=self.server.system_root)
             
         self.send_json({"status": "CREATED", "project": new_project})
 
@@ -701,7 +1368,7 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
             self.send_json({"error": "Project ID is required"}, status=400)
             return
             
-        projects_path = self.server.project_root / "data/projects.json"
+        projects_path = self.server.system_root / "data/projects.json"
         data = safe_read_json(projects_path)
         if "projects" not in data:
             self.send_json({"error": "No projects found"}, status=404)
@@ -863,7 +1530,7 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
             self.send_json({"error": "project_id and agent are required"}, status=400)
             return
             
-        sessions_path = self.server.project_root / "data/sessions.json"
+        sessions_path = self.server.system_root / "data/sessions.json"
         data = safe_read_json(sessions_path)
         
         if "sessions" not in data:
@@ -894,7 +1561,7 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
             self.send_json({"error": "id, project_id, and agent are required"}, status=400)
             return
             
-        sessions_path = self.server.project_root / "data/sessions.json"
+        sessions_path = self.server.system_root / "data/sessions.json"
         data = safe_read_json(sessions_path)
         
         if "sessions" not in data:
@@ -944,7 +1611,7 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
             self.send_json({"results": []})
             return
             
-        sessions_path = self.server.project_root / "data/sessions.json"
+        sessions_path = self.server.system_root / "data/sessions.json"
         data = safe_read_json(sessions_path)
         
         if "sessions" not in data:
@@ -1078,8 +1745,9 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
         import time
         import random
         
-        # Resolve the correct Python interpreter (prefer project venv)
-        venv_python = "/run/media/cane/f2a4492f-959f-4385-b87a-134ac4769088/home/cane/.agentos_venv/bin/python3"
+        # Resolve the correct Python interpreter (prefer external project venv)
+        venv_root = Path(os.environ.get("AGENTOS_VENV", str(Path.home() / ".agentos_venv")))
+        venv_python = str(venv_root / "bin" / "python")
         python_exe = venv_python if os.path.exists(venv_python) else sys.executable
         
         # Build command with PYTHONPATH to ensure internal modules are found
@@ -1429,6 +2097,32 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
                             s["approved"] = True
                             s["status"] = "completed"
                             s["logs"].append("[Orchestrator] Orchestrator approval GRANTED. Advancing execution.")
+                            
+                            # Record approval gate to data/approval_gates.json
+                            try:
+                                gate_id = f"gate_{run_id}_{s.get('id', 'step')}"
+                                requested_time = run.get("started_at")
+                                if not requested_time:
+                                    requested_time = datetime.utcnow().isoformat() + "Z"
+                                decision = {
+                                    "id": gate_id,
+                                    "name": s.get("name", "Step Approval"),
+                                    "classification": "policy-override",
+                                    "status": "approved",
+                                    "workflow_run_id": run_id,
+                                    "step_id": s.get("id", "step"),
+                                    "requested_at": requested_time,
+                                    "decided_at": datetime.utcnow().isoformat() + "Z",
+                                    "decided_by": "operator",
+                                    "rationale": "Approved via HITM dashboard override."
+                                }
+                                gates = self._load_approval_gates()
+                                gates = [g for g in gates if g.get("id") != gate_id]
+                                gates.append(decision)
+                                self._save_approval_gates(gates)
+                            except Exception as e_gate:
+                                print(f"[HITM Gate] Approve saving failed: {e_gate}")
+                            
                             if run_id in self.server.active_runs_updates:
                                 self.server.active_runs_updates[run_id]["last_update"] = 0
                             break
@@ -1439,6 +2133,32 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
                             s["approved"] = False
                             s["status"] = "failed"
                             s["logs"].append("[Orchestrator] Orchestrator approval REJECTED. Terminating thread.")
+                            
+                            # Record approval gate to data/approval_gates.json
+                            try:
+                                gate_id = f"gate_{run_id}_{s.get('id', 'step')}"
+                                requested_time = run.get("started_at")
+                                if not requested_time:
+                                    requested_time = datetime.utcnow().isoformat() + "Z"
+                                decision = {
+                                    "id": gate_id,
+                                    "name": s.get("name", "Step Approval"),
+                                    "classification": "policy-override",
+                                    "status": "rejected",
+                                    "workflow_run_id": run_id,
+                                    "step_id": s.get("id", "step"),
+                                    "requested_at": requested_time,
+                                    "decided_at": datetime.utcnow().isoformat() + "Z",
+                                    "decided_by": "operator",
+                                    "rationale": "Rejected via HITM dashboard override."
+                                }
+                                gates = self._load_approval_gates()
+                                gates = [g for g in gates if g.get("id") != gate_id]
+                                gates.append(decision)
+                                self._save_approval_gates(gates)
+                            except Exception as e_gate:
+                                print(f"[HITM Gate] Reject saving failed: {e_gate}")
+                                
                             run["status"] = "failed"
                             run["completed_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
                             if run_id in self.server.active_runs_updates:
@@ -1683,11 +2403,11 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
             self.send_json({"error": f"Failed to write skill file: {str(e)}"}, status=500)
 
     def load_settings(self):
-        settings_path = self.server.project_root / "axiomengine_settings.json"
+        settings_path = self.server.system_root / "axiomengine_settings.json"
         default_settings = {
-            "start_archon_path": str((self.server.project_root / "start_archon.sh").absolute()),
-            "run_hermes_path": str((self.server.project_root / "run_hermes.sh").absolute()),
-            "open_pi_path": str((self.server.project_root / "open_pi.sh").absolute())
+            "start_archon_path": str((self.server.system_root / "start_archon.sh").absolute()),
+            "run_hermes_path": str((self.server.system_root / "run_hermes.sh").absolute()),
+            "open_pi_path": str((self.server.system_root / "open_pi.sh").absolute())
         }
         if not settings_path.exists():
             try:
@@ -1775,6 +2495,604 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
             except Exception as e2:
                 self.send_json({"success": False, "error": f"xdg-open failed: {e}, terminal spawn failed: {e2}"})
 
+    def handle_launch_tool(self):
+        content_len = int(self.headers.get('Content-Length', 0))
+        post_data = self.rfile.read(content_len)
+        try:
+            req = json.loads(post_data.decode('utf-8'))
+        except Exception as e:
+            self.send_json({"error": f"Invalid JSON payload: {str(e)}"}, status=400)
+            return
+            
+        tool = req.get("tool")
+        mode = req.get("mode", "integrated")
+        args = req.get("args", [])
+        device = req.get("device", "default")
+        model = req.get("model") or "gemma4:e4b"
+        provider = req.get("provider") or "ollama"
+        
+        if not tool or tool not in ["pi", "archon", "reversa"]:
+            self.send_json({"error": f"Unsupported tool: {tool}"}, status=400)
+            return
+
+        pi_workspace = PI_WORKSPACE
+        if tool == "pi" and mode == "gui":
+            try:
+                import subprocess
+                import os
+                s_env = os.environ.copy()
+                s_env["PATH"] = f"{self.server.project_root}/pi/pi-gui/apps/desktop/node_modules/.bin:{self.server.project_root}/pi/pi-gui/node_modules/.bin:{s_env.get('PATH', '')}"
+                
+                if device == "rtx3070":
+                    s_env["OLLAMA_HOST"] = "http://127.0.0.1:11436"
+                    s_env["AXIOMENGINE_OLLAMA_URL"] = "http://127.0.0.1:11436"
+                    s_env["CUDA_VISIBLE_DEVICES"] = "0"
+                    s_env["OLLAMA_DEVICE"] = "rtx3070"
+                elif device == "p40":
+                    s_env["OLLAMA_HOST"] = "http://127.0.0.1:11437"
+                    s_env["AXIOMENGINE_OLLAMA_URL"] = "http://127.0.0.1:11437"
+                    s_env["CUDA_VISIBLE_DEVICES"] = "1"
+                    s_env["OLLAMA_DEVICE"] = "p40"
+                elif device == "cpu":
+                    s_env["OLLAMA_HOST"] = "http://127.0.0.1:11434"
+                    s_env["AXIOMENGINE_OLLAMA_URL"] = "http://127.0.0.1:11434"
+                    s_env["CUDA_VISIBLE_DEVICES"] = ""
+                    s_env["OLLAMA_DEVICE"] = "cpu"
+                else:
+                    s_env["OLLAMA_DEVICE"] = device
+
+                s_env["PI_CODING_AGENT_DIR"] = str(PI_CODING_AGENT_DIR)
+                s_env["PI_CODING_AGENT_SESSION_DIR"] = str(PI_CODING_AGENT_SESSION_DIR)
+                s_env["AXIOMENGINE_ROOT"] = str(self.server.project_root)
+                s_env["AXIOMENGINE_FOLDERS"] = str(pi_workspace)
+
+                gui_dir = self.server.project_root / "pi" / "pi-gui" / "apps" / "desktop"
+                run_cwd = str(gui_dir)
+                subprocess.Popen(["electron", ".", "--no-sandbox"], cwd=run_cwd, env=s_env)
+                self.send_json({"success": True, "message": f"Spawned PI Desktop GUI on device {device}!"})
+            except Exception as e:
+                self.send_json({"error": f"Failed to spawn Desktop GUI: {str(e)}"}, status=500)
+            return
+
+        if tool == "pi":
+            # Use the correct PI CLI path directly from the AxiomEngine project
+            pi_cli = self.server.project_root / "pi" / "pi-mono-main" / "packages" / "coding-agent" / "dist" / "cli.js"
+            legacy_standalone = Path.home() / "bin" / "axiom-pi"
+            legacy_hosted = Path.home() / "bin" / "axiom-pi-hosted"
+            if mode == "standalone" and legacy_standalone.exists():
+                script_path = legacy_standalone
+            elif pi_cli.exists():
+                script_path = pi_cli  # Will be launched with node
+            elif legacy_hosted.exists():
+                script_path = legacy_hosted
+            else:
+                self.send_json({
+                    "error": f"PI coding-agent CLI not found at {pi_cli}. "
+                             f"Build it: cd pi/pi-mono-main && npm install && npm run build"
+                }, status=404)
+                return
+            run_cwd = pi_workspace
+        else:
+            script_mapping = {
+                "archon": "start_archon.sh",
+                "reversa": "run_reversa.sh"
+            }
+            script_path = self.server.project_root / script_mapping[tool]
+            run_cwd = self.server.project_root
+        
+        if not script_path.exists():
+            self.send_json({"error": f"Script not found at {script_path}"}, status=404)
+            return
+
+        cmd_parts = []
+        if tool == "pi" and str(script_path).endswith(".js"):
+            cmd_parts = ["node", str(script_path)]
+            # In integrated mode the agent runs behind a piped (non-PTY) stdio
+            # bridge, so it must speak the line-based RPC protocol rather than
+            # the interactive TUI (which requires a real terminal). RPC mode
+            # accepts {"type":"prompt","message":"…"} on stdin and streams
+            # JSONL events on stdout.
+            if mode != "standalone":
+                joined = " ".join(str(a) for a in (args or []))
+                if "--mode" not in joined:
+                    cmd_parts += ["--mode", "rpc"]
+                if "--provider" not in joined:
+                    cmd_parts += ["--provider", str(provider)]
+                if "--model" not in joined:
+                    cmd_parts += ["--model", str(model)]
+                # Ephemeral session keeps each dashboard turn clean.
+                if "--no-session" not in joined and "--session" not in joined:
+                    cmd_parts += ["--no-session"]
+        else:
+            cmd_parts = ["bash", str(script_path)]
+        if args:
+            if isinstance(args, list):
+                cmd_parts.extend(args)
+            elif isinstance(args, str):
+                cmd_parts.extend(args.split())
+
+        if mode == "standalone":
+            try:
+                import subprocess
+                import os
+                s_env = os.environ.copy()
+                if device == "rtx3070":
+                    s_env["OLLAMA_HOST"] = "http://127.0.0.1:11436"
+                    s_env["AXIOMENGINE_OLLAMA_URL"] = "http://127.0.0.1:11436"
+                    s_env["CUDA_VISIBLE_DEVICES"] = "0"
+                    s_env["OLLAMA_DEVICE"] = "rtx3070"
+                elif device == "p40":
+                    s_env["OLLAMA_HOST"] = "http://127.0.0.1:11437"
+                    s_env["AXIOMENGINE_OLLAMA_URL"] = "http://127.0.0.1:11437"
+                    s_env["CUDA_VISIBLE_DEVICES"] = "1"
+                    s_env["OLLAMA_DEVICE"] = "p40"
+                elif device == "cpu":
+                    s_env["OLLAMA_HOST"] = "http://127.0.0.1:11434"
+                    s_env["AXIOMENGINE_OLLAMA_URL"] = "http://127.0.0.1:11434"
+                    s_env["CUDA_VISIBLE_DEVICES"] = ""
+                    s_env["OLLAMA_DEVICE"] = "cpu"
+                else:
+                    s_env["OLLAMA_DEVICE"] = device
+
+                if tool == "pi":
+                    s_env["PI_CODING_AGENT_DIR"] = str(PI_CODING_AGENT_DIR)
+                    s_env["PI_CODING_AGENT_SESSION_DIR"] = str(PI_CODING_AGENT_SESSION_DIR)
+                    s_env["AXIOMENGINE_ROOT"] = str(self.server.project_root)
+                    s_env["AXIOMENGINE_FOLDERS"] = str(pi_workspace)
+                
+                quoted_cmd = " ".join(shlex.quote(str(part)) for part in cmd_parts)
+                terminal_cmd = [
+                    "gnome-terminal", 
+                    "--", 
+                    "bash", 
+                    "-c", 
+                    f"{quoted_cmd}; exec bash"
+                ]
+                subprocess.Popen(terminal_cmd, cwd=str(run_cwd), env=s_env)
+                self.send_json({"success": True, "message": f"Spawned gnome-terminal executing {tool} launcher on device {device}!"})
+            except Exception as e:
+                self.send_json({"error": f"Failed to spawn standalone terminal: {str(e)}"}, status=500)
+        else:
+            import time
+            import threading
+            import subprocess
+            
+            task_id = f"launch_{tool}_{int(time.time())}"
+            
+            record = {
+                "cmd": cmd_parts,
+                "logs": f"\x01SYSTEM\x02Launching {tool.upper()} on device {device.upper()} (model: {model}) in Integrated AXiomEngine mode…\x01END\x02",
+                "status": "running",
+                "exit_code": None
+            }
+            self.server.active_scripts[task_id] = record
+            
+            def run_thread(proc_cmd, t_id, dev_type, ctx_tokens_val):
+                try:
+                    import os
+                    env = os.environ.copy()
+                    env["PYTHONUNBUFFERED"] = "1"
+                    
+                    if dev_type == "rtx3070":
+                        env["OLLAMA_HOST"] = "http://127.0.0.1:11436"
+                        env["AXIOMENGINE_OLLAMA_URL"] = "http://127.0.0.1:11436"
+                        env["CUDA_VISIBLE_DEVICES"] = "0"
+                        env["OLLAMA_DEVICE"] = "rtx3070"
+                    elif dev_type == "p40":
+                        env["OLLAMA_HOST"] = "http://127.0.0.1:11437"
+                        env["AXIOMENGINE_OLLAMA_URL"] = "http://127.0.0.1:11437"
+                        env["CUDA_VISIBLE_DEVICES"] = "1"
+                        env["OLLAMA_DEVICE"] = "p40"
+                    elif dev_type == "cpu":
+                        env["OLLAMA_HOST"] = "http://127.0.0.1:11434"
+                        env["AXIOMENGINE_OLLAMA_URL"] = "http://127.0.0.1:11434"
+                        env["CUDA_VISIBLE_DEVICES"] = ""
+                        env["OLLAMA_DEVICE"] = "cpu"
+                    else:
+                        env["OLLAMA_HOST"] = "http://127.0.0.1:11434"
+                        env["AXIOMENGINE_OLLAMA_URL"] = "http://127.0.0.1:11434"
+                        env["OLLAMA_DEVICE"] = dev_type
+
+                    if tool == "pi":
+                        env["PI_CODING_AGENT_DIR"] = str(PI_CODING_AGENT_DIR)
+                        env["PI_CODING_AGENT_SESSION_DIR"] = str(PI_CODING_AGENT_SESSION_DIR)
+                        env["AXIOMENGINE_ROOT"] = str(self.server.project_root)
+                        env["AXIOMENGINE_FOLDERS"] = str(pi_workspace)
+                        # Context window for the agent's Ollama lane.
+                        env["OLLAMA_CONTEXT_LENGTH"] = str(ctx_tokens_val or 32768)
+                    
+                    proc = subprocess.Popen(
+                        proc_cmd, 
+                        stdin=subprocess.PIPE,
+                        stdout=subprocess.PIPE, 
+                        stderr=subprocess.STDOUT, 
+                        bufsize=0,
+                        cwd=str(run_cwd),
+                        env=env
+                    )
+                    GovernanceDiscoveryHandler.active_processes[t_id] = proc
+                    
+                    # Detect whether this process speaks the line-based JSON
+                    # protocol (PI integrated mode). If so, translate the event
+                    # stream into human-readable text for the log buffer; if
+                    # not, fall back to raw passthrough.
+                    is_json_pi = ("--mode" in proc_cmd and ("rpc" in proc_cmd or "json" in proc_cmd))
+
+                    if is_json_pi:
+                        # Debug: confirm pump thread entered
+                        self.server.active_scripts[t_id]["logs"] += "\x01SYSTEM\x02PI pump thread started, reading stdout…\x01END\x02"
+                        self._pump_pi_json(proc, t_id)
+                    else:
+                        while True:
+                            char = proc.stdout.read(1)
+                            if not char:
+                                break
+                            self.server.active_scripts[t_id]["logs"] += char.decode("utf-8", errors="replace")
+                            self.server.active_scripts[t_id]["logs"] += char
+                    
+                    proc.wait()
+                    self.server.active_scripts[t_id]["exit_code"] = proc.returncode
+                    self.server.active_scripts[t_id]["status"] = "completed" if proc.returncode == 0 else "failed"
+                    self.server.active_scripts[t_id]["logs"] += f"\n[System] Process exited with code {proc.returncode}\n"
+                except Exception as ex:
+                    self.server.active_scripts[t_id]["status"] = "failed"
+                    self.server.active_scripts[t_id]["logs"] += f"\n[System Error] Execution failed: {ex}\n"
+                finally:
+                    if t_id in GovernanceDiscoveryHandler.active_processes:
+                        del GovernanceDiscoveryHandler.active_processes[t_id]
+
+            t = threading.Thread(target=run_thread, args=(cmd_parts, task_id, device, req.get("ctx_tokens", 32768)), daemon=True)
+            t.start()
+            
+            self.send_json({"task_id": task_id, "status": "running"})
+
+    def _pump_pi_json(self, proc, t_id):
+        """Read PI's --mode json event stream line by line and append
+        structured, render-friendly markers to the task log buffer.
+
+        We emit sentinel-tagged blocks the frontend parses into a modern chat
+        transcript:
+            \x01ROLE:thinking\x02 <text>            (collapsible reasoning)
+            \x01ROLE:assistant\x02 <text>           (assistant answer, streamed)
+            \x01TOOL:<name>\x02                      (tool invocation card)
+            \x01RESULT\x02 <text>                    (tool output card)
+            \x01ERROR\x02 <text>                     (error block)
+            \x01END\x02                              (turn complete)
+        Sentinels (\x01/\x02) never appear in normal text, so the frontend can
+        split on them safely. Falls back gracefully for non-JSON lines.
+        """
+        import json as _json
+        import re as _re
+
+        ANSI = _re.compile(r"\x1b\[[0-9;]*m")
+
+        def log(text):
+            if t_id in self.server.active_scripts:
+                self.server.active_scripts[t_id]["logs"] += text
+
+        cur_role = None  # 'thinking' | 'assistant'
+
+        def open_block(role):
+            nonlocal cur_role
+            if cur_role == role:
+                return
+            cur_role = role
+            log(f"\x01ROLE:{role}\x02")
+
+        def close_block():
+            nonlocal cur_role
+            cur_role = None
+
+        # Read stdout byte-by-byte and accumulate lines. The pipe is binary
+        # (bufsize=0) to avoid Python's text-mode read-ahead buffer which would
+        # block indefinitely on a persistent agent process.
+        import time as _time
+        buf = b""
+        while True:
+            chunk = proc.stdout.read(1)
+            if not chunk:
+                if proc.poll() is not None:
+                    break
+                _time.sleep(0.01)
+                continue
+            buf += chunk
+            if chunk != b"\n":
+                continue
+            line = buf.decode("utf-8", errors="replace").strip()
+            buf = b""
+            if not line:
+                continue
+            try:
+                evt = _json.loads(line)
+            except Exception:
+                log(ANSI.sub("", line) + "\n")
+                continue
+
+            etype = evt.get("type")
+
+            if etype == "message_update":
+                ame = evt.get("assistantMessageEvent", {}) or {}
+                sub = ame.get("type")
+                if sub in ("text_start", "text_delta"):
+                    open_block("assistant")
+                    log(ANSI.sub("", str(ame.get("delta", "") or "")))
+                elif sub in ("thinking_start", "thinking_delta"):
+                    open_block("thinking")
+                    log(ANSI.sub("", str(ame.get("delta", "") or "")))
+                elif sub in ("tool_start", "tool_call"):
+                    close_block()
+                    name = ame.get("name") or ame.get("tool") or "tool"
+                    log(f"\x01TOOL:{name}\x02")
+            elif etype == "tool_execution_start":
+                close_block()
+                name = evt.get("name") or evt.get("tool") or "tool"
+                log(f"\x01TOOL:{name}\x02")
+            elif etype in ("tool_execution_end", "tool_result"):
+                close_block()
+                out = ANSI.sub("", str(evt.get("output") or evt.get("result") or ""))
+                if out:
+                    snippet = out if len(out) <= 4000 else out[:4000] + " …(truncated)"
+                    log(f"\x01RESULT\x02{snippet}")
+            elif etype in ("turn_end", "agent_end"):
+                close_block()
+                log("\x01END\x02")
+            elif etype == "error":
+                close_block()
+                log(f"\x01ERROR\x02{evt.get('error') or evt.get('message') or line}")
+
+        close_block()
+        log("\x01END\x02")
+
+    def handle_launch_cancel(self):
+        import json
+        content_len = int(self.headers.get('Content-Length', 0))
+        post_data = self.rfile.read(content_len)
+        try:
+            req = json.loads(post_data.decode('utf-8'))
+        except Exception as e:
+            self.send_json({"error": f"Invalid JSON payload: {str(e)}"}, status=400)
+            return
+            
+        task_id = req.get("task_id")
+        if not task_id:
+            self.send_json({"error": "Missing task_id"}, status=400)
+            return
+
+        proc = GovernanceDiscoveryHandler.active_processes.get(task_id)
+        if proc:
+            try:
+                if proc.poll() is None:
+                    proc.terminate()
+                    if task_id in self.server.active_scripts:
+                        self.server.active_scripts[task_id]["status"] = "cancelled"
+                        self.server.active_scripts[task_id]["logs"] += "\n[System] Process terminated by user.\n"
+                    self.send_json({"success": True, "message": "Process terminated successfully."})
+                else:
+                    self.send_json({"success": True, "message": "Process already finished."})
+            except Exception as e:
+                self.send_json({"error": f"Failed to terminate process: {str(e)}"}, status=500)
+        else:
+            self.send_json({"error": "Task not found or already finished"}, status=404)
+
+    def handle_compact(self):
+        """Compact the current session: persist full log, extract keywords,
+        find referenced markdown files, and generate a session index file."""
+        import json as _json
+        import re as _re
+        from datetime import datetime
+        from pathlib import Path as _Path
+
+        content_len = int(self.headers.get('Content-Length', 0))
+        post_data = self.rfile.read(content_len)
+        try:
+            req = _json.loads(post_data.decode('utf-8'))
+        except Exception:
+            self.send_json({"error": "Invalid JSON"}, status=400)
+            return
+
+        task_id = req.get("task_id")
+        ctx_tokens = req.get("ctx_tokens", 32768)
+
+        record = self.server.active_scripts.get(task_id)
+        if not record:
+            self.send_json({"error": "Task not found"}, status=404)
+            return
+
+        logs = record.get("logs", "")
+        if not logs:
+            self.send_json({"error": "No logs to compact"}, status=400)
+            return
+
+        # --- 1. Persist full log ---
+        project_name = self.server.project_root.name or "AxiomEngine"
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        session_id = task_id.replace("launch_", "")
+        logs_dir = self.server.project_root / "logs" / "sessions"
+        logs_dir.mkdir(parents=True, exist_ok=True)
+        log_file = logs_dir / f"{project_name}_{session_id}_{ts}.log"
+        log_file.write_text(logs, encoding="utf-8")
+
+        # --- 2. Extract plain text from sentinel-tagged logs ---
+        plain_parts = []
+        for segment in _re.split(r'\x01[^\x02]*\x02', logs):
+            cleaned = _re.sub(r'\x1b\[[0-9;]*m', '', segment).strip()
+            if cleaned:
+                plain_parts.append(cleaned)
+        plain_text = "\n".join(plain_parts)
+
+        # --- 3. Extract keywords/tags (top frequent meaningful words) ---
+        stop_words = {'the','a','an','is','are','was','were','be','been','being',
+                      'have','has','had','do','does','did','will','would','could',
+                      'should','may','might','shall','can','to','of','in','for',
+                      'on','with','at','by','from','as','into','through','during',
+                      'before','after','above','below','between','out','off','over',
+                      'under','again','further','then','once','here','there','when',
+                      'where','why','how','all','each','every','both','few','more',
+                      'most','other','some','such','no','nor','not','only','own',
+                      'same','so','than','too','very','just','because','but','and',
+                      'or','if','while','about','up','it','its','this','that','these',
+                      'those','i','me','my','we','our','you','your','he','him','his',
+                      'she','her','they','them','their','what','which','who','whom'}
+        words = _re.findall(r'\b[a-zA-Z_][a-zA-Z0-9_]{2,}\b', plain_text.lower())
+        word_freq = {}
+        for w in words:
+            if w not in stop_words and len(w) > 3:
+                word_freq[w] = word_freq.get(w, 0) + 1
+        top_keywords = sorted(word_freq.items(), key=lambda x: -x[1])[:40]
+        keywords = [k for k, _ in top_keywords]
+
+        # --- 4. Find referenced file paths (especially .md files) ---
+        file_refs = set()
+        # Match paths like /path/to/file.md or relative/path.md
+        for m in _re.finditer(r'(?:^|[\s"\'])([/\w._-]+\.(?:md|json|py|js|ts|sql|html|yaml|yml))', plain_text):
+            fp = m.group(1)
+            if len(fp) > 5:
+                file_refs.add(fp)
+        # Also check for files mentioned in tool results
+        for m in _re.finditer(r'(?:read_file|write_file|edit_file|bash).*?([/\w._-]+\.(?:md|json|py|js|ts|sql|html))', logs):
+            fp = m.group(1)
+            if len(fp) > 5:
+                file_refs.add(fp)
+
+        # --- 5. Build keyword location index (which files contain which keywords) ---
+        keyword_locations = {}
+        for kw in keywords[:20]:
+            locations = []
+            for fp in file_refs:
+                full_path = self.server.project_root / fp if not fp.startswith('/') else _Path(fp)
+                if full_path.is_file():
+                    try:
+                        content = full_path.read_text(encoding='utf-8', errors='ignore')
+                        indices = [m.start() for m in _re.finditer(_re.escape(kw), content.lower())]
+                        if indices:
+                            # Convert char positions to line numbers
+                            lines = []
+                            for idx in indices[:10]:
+                                line_num = content[:idx].count('\n') + 1
+                                lines.append(line_num)
+                            locations.append({"file": str(fp), "lines": lines, "count": len(indices)})
+                    except Exception:
+                        pass
+            if locations:
+                keyword_locations[kw] = locations
+
+        # --- 6. Generate index markdown ---
+        index_file = logs_dir / f"{project_name}_{session_id}_index.md"
+        lines = []
+        lines.append(f"# Session Index: {project_name} / {session_id}")
+        lines.append(f"")
+        lines.append(f"_Generated: {datetime.now().isoformat()}_")
+        lines.append(f"")
+        lines.append(f"## Session Info")
+        lines.append(f"- **Task ID**: `{task_id}`")
+        lines.append(f"- **Full Log**: `{log_file.relative_to(self.server.project_root)}`")
+        lines.append(f"- **Context Window**: {ctx_tokens} tokens")
+        est_tokens = len(logs) // 4
+        pct = min(100, round((est_tokens / ctx_tokens) * 100))
+        lines.append(f"- **Usage at compaction**: ~{est_tokens} tokens ({pct}%)")
+        lines.append(f"")
+        lines.append(f"## Keywords / Tags")
+        lines.append(f"")
+        lines.append(f"`{'` `'.join(keywords[:20])}`")
+        lines.append(f"")
+        lines.append(f"## Referenced Files")
+        lines.append(f"")
+        for fp in sorted(file_refs):
+            lines.append(f"- `{fp}`")
+        lines.append(f"")
+        lines.append(f"## Keyword Locations")
+        lines.append(f"")
+        lines.append(f"```json")
+        lines.append(_json.dumps(keyword_locations, indent=2))
+        lines.append(f"```")
+        lines.append(f"")
+        lines.append(f"## Summary")
+        lines.append(f"")
+        # Brief summary from the conversation (first user prompt + first assistant response)
+        user_msgs = _re.findall(r'\x01ROLE:user\x02(.*?)\x01', logs)
+        asst_msgs = _re.findall(r'\x01ROLE:assistant\x02(.*?)\x01', logs)
+        if user_msgs:
+            lines.append(f"**User asked**: {user_msgs[0][:200].strip()}")
+        if asst_msgs:
+            lines.append(f"")
+            lines.append(f"**PI responded**: {asst_msgs[0][:500].strip()}")
+        lines.append(f"")
+
+        index_file.write_text("\n".join(lines), encoding="utf-8")
+
+        # --- 7. Send compaction command to PI agent (if still running) ---
+        proc = GovernanceDiscoveryHandler.active_processes.get(task_id)
+        if proc and proc.poll() is None:
+            try:
+                compact_cmd = _json.dumps({"type": "compact", "customInstructions": 
+                    f"Session compacted. Full log persisted at {log_file}. "
+                    f"Index at {index_file}. Top keywords: {', '.join(keywords[:10])}. "
+                    f"Referenced files: {', '.join(list(file_refs)[:10])}."
+                }) + "\n"
+                proc.stdin.write(compact_cmd.encode("utf-8"))
+                proc.stdin.flush()
+            except Exception:
+                pass  # Agent may not support compact command; that's ok
+
+        self.send_json({
+            "success": True,
+            "index_file": str(index_file.relative_to(self.server.project_root)),
+            "log_file": str(log_file.relative_to(self.server.project_root)),
+            "keywords": keywords[:20],
+            "files_referenced": len(file_refs),
+            "token_estimate": est_tokens,
+            "usage_pct": pct,
+        })
+
+    def handle_launch_stdin(self):
+        import json
+        content_len = int(self.headers.get('Content-Length', 0))
+        post_data = self.rfile.read(content_len)
+        try:
+            req = json.loads(post_data.decode('utf-8'))
+        except Exception as e:
+            self.send_json({"error": f"Invalid JSON payload: {str(e)}"}, status=400)
+            return
+            
+        task_id = req.get("task_id")
+        text = req.get("text", "")
+        
+        if not task_id:
+            self.send_json({"error": "Missing task_id"}, status=400)
+            return
+
+        proc = GovernanceDiscoveryHandler.active_processes.get(task_id)
+        if proc:
+            try:
+                if proc.poll() is None:
+                    # If this process is a JSON-mode PI agent, wrap the user's
+                    # text in the line protocol it expects. Otherwise send raw.
+                    record = self.server.active_scripts.get(task_id, {})
+                    cmd = record.get("cmd", []) if isinstance(record, dict) else []
+                    is_json_pi = ("--mode" in cmd and ("rpc" in cmd or "json" in cmd))
+
+                    if is_json_pi:
+                        payload = json.dumps({"type": "prompt", "message": text})
+                        proc.stdin.write((payload + "\n").encode("utf-8"))
+                    else:
+                        proc.stdin.write((text + "\n").encode("utf-8"))
+                    proc.stdin.flush()
+                    
+                    # Echo input to the logs for rendering
+                    if task_id in self.server.active_scripts:
+                        if is_json_pi:
+                            self.server.active_scripts[task_id]["logs"] += f"\x01ROLE:user\x02{text}\x01END\x02"
+                        else:
+                            self.server.active_scripts[task_id]["logs"] += f"\n>> {text}\n"
+                    
+                    self.send_json({"success": True})
+                else:
+                    self.send_json({"error": "Process has already exited"}, status=400)
+            except Exception as e:
+                self.send_json({"error": f"Failed to send input to process: {str(e)}"}, status=500)
+        else:
+            self.send_json({"error": f"No active process found for task {task_id}"}, status=404)
+
     def handle_pi_exec(self):
         content_len = int(self.headers.get('Content-Length', 0))
         post_data = self.rfile.read(content_len)
@@ -1828,7 +3146,7 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
                 if p.is_file():
                     rel = p.relative_to(self.server.project_root)
                     rel_str = str(rel)
-                    if any(x in rel_str for x in [".git/", "node_modules/", "__pycache__/", ".axiomengine_venv/"]):
+                    if any(x in rel_str for x in [".git/", "node_modules/", "__pycache__/", ".venv/", ".agentos_venv/", ".axiomengine_venv/"]):
                         continue
                     if query in p.name.lower() or query in rel_str.lower():
                         matches.append({
@@ -2249,26 +3567,151 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
             self.send_json({"error": f"Error saving agent: {e}"}, status=500)
 
     def handle_chat_promote(self):
+        import time, urllib.request
         try:
             length = int(self.headers.get("Content-Length", 0))
             body = json.loads(self.rfile.read(length).decode("utf-8"))
             intent_text = body.get("intent", "")
-            
+            model = body.get("model", "nemotron")
+            agent_name = body.get("agent_name", "Promoted Skill")
+
             if not intent_text:
                 self.send_json({"status": "error", "message": "No intent provided"}, 400)
                 return
-                
+
+            # --- Step 1: Call Ollama to generate structured skill instructions ---
+            system_prompt = (
+                "You are an expert AI skill architect. Given a user's intent text extracted from a "
+                "conversation, produce a complete, structured Reversa-compatible SKILL.md document. "
+                "Include: name, description, persona, intent, scope, allowed_actions, denied_actions, "
+                "input_contract, output_contract, and at least one example. "
+                "Format the output as clean markdown only. Do not include commentary outside the document."
+            )
+            skill_instructions = None
+            generation_error = None
+
+            try:
+                payload = json.dumps({
+                    "model": model,
+                    "messages": [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": f"Generate a skill document from this intent:\n\n{intent_text}"}
+                    ],
+                    "stream": False
+                }).encode("utf-8")
+                req = urllib.request.Request(
+                    "http://127.0.0.1:11434/api/chat",
+                    data=payload,
+                    headers={"Content-Type": "application/json"}
+                )
+                with urllib.request.urlopen(req, timeout=120) as resp:
+                    result = json.loads(resp.read())
+                    skill_instructions = result.get("message", {}).get("content", "")
+            except Exception as e:
+                generation_error = str(e)
+
+            # --- Step 2: Build the skill file ---
+            timestamp = int(time.time())
+            safe_name = agent_name.lower().replace(" ", "-").replace("/", "-")[:40]
+            filename = f"promoted-skill-{safe_name}-{timestamp}.md"
+
             skills_dir = self.server.project_root / "skills"
             skills_dir.mkdir(exist_ok=True)
-            
-            import time
-            filename = f"promoted_skill_{int(time.time())}.md"
             filepath = skills_dir / filename
-            
+
+            # Build frontmatter + content
+            generated_at = datetime.utcnow().isoformat() + "Z"
+            if skill_instructions:
+                content = (
+                    f"---\n"
+                    f"name: {agent_name}\n"
+                    f"status: draft\n"
+                    f"version: 1.0.0\n"
+                    f"generated_at: {generated_at}\n"
+                    f"source_intent_excerpt: {intent_text[:120].replace(chr(10), ' ')}\n"
+                    f"promoted_by: chat_promote\n"
+                    f"model_used: {model}\n"
+                    f"---\n\n"
+                    f"{skill_instructions}\n"
+                )
+            else:
+                # Fallback: template stub with intent
+                content = (
+                    f"---\n"
+                    f"name: {agent_name}\n"
+                    f"status: draft\n"
+                    f"version: 1.0.0\n"
+                    f"generated_at: {generated_at}\n"
+                    f"source_intent_excerpt: {intent_text[:120].replace(chr(10), ' ')}\n"
+                    f"promoted_by: chat_promote\n"
+                    f"generation_error: {generation_error}\n"
+                    f"---\n\n"
+                    f"# {agent_name}\n\n"
+                    f"## Intent\n\n{intent_text}\n\n"
+                    f"## Generated Instructions\n\n"
+                    f"*Generation via {model} failed: {generation_error}. Please fill in manually.*\n\n"
+                    f"## Persona\n\n[Describe the agent persona here]\n\n"
+                    f"## Allowed Actions\n\n- [action 1]\n\n"
+                    f"## Denied Actions\n\n- [forbidden action 1]\n\n"
+                    f"## Input Contract\n\n[Describe expected inputs]\n\n"
+                    f"## Output Contract\n\n[Describe expected outputs]\n"
+                )
+
             with open(filepath, "w", encoding="utf-8") as f:
-                f.write(f"# Promoted Skill: {filename}\n\n## Intent\n{intent_text}\n\n## Generated Instructions\nTo be filled by AI model...\n")
+                f.write(content)
+
+            # Generate and write JSON profile for schema compliance
+            try:
+                skill_profiles_dir = self.server.project_root / "data" / "skill_profiles"
+                skill_profiles_dir.mkdir(parents=True, exist_ok=True)
+                json_filename = filename.replace(".md", ".json")
+                json_filepath = skill_profiles_dir / json_filename
                 
-            self.send_json({"status": "success", "file": filename})
+                # Normalize key to conform to pattern ^[a-zA-Z0-9_-]+$
+                norm_id = "skill_" + safe_name.replace("-", "_")
+                # Strip any other illegal character from ID
+                import re
+                norm_id = re.sub(r'[^a-zA-Z0-9_-]', '', norm_id)
+
+                persona_extracted = "Skill to execute " + agent_name
+                intent_extracted = intent_text
+                scope_extracted = "Ecosystem boundaries"
+                
+                if skill_instructions:
+                    persona_match = re.search(r'## Persona\s*([\s\S]*?)(?=\n##|$)', skill_instructions, re.IGNORECASE)
+                    if persona_match:
+                        persona_extracted = persona_match.group(1).strip()
+                    intent_match = re.search(r'## Intent\s*([\s\S]*?)(?=\n##|$)', skill_instructions, re.IGNORECASE)
+                    if intent_match:
+                        intent_extracted = intent_match.group(1).strip()
+                    scope_match = re.search(r'## Scope\s*([\s\S]*?)(?=\n##|$)', skill_instructions, re.IGNORECASE)
+                    if scope_match:
+                        scope_extracted = scope_match.group(1).strip()
+
+                json_profile = {
+                    "id": norm_id,
+                    "name": agent_name,
+                    "description": agent_name,
+                    "status": "draft",
+                    "version": "1.0.0",
+                    "persona": persona_extracted[:200] if persona_extracted else "Expert agent persona",
+                    "intent": intent_extracted[:200] if intent_extracted else intent_text[:200],
+                    "scope": scope_extracted[:200] if scope_extracted else "Workspace actions",
+                    "created_at": generated_at
+                }
+                
+                with open(json_filepath, "w", encoding="utf-8") as jf:
+                    json.dump(json_profile, jf, indent=2)
+            except Exception as e_profile:
+                print(f"[Promote to Skill] Profile generation warning: {e_profile}")
+
+            self.send_json({
+                "status": "success",
+                "file": filename,
+                "llm_used": skill_instructions is not None,
+                "generation_error": generation_error,
+                "preview": content[:800]
+            })
         except Exception as e:
             self.send_json({"status": "error", "message": str(e)}, 500)
 
@@ -2716,6 +4159,7 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
 
         rel_path = req_data.get("path")
         content = req_data.get("content")
+        save_reason = req_data.get("save_reason", "Updated via Governance Dashboard")
 
         if not rel_path or content is None:
             self.send_json({"error": "Missing path or content"}, status=400)
@@ -2727,20 +4171,438 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
 
         target_path = self.server.project_root / rel_path
         
+        # Schema validation before saving JSON assets
+        if rel_path.endswith(".json"):
+            try:
+                parsed_json = json.loads(content)
+                scripts_dir = str(self.server.project_root / "scripts")
+                import sys
+                if scripts_dir not in sys.path:
+                    sys.path.append(scripts_dir)
+                try:
+                    import schema_validator
+                    schema_type = None
+                    for stype, paths in schema_validator.SCHEMA_SCAN_PATHS.items():
+                        for p in paths:
+                            if p in rel_path:
+                                schema_type = stype
+                                break
+                        if schema_type:
+                            break
+                    
+                    if schema_type:
+                        objects = []
+                        if isinstance(parsed_json, list):
+                            objects = parsed_json
+                        elif isinstance(parsed_json, dict):
+                            for wrapper_key in ["projects", "workflows", "runs", "assets", "gates", "instances", "skills", "items"]:
+                                if wrapper_key in parsed_json and isinstance(parsed_json[wrapper_key], list):
+                                    objects = parsed_json[wrapper_key]
+                                    break
+                            else:
+                                objects = [parsed_json]
+                        
+                        validation_errors = []
+                        for i, obj in enumerate(objects):
+                            errs = schema_validator.validate_object(schema_type, obj, source=f"proposed[{i}]")
+                            if errs:
+                                validation_errors.extend(errs)
+                        
+                        if validation_errors:
+                            self.send_json({
+                                "error": "Schema validation failed",
+                                "validation_errors": validation_errors
+                            }, status=422)
+                            return
+                except Exception as ex:
+                    print(f"[Schema Validator] Validation exception during save: {ex}")
+            except json.JSONDecodeError as jde:
+                self.send_json({
+                    "error": f"Invalid JSON syntax: {jde}",
+                    "validation_errors": [{"field": "json", "severity": "error", "message": str(jde), "source": "proposed"}]
+                }, status=422)
+                return
+
         try:
+            import time, shutil, hashlib
+            timestamp = int(time.time())
+            backup_rel_path = ""
+            backup_dir = self.server.project_root / ".reversa" / "backups"
+            backup_dir.mkdir(parents=True, exist_ok=True)
+            
             if target_path.exists():
-                import time, shutil
-                backup_dir = self.server.project_root / ".reversa" / "backups"
-                backup_dir.mkdir(parents=True, exist_ok=True)
-                timestamp = int(time.time())
                 backup_path = backup_dir / f"{timestamp}_{target_path.name}"
                 shutil.copy2(target_path, backup_path)
+                backup_rel_path = str(backup_path.relative_to(self.server.project_root))
 
             target_path.parent.mkdir(parents=True, exist_ok=True)
             target_path.write_text(content, encoding="utf-8")
+
+            # Calculate content hash
+            h = hashlib.sha256()
+            h.update(content.encode('utf-8'))
+            content_hash = h.hexdigest()[:16]
+
+            # Save changelog history
+            changelog_file = self.server.project_root / ".reversa" / "changelog.json"
+            changelog = []
+            if changelog_file.exists():
+                try:
+                    with open(changelog_file, 'r', encoding='utf-8') as cf:
+                        changelog = json.load(cf)
+                except Exception:
+                    pass
+
+            changelog.append({
+                "timestamp": timestamp,
+                "path": rel_path,
+                "save_reason": save_reason,
+                "backup_path": backup_rel_path,
+                "content_hash": content_hash,
+                "operator": "Governance Console"
+            })
+
+            with open(changelog_file, 'w', encoding='utf-8') as cf:
+                json.dump(changelog, cf, indent=2)
+
             self.send_json({"success": True})
         except Exception as e:
             self.send_json({"error": str(e)}, status=500)
+
+    def handle_reversa_asset_diff(self):
+        """GET /api/governance/reversa/asset/diff?path=<rel_path>&version=<timestamp>
+        Returns a unified diff between the current file content and a backup version.
+        If no version specified, returns the diff against the most recent backup.
+        """
+        import urllib.parse, difflib, os
+
+        query = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+        rel_path = query.get("path", [""])[0]
+        version_ts = query.get("version", [""])[0]
+
+        if not rel_path:
+            self.send_json({"error": "Missing path parameter"}, status=400)
+            return
+
+        if ".." in rel_path or rel_path.startswith("/"):
+            self.send_json({"error": "Access denied"}, status=403)
+            return
+
+        target_path = self.server.project_root / rel_path
+        if not target_path.exists():
+            self.send_json({"error": "File not found"}, status=404)
+            return
+
+        try:
+            current = target_path.read_text(encoding="utf-8")
+        except Exception as e:
+            self.send_json({"error": f"Cannot read file: {e}"}, status=500)
+            return
+
+        # Find backup
+        backup_dir = self.server.project_root / ".reversa" / "backups"
+        backup_content = None
+        backup_timestamp = None
+        backup_file = None
+
+        if backup_dir.exists():
+            matches = sorted(backup_dir.glob(f"*_{target_path.name}"), reverse=True)
+            if version_ts:
+                for m in matches:
+                    if m.name.startswith(version_ts + "_"):
+                        backup_file = m
+                        break
+            elif matches:
+                backup_file = matches[0]
+
+        if backup_file and backup_file.exists():
+            try:
+                backup_content = backup_file.read_text(encoding="utf-8")
+                backup_timestamp = backup_file.stem.split("_")[0]
+            except Exception:
+                pass
+
+        if backup_content is None:
+            self.send_json({
+                "diff": "",
+                "has_diff": False,
+                "message": "No backup version available for comparison.",
+                "backup_timestamp": None,
+            })
+            return
+
+        diff_lines = list(difflib.unified_diff(
+            backup_content.splitlines(keepends=True),
+            current.splitlines(keepends=True),
+            fromfile=f"{rel_path} (backup {backup_timestamp})",
+            tofile=f"{rel_path} (current)",
+            lineterm=""
+        ))
+        diff_text = "".join(diff_lines)
+
+        self.send_json({
+            "diff": diff_text,
+            "has_diff": len(diff_lines) > 0,
+            "backup_timestamp": backup_timestamp,
+            "current_lines": len(current.splitlines()),
+            "backup_lines": len(backup_content.splitlines()),
+        })
+
+    def handle_reversa_asset_diff_post(self):
+        """POST /api/governance/reversa/asset/diff
+        Calculates unified diff between current file and proposed file contents before saving.
+        Payload: { "path": "path/to/asset.md", "content": "proposed new content..." }
+        """
+        content_len = int(self.headers.get('Content-Length', 0))
+        post_data = self.rfile.read(content_len)
+        try:
+            req_data = json.loads(post_data.decode('utf-8'))
+        except Exception as e:
+            self.send_json({"error": f"Invalid payload: {e}"}, status=400)
+            return
+
+        rel_path = req_data.get("path")
+        proposed_content = req_data.get("content")
+
+        if not rel_path or proposed_content is None:
+            self.send_json({"error": "Missing path or content"}, status=400)
+            return
+
+        if ".." in rel_path or rel_path.startswith("/") or rel_path.startswith("\\"):
+            self.send_json({"error": "Access denied"}, status=403)
+            return
+
+        target_path = self.server.project_root / rel_path
+        current_content = ""
+        if target_path.exists():
+            try:
+                current_content = target_path.read_text(encoding="utf-8")
+            except Exception as e:
+                self.send_json({"error": f"Cannot read current file: {e}"}, status=500)
+                return
+
+        import difflib
+        diff_lines = list(difflib.unified_diff(
+            current_content.splitlines(keepends=True),
+            proposed_content.splitlines(keepends=True),
+            fromfile=f"{rel_path} (current)",
+            tofile=f"{rel_path} (proposed)",
+            lineterm=""
+        ))
+        diff_text = "".join(diff_lines)
+
+        self.send_json({
+            "diff": diff_text,
+            "has_diff": len(diff_lines) > 0,
+            "current_lines": len(current_content.splitlines()),
+            "proposed_lines": len(proposed_content.splitlines())
+        })
+
+    def handle_reversa_asset_history(self):
+        """GET /api/governance/reversa/asset/history?path=<rel_path>
+        Returns changelog edit history for a specific asset file.
+        """
+        import urllib.parse
+        query = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+        rel_path = query.get("path", [""])[0]
+
+        if not rel_path:
+            self.send_json({"error": "Missing path parameter"}, status=400)
+            return
+
+        changelog_file = self.server.project_root / ".reversa" / "changelog.json"
+        history = []
+        if changelog_file.exists():
+            try:
+                with open(changelog_file, 'r', encoding='utf-8') as cf:
+                    changelog = json.load(cf)
+                    history = [item for item in changelog if item.get("path") == rel_path]
+            except Exception:
+                pass
+
+        self.send_json({"history": history})
+
+    def handle_reversa_asset_restore(self):
+        """POST /api/governance/reversa/asset/restore
+        Restores a file to its state from a specific backup timestamp.
+        Payload: { "path": "path/to/asset.md", "timestamp": 1715893040 }
+        """
+        content_len = int(self.headers.get('Content-Length', 0))
+        post_data = self.rfile.read(content_len)
+        try:
+            req_data = json.loads(post_data.decode('utf-8'))
+        except Exception as e:
+            self.send_json({"error": f"Invalid payload: {e}"}, status=400)
+            return
+
+        rel_path = req_data.get("path")
+        timestamp = req_data.get("timestamp")
+
+        if not rel_path or not timestamp:
+            self.send_json({"error": "Missing path or timestamp"}, status=400)
+            return
+
+        if ".." in rel_path or rel_path.startswith("/") or rel_path.startswith("\\"):
+            self.send_json({"error": "Access denied"}, status=403)
+            return
+
+        target_path = self.server.project_root / rel_path
+        backup_dir = self.server.project_root / ".reversa" / "backups"
+        backup_path = backup_dir / f"{timestamp}_{target_path.name}"
+
+        if not backup_path.exists():
+            self.send_json({"error": "Backup file not found"}, status=404)
+            return
+
+        try:
+            import shutil
+            # Make a temporary current backup before restoring
+            import time
+            current_timestamp = int(time.time())
+            if target_path.exists():
+                curr_backup = backup_dir / f"{current_timestamp}_pre_restore_{target_path.name}"
+                shutil.copy2(target_path, curr_backup)
+
+            shutil.copy2(backup_path, target_path)
+
+            # Record restore event in changelog
+            changelog_file = self.server.project_root / ".reversa" / "changelog.json"
+            changelog = []
+            if changelog_file.exists():
+                try:
+                    with open(changelog_file, 'r', encoding='utf-8') as cf:
+                        changelog = json.load(cf)
+                except Exception:
+                    pass
+
+            changelog.append({
+                "timestamp": current_timestamp,
+                "path": rel_path,
+                "save_reason": f"Restored backup from timestamp {timestamp}",
+                "backup_path": str(curr_backup.relative_to(self.server.project_root)) if target_path.exists() else "",
+                "content_hash": "restored",
+                "operator": "Governance Console"
+            })
+
+            with open(changelog_file, 'w', encoding='utf-8') as cf:
+                json.dump(changelog, cf, indent=2)
+
+            self.send_json({"success": True})
+        except Exception as e:
+            self.send_json({"error": str(e)}, status=500)
+
+
+    def handle_registry_assets(self):
+        """GET /api/registry/assets — Context Asset Registry with full metadata.
+
+        Query params:
+          ?type=<asset_type>   filter by type
+          ?status=<status>     filter by status
+          ?q=<search>          text search in title/path
+          ?sort=mtime|title|type|size   sort field (default: mtime desc)
+        """
+        import os, hashlib, urllib.parse
+
+        query = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+        filter_type = query.get("type", [""])[0].lower()
+        filter_status = query.get("status", [""])[0].lower()
+        search_q = query.get("q", [""])[0].lower()
+        sort_by = query.get("sort", ["mtime"])[0]
+
+        # Registry scan paths with type mapping
+        scan_config = [
+            {"dir": "_reversa_sdd", "type": "requirements", "status": "active"},
+            {"dir": "skills", "type": "skill", "status": "draft"},
+            {"dir": ".agents/skills", "type": "skill", "status": "active"},
+            {"dir": "docs/pdd", "type": "pdd-rule", "status": "active"},
+            {"dir": "data/catalog/PDD", "type": "pdd-rule", "status": "active"},
+            {"dir": "docs/audit", "type": "evidence-artifact", "status": "complete"},
+            {"dir": "_reversa_forward", "type": "roadmap", "status": "active"},
+            {"dir": "data/schemas", "type": "schema", "status": "active"},
+            {"dir": "docs", "type": "migration-plan", "status": "active", "ext": [".md"]},
+        ]
+
+        assets = []
+        seen_paths = set()
+
+        for cfg in scan_config:
+            scan_dir = self.server.project_root / cfg["dir"]
+            if not scan_dir.exists():
+                continue
+            extensions = cfg.get("ext", [".md", ".json", ".yml", ".yaml", ".toml"])
+
+            for root_dir, dirs, files in os.walk(scan_dir):
+                dirs[:] = [d for d in dirs if d not in ["__pycache__", "node_modules", ".git", "backups", "agent_versions"]]
+                for filename in files:
+                    if not any(filename.endswith(ext) for ext in extensions):
+                        continue
+                    full_path = os.path.join(root_dir, filename)
+                    rel = os.path.relpath(full_path, self.server.project_root).replace("\\", "/")
+
+                    if rel in seen_paths:
+                        continue
+                    seen_paths.add(rel)
+
+                    try:
+                        stat = os.stat(full_path)
+                    except Exception:
+                        continue
+
+                    # Compute content hash (fast: first 64KB)
+                    content_hash = ""
+                    try:
+                        h = hashlib.sha256()
+                        with open(full_path, "rb") as fh:
+                            h.update(fh.read(65536))
+                        content_hash = h.hexdigest()[:16]  # short hash for display
+                    except Exception:
+                        pass
+
+                    asset = {
+                        "id": rel,
+                        "type": cfg["type"],
+                        "title": filename.replace("-", " ").replace("_", " ").rsplit(".", 1)[0],
+                        "status": cfg["status"],
+                        "source_path": rel,
+                        "content_hash": content_hash,
+                        "size_bytes": stat.st_size,
+                        "mtime": stat.st_mtime,
+                        "created_at": stat.st_ctime,
+                        "application_profile_id": "",
+                        "validation_status": "not-validated",
+                    }
+                    assets.append(asset)
+
+        # Apply filters
+        if filter_type:
+            assets = [a for a in assets if a["type"] == filter_type]
+        if filter_status:
+            assets = [a for a in assets if a["status"] == filter_status]
+        if search_q:
+            assets = [a for a in assets if search_q in a["title"].lower() or search_q in a["source_path"].lower()]
+
+        # Sort
+        reverse = True
+        if sort_by == "title":
+            assets.sort(key=lambda a: a["title"].lower(), reverse=False)
+            reverse = False
+        elif sort_by == "type":
+            assets.sort(key=lambda a: a["type"], reverse=False)
+        elif sort_by == "size":
+            assets.sort(key=lambda a: a["size_bytes"], reverse=True)
+        else:
+            assets.sort(key=lambda a: a["mtime"], reverse=True)
+
+        # Type summary
+        type_counts = {}
+        for a in assets:
+            type_counts[a["type"]] = type_counts.get(a["type"], 0) + 1
+
+        self.send_json({
+            "assets": assets,
+            "total": len(assets),
+            "type_summary": type_counts,
+        })
 
     def handle_reversa_run_script(self):
         import subprocess, threading, time
@@ -3358,7 +5220,9 @@ class GovernanceDiscoveryHandler(BaseHTTPRequestHandler):
 class GovernanceServer(HTTPServer):
     def __init__(self, address, handler, project_root, mission_dirs):
         super().__init__(address, handler)
+        self.system_root = Path(project_root).absolute()
         self.project_root = Path(project_root).absolute()
+        self.active_project_id = ""
         self.mission_dirs = [Path(d).absolute() for d in mission_dirs]
         if self.project_root not in self.mission_dirs:
             self.mission_dirs.append(self.project_root)
@@ -3367,12 +5231,50 @@ class GovernanceServer(HTTPServer):
         self.axiom_queue = []
         self.axiom_status = {"status": "idle", "processed": 0, "total": 0, "logs": "Queue idle.\n", "active_workers": 0}
         self.axiom_stop_requested = False
+        # HITM: in-memory gate registry (also persisted to disk)
+        self.hitm_gates = {}
+        
+        # PI GUI Bridge Process
+        self.bridge_process = None
+        self.start_bridge_server()
+
+    def start_bridge_server(self):
+        import subprocess
+        import sys
+        bridge_script = self.system_root / "pi/pi-gui/apps/desktop/scripts/pi_gui_bridge.mts"
+        print(f"🚀 [AxiomEngine] Starting PI GUI Bridge server ({bridge_script})...")
+        try:
+            self.bridge_process = subprocess.Popen(
+                ["node", "--experimental-strip-types", str(bridge_script)],
+                cwd=str(self.system_root / "pi/pi-gui/apps/desktop"),
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                env={**os.environ, "PI_APP_USER_DATA_DIR": str(PI_CODING_AGENT_DIR)}
+            )
+        except Exception as e:
+            print(f"❌ [AxiomEngine] Failed to start PI GUI Bridge: {e}", file=sys.stderr)
+
+    def server_close(self):
+        if hasattr(self, "bridge_process") and self.bridge_process:
+            print("🛑 [AxiomEngine] Stopping PI GUI bridge process...")
+            self.bridge_process.terminate()
+            try:
+                self.bridge_process.wait(timeout=5)
+            except Exception:
+                try:
+                    self.bridge_process.kill()
+                except Exception:
+                    pass
+        super().server_close()
 
 def main():
+    # Default the project root to this script's parent directory (the project
+    # root), so the server works regardless of the current working directory.
+    default_root = str(Path(__file__).resolve().parent.parent)
     parser = argparse.ArgumentParser(description="AXiomEngine Governance Discovery Server")
     parser.add_argument("--host", default="127.0.0.1", help="Host to bind to")
     parser.add_argument("--port", type=int, default=8765, help="Port to listen on")
-    parser.add_argument("--project-root", default=".", help="Project root directory")
+    parser.add_argument("--project-root", default=default_root, help="Project root directory")
     parser.add_argument("--mission-dir", action="append", help="Additional mission artifact directory (repeatable)")
     args = parser.parse_args()
 
