@@ -537,10 +537,11 @@
                 <span class="nav-icon">🤖</span>
                 <span>PI Intelligence</span>
             </div>
-            <div class="launcher-group" style="display: flex; gap: 6px; padding: 0 15px 8px 54px;">
-                <button onclick="quickLaunchAgent(event, 'pi', 'integrated')" title="Run PI hosted inside AXiomEngine" style="flex: 1; padding: 5px 4px; background: rgba(121, 192, 255, 0.12); border: 1px solid var(--border-color); border-radius: 4px; color: var(--accent-color); font-family: inherit; font-size: 0.7rem; font-weight: 600; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Hosted</button>
-                <button onclick="quickLaunchAgent(event, 'pi', 'standalone')" title="Open PI as a standalone terminal TUI" style="flex: 1; padding: 5px 4px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 4px; color: #8b949e; font-family: inherit; font-size: 0.7rem; font-weight: 600; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">TUI</button>
-                <button onclick="quickLaunchAgent(event, 'pi', 'gui')" title="Open PI Desktop GUI" style="flex: 1; padding: 5px 4px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 4px; color: #8b949e; font-family: inherit; font-size: 0.7rem; font-weight: 600; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">GUI</button>
+            <div class="launcher-group" style="display: flex; gap: 6px; padding: 0 15px 8px 54px; flex-wrap: wrap;">
+                <button onclick="quickLaunchAgent(event, 'pi', 'integrated')" title="Run PI hosted (chat UI)" style="flex: 1; padding: 5px 4px; background: rgba(121, 192, 255, 0.12); border: 1px solid var(--border-color); border-radius: 4px; color: var(--accent-color); font-family: inherit; font-size: 0.7rem; font-weight: 600; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Hosted</button>
+                <button onclick="launchRpcTui()" title="Run PI in raw terminal mode (integrated RPC)" style="flex: 1; padding: 5px 4px; background: rgba(171,125,248,0.12); border: 1px solid var(--border-color); border-radius: 4px; color: #ab7df8; font-family: inherit; font-size: 0.7rem; font-weight: 600; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">RPC TUI</button>
+                <button onclick="loadPiTui()" title="Open PI Bridge TUI (WebSocket terminal)" style="flex: 1; padding: 5px 4px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 4px; color: #8b949e; font-family: inherit; font-size: 0.7rem; font-weight: 600; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Bridge TUI</button>
+                <button onclick="loadPiGui()" title="Open PI Desktop GUI" style="flex: 1; padding: 5px 4px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 4px; color: #8b949e; font-family: inherit; font-size: 0.7rem; font-weight: 600; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">GUI</button>
             </div>
             
             <div class="nav-item" onclick="openLauncherModal('archon', this)">
@@ -876,7 +877,7 @@
                 
                 <div class="modal-footer" style="padding: 15px 20px; background: #0d1117; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px;">
                     <button onclick="closeLauncherModal()" style="padding: 8px 16px; background: none; border: 1px solid var(--border-color); border-radius: 6px; color: #c9d1d9; font-family: inherit; font-size: 0.85rem; cursor: pointer; transition: background 0.2s;">Cancel</button>
-                    <button onclick="submitLauncher('standalone')" style="padding: 8px 16px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 6px; color: #8b949e; font-family: inherit; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border-color: var(--border-color);">Standalone Terminal</button>
+                    <button onclick="submitLauncher('integrated')" style="padding: 8px 16px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 6px; color: #8b949e; font-family: inherit; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border-color: var(--border-color);">Launch in Terminal</button>
                     <button id="modal-submit-integrated" onclick="submitLauncher('integrated')" style="padding: 8px 16px; background: var(--accent-color); border: none; border-radius: 6px; color: var(--bg-color); font-family: inherit; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s;">Run in AXiomEngine</button>
                 </div>
             </div>
@@ -1124,7 +1125,10 @@
         }
 
         async function quickLaunchAgent(event, tool, mode) {
-            if (event) event.stopPropagation();
+            if (event) {
+                event.stopPropagation();
+                rpcTuiMode = false; // Reset: Hosted button uses chat UI
+            }
 
             const launcherGroup = event ? event.target.closest('.launcher-group') : null;
             const navItem = launcherGroup ? launcherGroup.previousElementSibling : null;
@@ -1146,7 +1150,7 @@
                         mode: mode,
                         args: [],
                         device: document.getElementById('modal-device-select')?.value || 'default',
-                        model: document.getElementById('pi-model')?.value || 'qwen3.6:27b'
+                        model: (function(){ var v = document.getElementById('pi-model')?.value; return (!v || v === 'default') ? 'qwen3.6:27b' : v; })()
                     })
                 });
                 const data = await response.json();
@@ -1650,13 +1654,20 @@
         let _lastRenderedBlocks = 0;
 
         function renderTranscriptIncremental(container, raw, status) {
-            // Legacy/raw (non-PI) output: just show as plain monospace.
-            if (raw.indexOf('\x01') === -1) {
+            // Legacy/raw (non-PI) output OR RPC TUI mode: render as plain terminal
+            if (raw.indexOf('\x01') === -1 || rpcTuiMode) {
                 container.classList.remove('chat-view');
                 container.style.whiteSpace = 'pre-wrap';
                 container.style.fontFamily = "'JetBrains Mono', monospace";
-                container.textContent = raw;
+                container.style.fontSize = '0.85rem';
+                container.style.padding = '16px';
+                container.style.lineHeight = '1.5';
+                // Strip sentinels for raw display
+                const clean = raw.replace(/\x01[^\x02]*\x02/g, '').replace(/\x1b\[[0-9;]*m/g, '');
+                container.textContent = clean;
+                container.scrollTop = container.scrollHeight;
                 _lastRenderedLen = raw.length;
+                _lastRenderedBlocks = 0;
                 return;
             }
             container.classList.add('chat-view');
@@ -1816,6 +1827,27 @@
 
         // Initialize projects list
         fetchProjects();
+
+        // --- Direct iframe loaders for PI modes ---
+        function loadPiTui() {
+            const vp = document.getElementById('viewport');
+            vp.src = 'http://127.0.0.1:8770/pi';
+            document.getElementById('active-panel-title').innerHTML = '💻 PI Bridge TUI';
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        }
+        function loadPiGui() {
+            const vp = document.getElementById('viewport');
+            vp.src = '/pi-gui/index.html';
+            document.getElementById('active-panel-title').innerHTML = '🖥️ PI Desktop GUI';
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        }
+
+        // RPC TUI: same proven backend as Hosted, but renders as raw terminal lines
+        let rpcTuiMode = false;
+        function launchRpcTui() {
+            rpcTuiMode = true;
+            quickLaunchAgent(null, 'pi', 'integrated');
+        }
 
         // --- Chat Toolbar: Filter, Search, Copy, Stats, Persistence ---
         let chatFilter = 'all';

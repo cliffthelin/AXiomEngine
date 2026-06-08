@@ -2508,7 +2508,9 @@ C4Context
         mode = req.get("mode", "integrated")
         args = req.get("args", [])
         device = req.get("device", "default")
-        model = req.get("model") or "gemma4:e4b"
+        model = req.get("model") or "qwen3.6:27b"
+        if model == "default":
+            model = "qwen3.6:27b"
         provider = req.get("provider") or "ollama"
         
         if not tool or tool not in ["pi", "archon", "reversa"]:
@@ -5218,6 +5220,8 @@ C4Context
 # --- SERVER INFRA ---
 
 class GovernanceServer(HTTPServer):
+    allow_reuse_address = True
+
     def __init__(self, address, handler, project_root, mission_dirs):
         super().__init__(address, handler)
         self.system_root = Path(project_root).absolute()
