@@ -107,6 +107,21 @@ CREATE INDEX IF NOT EXISTS pdd_rules_embedding_idx
     ON pdd_rules USING hnsw (embedding vector_cosine_ops);
 CREATE INDEX IF NOT EXISTS pdd_rules_scope_idx ON pdd_rules(scope);
 
+-- PDD Rule Mutation Proposals (R-PDD-SWARM-001, Phase 6/7)
+CREATE TABLE IF NOT EXISTS pdd_proposals (
+    proposal_id  BIGSERIAL PRIMARY KEY,
+    rule_id      TEXT,
+    agent_name   TEXT,
+    change_type  TEXT NOT NULL, -- new | update | delete
+    title        TEXT,
+    content      TEXT NOT NULL,
+    rationale    TEXT,
+    status       TEXT NOT NULL DEFAULT 'pending', -- pending | approved | rejected
+    created_at   TIMESTAMPTZ DEFAULT NOW(),
+    updated_at   TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS pdd_proposals_status_idx ON pdd_proposals(status);
+
 -- Agent Audit Trail (R-PDD-AUDIT-001)
 CREATE TABLE IF NOT EXISTS agent_audit (
     id           BIGSERIAL PRIMARY KEY,
