@@ -81,7 +81,7 @@
 - [x] **User Intelligence (The Interview)**: Implement an "Interview" phase to capture self-declared job roles, expectations, and company-specific lingo. (Implemented via `user_interview.py` + `user_profile` table; surfaced through `search_context.py`.)
 - [x] **Persistent Conversational Memory**: Add long-term session recall via semantic search or FTS5 (addressing assistant amnesia). (Implemented via `conversation_memory.py` + `conversation_memory` table with pgvector + tsvector fallback; router persists each turn best-effort, `search_context.py` recalls relevant prior turns.)
 - [x] **PI Rule Extensions**: Index and inject specific rule behaviors through specialized PI extensions. (Implemented via `ExtensionAPI.registerRuleProvider` + `index_extension_rules.py`, which embeds extension-contributed rules into `pdd_rules` so they flow through the existing injection pipeline; see `extensions/gpu_thermal_rules.py` for an example.)
-- [ ] **The Governance Manifest Template**: Standardize the AXiomEngine audit results into a reusable template for other ecosystems.
+- [x] **The Governance Manifest Template**: Standardize the AXiomEngine audit results into a reusable template for other ecosystems. (Implemented via `docs/contracts/governance_manifest_template_contract.md` + `scripts/governance_manifest_template.py`, which aggregates release/integrity/hardware/mission artifacts into one ecosystem-agnostic manifest.)
 - [ ] **Remote Compute (Long-term)**: Consider off-host execution via Modal or SSH sandboxes.
 
 ---
