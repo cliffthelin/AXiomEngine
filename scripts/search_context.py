@@ -18,11 +18,44 @@ async def get_embedding(text: str) -> List[float]:
 async def search_context(query: str, limit: int = 5) -> Dict:
     emb = await get_embedding(query)
     conn = await asyncpg.connect(PG_DSN)
-    
+
     results = {
         "projects": [],
-        "pdd_rules": []
+        "pdd_rules": [],
+        "memory": [],
+        "user_profile": None
     }
+
+    # Persistent Conversational Memory: recall prior turns relevant to this query
+    memory_rows = await conn.fetch("""
+        SELECT session_id, agent_name, role, content, created_at,
+               1 - (embedding <=> $1::vector) as similarity
+        FROM conversation_memory
+        WHERE embedding IS NOT NULL
+        ORDER BY embedding <=> $1::vector
+        LIMIT 3
+    """, str(emb))
+
+    for r in memory_rows:
+        results["memory"].append({
+            "session_id": r['session_id'],
+            "agent_name": r['agent_name'],
+            "role": r['role'],
+            "content": r['content'],
+            "similarity": float(r['similarity'])
+        })
+
+    # User Intelligence: self-declared role/expectations/lingo, if an interview was run
+    profile_row = await conn.fetchrow(
+        "SELECT job_role, expectations, company_lingo FROM user_profile "
+        "WHERE user_id = 'default' AND interviewed_at IS NOT NULL"
+    )
+    if profile_row:
+        results["user_profile"] = {
+            "job_role": profile_row["job_role"],
+            "expectations": profile_row["expectations"],
+            "company_lingo": profile_row["company_lingo"],
+        }
 
     # Search projects
     rows = await conn.fetch("""

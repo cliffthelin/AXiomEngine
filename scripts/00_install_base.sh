@@ -107,6 +107,65 @@ CREATE INDEX IF NOT EXISTS pdd_rules_embedding_idx
     ON pdd_rules USING hnsw (embedding vector_cosine_ops);
 CREATE INDEX IF NOT EXISTS pdd_rules_scope_idx ON pdd_rules(scope);
 
+-- PDD Rule Mutation Proposals (R-PDD-SWARM-001, Phase 6/7)
+CREATE TABLE IF NOT EXISTS pdd_proposals (
+    proposal_id  BIGSERIAL PRIMARY KEY,
+    rule_id      TEXT,
+    agent_name   TEXT,
+    change_type  TEXT NOT NULL, -- new | update | delete
+    title        TEXT,
+    content      TEXT NOT NULL,
+    rationale    TEXT,
+    status       TEXT NOT NULL DEFAULT 'pending', -- pending | approved | rejected
+    created_at   TIMESTAMPTZ DEFAULT NOW(),
+    updated_at   TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS pdd_proposals_status_idx ON pdd_proposals(status);
+
+-- Governed Skill Harvesting candidates (Phase 7)
+CREATE TABLE IF NOT EXISTS skill_harvest_candidates (
+    candidate_id  BIGSERIAL PRIMARY KEY,
+    name          TEXT NOT NULL,
+    description   TEXT NOT NULL,
+    source_agent  TEXT,
+    rules_cited   TEXT[],
+    pattern_count INT NOT NULL DEFAULT 0,
+    content       TEXT NOT NULL,      -- draft SKILL.md body
+    staged_path   TEXT,               -- filesystem path of the staged (not-yet-active) skill
+    governor_verdict TEXT,
+    status        TEXT NOT NULL DEFAULT 'pending', -- pending | approved | rejected
+    created_at    TIMESTAMPTZ DEFAULT NOW(),
+    updated_at    TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS skill_harvest_status_idx ON skill_harvest_candidates(status);
+
+-- Persistent Conversational Memory (Phase 7)
+CREATE TABLE IF NOT EXISTS conversation_memory (
+    id           BIGSERIAL PRIMARY KEY,
+    session_id   TEXT NOT NULL,
+    agent_name   TEXT,
+    role         TEXT NOT NULL,   -- user | assistant
+    content      TEXT NOT NULL,
+    embedding    vector(768),
+    content_tsv  tsvector GENERATED ALWAYS AS (to_tsvector('english', content)) STORED,
+    created_at   TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS conversation_memory_session_idx ON conversation_memory(session_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS conversation_memory_tsv_idx ON conversation_memory USING GIN (content_tsv);
+CREATE INDEX IF NOT EXISTS conversation_memory_embedding_idx
+    ON conversation_memory USING hnsw (embedding vector_cosine_ops);
+
+-- User Intelligence: self-declared role/expectations/lingo (Phase 7 "The Interview")
+CREATE TABLE IF NOT EXISTS user_profile (
+    user_id       TEXT PRIMARY KEY DEFAULT 'default',
+    job_role      TEXT,
+    expectations  TEXT,
+    company_lingo JSONB DEFAULT '{}',  -- term -> meaning
+    raw_answers   JSONB DEFAULT '{}',  -- verbatim interview Q&A for audit
+    interviewed_at TIMESTAMPTZ,
+    updated_at    TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Agent Audit Trail (R-PDD-AUDIT-001)
 CREATE TABLE IF NOT EXISTS agent_audit (
     id           BIGSERIAL PRIMARY KEY,
