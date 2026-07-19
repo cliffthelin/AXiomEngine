@@ -18,11 +18,24 @@ async def get_embedding(text: str) -> List[float]:
 async def search_context(query: str, limit: int = 5) -> Dict:
     emb = await get_embedding(query)
     conn = await asyncpg.connect(PG_DSN)
-    
+
     results = {
         "projects": [],
-        "pdd_rules": []
+        "pdd_rules": [],
+        "user_profile": None
     }
+
+    # User Intelligence: self-declared role/expectations/lingo, if an interview was run
+    profile_row = await conn.fetchrow(
+        "SELECT job_role, expectations, company_lingo FROM user_profile "
+        "WHERE user_id = 'default' AND interviewed_at IS NOT NULL"
+    )
+    if profile_row:
+        results["user_profile"] = {
+            "job_role": profile_row["job_role"],
+            "expectations": profile_row["expectations"],
+            "company_lingo": profile_row["company_lingo"],
+        }
 
     # Search projects
     rows = await conn.fetch("""

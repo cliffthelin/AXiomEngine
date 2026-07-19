@@ -139,6 +139,17 @@ CREATE TABLE IF NOT EXISTS skill_harvest_candidates (
 );
 CREATE INDEX IF NOT EXISTS skill_harvest_status_idx ON skill_harvest_candidates(status);
 
+-- User Intelligence: self-declared role/expectations/lingo (Phase 7 "The Interview")
+CREATE TABLE IF NOT EXISTS user_profile (
+    user_id       TEXT PRIMARY KEY DEFAULT 'default',
+    job_role      TEXT,
+    expectations  TEXT,
+    company_lingo JSONB DEFAULT '{}',  -- term -> meaning
+    raw_answers   JSONB DEFAULT '{}',  -- verbatim interview Q&A for audit
+    interviewed_at TIMESTAMPTZ,
+    updated_at    TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Agent Audit Trail (R-PDD-AUDIT-001)
 CREATE TABLE IF NOT EXISTS agent_audit (
     id           BIGSERIAL PRIMARY KEY,
