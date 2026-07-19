@@ -22,8 +22,28 @@ async def search_context(query: str, limit: int = 5) -> Dict:
     results = {
         "projects": [],
         "pdd_rules": [],
+        "memory": [],
         "user_profile": None
     }
+
+    # Persistent Conversational Memory: recall prior turns relevant to this query
+    memory_rows = await conn.fetch("""
+        SELECT session_id, agent_name, role, content, created_at,
+               1 - (embedding <=> $1::vector) as similarity
+        FROM conversation_memory
+        WHERE embedding IS NOT NULL
+        ORDER BY embedding <=> $1::vector
+        LIMIT 3
+    """, str(emb))
+
+    for r in memory_rows:
+        results["memory"].append({
+            "session_id": r['session_id'],
+            "agent_name": r['agent_name'],
+            "role": r['role'],
+            "content": r['content'],
+            "similarity": float(r['similarity'])
+        })
 
     # User Intelligence: self-declared role/expectations/lingo, if an interview was run
     profile_row = await conn.fetchrow(

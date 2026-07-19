@@ -139,6 +139,22 @@ CREATE TABLE IF NOT EXISTS skill_harvest_candidates (
 );
 CREATE INDEX IF NOT EXISTS skill_harvest_status_idx ON skill_harvest_candidates(status);
 
+-- Persistent Conversational Memory (Phase 7)
+CREATE TABLE IF NOT EXISTS conversation_memory (
+    id           BIGSERIAL PRIMARY KEY,
+    session_id   TEXT NOT NULL,
+    agent_name   TEXT,
+    role         TEXT NOT NULL,   -- user | assistant
+    content      TEXT NOT NULL,
+    embedding    vector(768),
+    content_tsv  tsvector GENERATED ALWAYS AS (to_tsvector('english', content)) STORED,
+    created_at   TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS conversation_memory_session_idx ON conversation_memory(session_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS conversation_memory_tsv_idx ON conversation_memory USING GIN (content_tsv);
+CREATE INDEX IF NOT EXISTS conversation_memory_embedding_idx
+    ON conversation_memory USING hnsw (embedding vector_cosine_ops);
+
 -- User Intelligence: self-declared role/expectations/lingo (Phase 7 "The Interview")
 CREATE TABLE IF NOT EXISTS user_profile (
     user_id       TEXT PRIMARY KEY DEFAULT 'default',
