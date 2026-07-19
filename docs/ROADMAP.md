@@ -77,7 +77,7 @@
 
 ## 🧠 Phase 7 — Cognitive Evolution & Deep Governance (PLANNED)
 - [x] **Non-Blocking Governance Check**: Pre-check prompts against governance without blocking; propose new rules or separate branches for non-compliant changes. (Implemented via `nonblocking_governor.py`, `pdd_proposals` table added to install script.)
-- [ ] **Governed Skill Harvesting**: Automatically codify successful workflows into "Skills" that must strictly adhere to PDD mandates (no auto-approval).
+- [x] **Governed Skill Harvesting**: Automatically codify successful workflows into "Skills" that must strictly adhere to PDD mandates (no auto-approval). (Implemented via `skill_harvester.py`; drafts are Governor-checked and staged to `.pi/skills_pending/`, promoted only by explicit `--approve`.)
 - [ ] **User Intelligence (The Interview)**: Implement an "Interview" phase to capture self-declared job roles, expectations, and company-specific lingo.
 - [ ] **Persistent Conversational Memory**: Add long-term session recall via semantic search or FTS5 (addressing assistant amnesia).
 - [ ] **PI Rule Extensions**: Index and inject specific rule behaviors through specialized PI extensions.

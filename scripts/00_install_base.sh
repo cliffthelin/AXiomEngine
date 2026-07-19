@@ -122,6 +122,23 @@ CREATE TABLE IF NOT EXISTS pdd_proposals (
 );
 CREATE INDEX IF NOT EXISTS pdd_proposals_status_idx ON pdd_proposals(status);
 
+-- Governed Skill Harvesting candidates (Phase 7)
+CREATE TABLE IF NOT EXISTS skill_harvest_candidates (
+    candidate_id  BIGSERIAL PRIMARY KEY,
+    name          TEXT NOT NULL,
+    description   TEXT NOT NULL,
+    source_agent  TEXT,
+    rules_cited   TEXT[],
+    pattern_count INT NOT NULL DEFAULT 0,
+    content       TEXT NOT NULL,      -- draft SKILL.md body
+    staged_path   TEXT,               -- filesystem path of the staged (not-yet-active) skill
+    governor_verdict TEXT,
+    status        TEXT NOT NULL DEFAULT 'pending', -- pending | approved | rejected
+    created_at    TIMESTAMPTZ DEFAULT NOW(),
+    updated_at    TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS skill_harvest_status_idx ON skill_harvest_candidates(status);
+
 -- Agent Audit Trail (R-PDD-AUDIT-001)
 CREATE TABLE IF NOT EXISTS agent_audit (
     id           BIGSERIAL PRIMARY KEY,

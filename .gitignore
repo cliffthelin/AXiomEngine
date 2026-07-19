@@ -51,3 +51,6 @@ _reversa_output/
 # Local Pi runtime state
 .atl/
 *.bak*
+
+# Harvested skill drafts pending human approval (scripts/skill_harvester.py)
+.pi/skills_pending/
