@@ -80,7 +80,7 @@
 - [x] **Governed Skill Harvesting**: Automatically codify successful workflows into "Skills" that must strictly adhere to PDD mandates (no auto-approval). (Implemented via `skill_harvester.py`; drafts are Governor-checked and staged to `.pi/skills_pending/`, promoted only by explicit `--approve`.)
 - [x] **User Intelligence (The Interview)**: Implement an "Interview" phase to capture self-declared job roles, expectations, and company-specific lingo. (Implemented via `user_interview.py` + `user_profile` table; surfaced through `search_context.py`.)
 - [x] **Persistent Conversational Memory**: Add long-term session recall via semantic search or FTS5 (addressing assistant amnesia). (Implemented via `conversation_memory.py` + `conversation_memory` table with pgvector + tsvector fallback; router persists each turn best-effort, `search_context.py` recalls relevant prior turns.)
-- [ ] **PI Rule Extensions**: Index and inject specific rule behaviors through specialized PI extensions.
+- [x] **PI Rule Extensions**: Index and inject specific rule behaviors through specialized PI extensions. (Implemented via `ExtensionAPI.registerRuleProvider` + `index_extension_rules.py`, which embeds extension-contributed rules into `pdd_rules` so they flow through the existing injection pipeline; see `extensions/gpu_thermal_rules.py` for an example.)
 - [ ] **The Governance Manifest Template**: Standardize the AXiomEngine audit results into a reusable template for other ecosystems.
 - [ ] **Remote Compute (Long-term)**: Consider off-host execution via Modal or SSH sandboxes.
 
