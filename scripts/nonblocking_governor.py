@@ -27,6 +27,7 @@ sys.path.append(str(PROJECT_ROOT / "scripts"))
 
 from governor import Governor
 from propose_rule import propose_rule
+from system_one import SystemOneClient
 
 GIT_WORKER = PROJECT_ROOT / "scripts" / "git_worker.sh"
 QUARANTINE_ROOT = PROJECT_ROOT / ".quarantine"
@@ -42,6 +43,7 @@ class NonBlockingGovernor:
 
     def __init__(self, session_id: str = "nb_gov_session"):
         self._governor = Governor(session_id=session_id)
+        self._system_one = SystemOneClient(name="NonBlockingGovernor", session_id=session_id)
 
     def precheck(self, agent_name: str, task: str, proposal: str) -> asyncio.Task:
         """Fire-and-forget: kicks off validation + routing, returns the Task."""
@@ -70,11 +72,33 @@ class NonBlockingGovernor:
           file a PDD rule proposal for human review.
         - Otherwise, isolate the change on its own branch/worktree so it
           never lands directly on the active branch.
+
+        This classification used to be a keyword-substring guess ("no rule"
+        in reason.lower()), which misses phrasing the model didn't happen to
+        use. It's exactly the kind of atomic, bounded choice a System One
+        model is suited for: not deterministic (no fixed vocabulary of
+        rejection reasons exists), but far simpler than a full chat
+        completion. If the classifier degrades (model unreachable, bad
+        output), fall back to the original keyword heuristic rather than
+        blocking or guessing worse.
         """
-        looks_like_gap = any(
-            phrase in reason.lower()
-            for phrase in ("no rule", "not covered", "undefined", "no applicable", "no matching rule")
+        classification = self._system_one.choice(
+            state=f"Governance rejection reason from {agent_name}'s task '{task}': {reason}",
+            question=(
+                "Is this rejection reason a governance COVERAGE GAP (no existing rule "
+                "addresses this situation at all), or a POLICY VIOLATION (an existing "
+                "rule was broken)?"
+            ),
+            options=["coverage_gap", "policy_violation"],
         )
+
+        if classification["degraded"]:
+            looks_like_gap = any(
+                phrase in reason.lower()
+                for phrase in ("no rule", "not covered", "undefined", "no applicable", "no matching rule")
+            )
+        else:
+            looks_like_gap = classification["best"] == "coverage_gap"
 
         if looks_like_gap:
             pid = await propose_rule(
@@ -85,7 +109,7 @@ class NonBlockingGovernor:
                 content=f"Task: {task}\nProposal:\n{proposal}",
                 rationale=f"Non-blocking governor detected an uncovered case: {reason}",
             )
-            return {"action": "rule_proposal", "proposal_id": pid}
+            return {"action": "rule_proposal", "proposal_id": pid, "classification": classification}
 
         branch = f"quarantine/{agent_name.lower()}-{uuid.uuid4().hex[:8]}"
         target = QUARANTINE_ROOT / branch.replace("/", "-")
@@ -94,7 +118,7 @@ class NonBlockingGovernor:
                 ["bash", str(GIT_WORKER), branch, str(target)],
                 check=True, capture_output=True, text=True, cwd=str(PROJECT_ROOT),
             )
-            return {"action": "quarantine_branch", "branch": branch, "path": str(target)}
+            return {"action": "quarantine_branch", "branch": branch, "path": str(target), "classification": classification}
         except subprocess.CalledProcessError as e:
             return {"action": "quarantine_branch_failed", "branch": branch, "error": e.stderr}
 

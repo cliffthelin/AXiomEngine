@@ -83,6 +83,7 @@
 - [x] **PI Rule Extensions**: Index and inject specific rule behaviors through specialized PI extensions. (Implemented via `ExtensionAPI.registerRuleProvider` + `index_extension_rules.py`, which embeds extension-contributed rules into `pdd_rules` so they flow through the existing injection pipeline; see `extensions/gpu_thermal_rules.py` for an example.)
 - [x] **The Governance Manifest Template**: Standardize the AXiomEngine audit results into a reusable template for other ecosystems. (Implemented via `docs/contracts/governance_manifest_template_contract.md` + `scripts/governance_manifest_template.py`, which aggregates release/integrity/hardware/mission artifacts into one ecosystem-agnostic manifest.)
 - [ ] **Remote Compute (Long-term)**: Consider off-host execution via Modal or SSH sandboxes. (Scoped, not implemented — see `docs/roadmap/REMOTE_COMPUTE_SCOPING.md`: recommends prototyping an SSH sandbox `AgentSandbox` mode first, with audit-sink-reachability as a hard precondition, before generalizing to a Modal backend.)
+- [x] **System One Decision Layer**: Fast structured Choice/Score primitives, self-hosted on the existing governed router, for non-deterministic-but-bounded decisions that don't need a full chat completion. (Implemented via `scripts/system_one.py`; wired into `nonblocking_governor.py`'s rejection-routing classification, replacing a keyword heuristic. See `docs/contracts/system_one_decision_contract.md` for the pattern and candidate future call sites.)
 
 ---
 
