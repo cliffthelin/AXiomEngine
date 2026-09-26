@@ -48,6 +48,7 @@ class ExtensionAPI:
         self.registered_commands: Dict[str, Any] = {}
         self.registered_shortcuts: Dict[str, Callable] = {}
         self.registered_flags: Dict[str, Any] = {}
+        self.registered_rule_providers: Dict[str, List[Callable]] = {}
         self.listeners: Dict[str, List[Callable]] = {}
 
     def registerTool(self, tool_def: Dict[str, Any]):
@@ -65,6 +66,15 @@ class ExtensionAPI:
 
     def registerFlag(self, name: str, config: Any):
         self.registered_flags[name] = config
+
+    def registerRuleProvider(self, scope: str, handler: Callable):
+        """PI Rule Extensions (Phase 7): let an extension contribute PDD rule
+        content for a given scope. `handler()` (sync or async) must return a
+        list of {rule_id, title, content} dicts. Providers are aggregated by
+        `scripts/index_extension_rules.py`, which embeds and upserts them into
+        `pdd_rules` so they flow through the existing rule-injection pipeline
+        (`get_pdd_rules`) just like any other rule."""
+        self.registered_rule_providers.setdefault(scope, []).append(handler)
 
     def on(self, event_name: str, handler: Callable):
         if event_name not in self.listeners:
@@ -110,6 +120,26 @@ class ExtensionManager:
         if git_global.exists():
             paths.extend([d for d in git_global.iterdir() if d.is_dir()])
         return paths
+
+    async def collect_rules(self) -> List[Dict[str, Any]]:
+        """Invoke every registered rule provider and return a flat list of
+        {scope, rule_id, title, content} dicts contributed by extensions."""
+        collected = []
+        for scope, handlers in self.api.registered_rule_providers.items():
+            for handler in handlers:
+                try:
+                    rules = await handler() if asyncio.iscoroutinefunction(handler) else handler()
+                except Exception as e:
+                    print(f"Extension rule provider error (scope={scope}): {e}")
+                    continue
+                for rule in rules or []:
+                    collected.append({
+                        "scope": scope,
+                        "rule_id": rule["rule_id"],
+                        "title": rule.get("title"),
+                        "content": rule["content"],
+                    })
+        return collected
 
     def load_extension(self, path: Path):
         try:

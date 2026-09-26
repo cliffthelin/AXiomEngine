@@ -37,6 +37,7 @@ sys.path.append(str(ROOT_DIR / "scripts"))
 
 from stitch import Stitch
 from core.cache.response_state_cache import global_response_cache
+from conversation_memory import save_turn as save_memory_turn
 
 # ── Config ────────────────────────────────────────────────────────────────────
 BACKENDS = {
@@ -320,6 +321,18 @@ async def chat_completions(request: Request, bg: BackgroundTasks):
         session.update_activity()
     
     bg.add_task(audit_log, session_id, "router", model, backend_key, rules, "hash", "hash", 0, 0, latency_ms)
+
+    if session_id != "anon":
+        user_messages = [m for m in body.get("messages", []) if m.get("role") == "user"]
+        if user_messages:
+            bg.add_task(save_memory_turn, session_id, agent_name, "user", user_messages[-1].get("content", ""))
+        try:
+            assistant_content = result["choices"][0]["message"]["content"]
+        except (KeyError, IndexError, TypeError):
+            assistant_content = None
+        if assistant_content:
+            bg.add_task(save_memory_turn, session_id, agent_name, "assistant", assistant_content)
+
     return result
 
 if __name__ == "__main__":
